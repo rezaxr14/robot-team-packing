@@ -1,0 +1,6380 @@
+{
+ "mechanism": {
+  "seed": 24,
+  "mass_sigma": 0.45,
+  "instruction": "Pack Maya's bag for school: book1, book2, bottle1, laptop1, lunchbox1, notebook1, notebook2, pencilcase1. Heavy items at the bottom. Laptop in the laptop slot. Bottle upright and away from the laptop. lunchbox1 last. Leave mug and plate.",
+  "items": [
+   {
+    "name": "book1",
+    "cls": "book",
+    "true_mass": 1.29,
+    "eye_mass": 0.779,
+    "true_frag": 0.14,
+    "eye_frag": 0.14,
+    "eye_cls": "book",
+    "distractor": false
+   },
+   {
+    "name": "book2",
+    "cls": "book",
+    "true_mass": 1.241,
+    "eye_mass": 1.106,
+    "true_frag": 0.098,
+    "eye_frag": 0.098,
+    "eye_cls": "book",
+    "distractor": false
+   },
+   {
+    "name": "bottle1",
+    "cls": "bottle",
+    "true_mass": 0.793,
+    "eye_mass": 0.658,
+    "true_frag": 0.206,
+    "eye_frag": 0.206,
+    "eye_cls": "bottle",
+    "distractor": false
+   },
+   {
+    "name": "laptop1",
+    "cls": "laptop",
+    "true_mass": 1.877,
+    "eye_mass": 1.771,
+    "true_frag": 0.433,
+    "eye_frag": 0.433,
+    "eye_cls": "laptop",
+    "distractor": false
+   },
+   {
+    "name": "lunchbox1",
+    "cls": "lunchbox",
+    "true_mass": 0.655,
+    "eye_mass": 0.552,
+    "true_frag": 0.525,
+    "eye_frag": 0.525,
+    "eye_cls": "lunchbox",
+    "distractor": false
+   },
+   {
+    "name": "mug",
+    "cls": "mug",
+    "true_mass": 0.3,
+    "eye_mass": 0.547,
+    "true_frag": 0.5,
+    "eye_frag": 0.5,
+    "eye_cls": "mug",
+    "distractor": true
+   },
+   {
+    "name": "notebook1",
+    "cls": "notebook",
+    "true_mass": 0.457,
+    "eye_mass": 0.257,
+    "true_frag": 0.094,
+    "eye_frag": 0.094,
+    "eye_cls": "notebook",
+    "distractor": false
+   },
+   {
+    "name": "notebook2",
+    "cls": "notebook",
+    "true_mass": 0.226,
+    "eye_mass": 0.143,
+    "true_frag": 0.081,
+    "eye_frag": 0.081,
+    "eye_cls": "notebook",
+    "distractor": false
+   },
+   {
+    "name": "pencilcase1",
+    "cls": "pencilcase",
+    "true_mass": 0.179,
+    "eye_mass": 0.307,
+    "true_frag": 0.299,
+    "eye_frag": 0.299,
+    "eye_cls": "pencilcase",
+    "distractor": false
+   },
+   {
+    "name": "plate",
+    "cls": "plate",
+    "true_mass": 0.3,
+    "eye_mass": 0.095,
+    "true_frag": 0.5,
+    "eye_frag": 0.5,
+    "eye_cls": "plate",
+    "distractor": true
+   }
+  ],
+  "no_fix": {
+   "success": false,
+   "score": 0.85,
+   "violations": [
+    {
+     "rule": "heavy_bottom",
+     "detail": "notebook1 above lighter pencilcase1"
+    }
+   ],
+   "crushed": [],
+   "missing": [],
+   "replans": 0,
+   "rounds": 12,
+   "looks": 0,
+   "challenges": 0,
+   "plan_retries": 0,
+   "plan_pass": true,
+   "failures": [
+    {
+     "agent": "Eye",
+     "cause": "slip",
+     "task": "g_book1",
+     "obj": "book1",
+     "detail": null,
+     "fatal": false
+    },
+    {
+     "agent": "Eye",
+     "cause": "slip",
+     "task": "g_book1",
+     "obj": "book1",
+     "detail": null,
+     "fatal": false
+    },
+    {
+     "agent": "Eye",
+     "cause": "rule_heavy_bottom",
+     "task": "-",
+     "obj": null,
+     "detail": "notebook1 above lighter pencilcase1",
+     "fatal": true
+    }
+   ],
+   "executed": [
+    {
+     "task": {
+      "id": "g_laptop1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "laptop1",
+      "params": {
+       "force": 18.28
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 0
+    },
+    {
+     "task": {
+      "id": "g_book1",
+      "arm": "R",
+      "skill": "grasp",
+      "obj": "book1",
+      "params": {
+       "force": 10.84
+      },
+      "deps": []
+     },
+     "ok": false,
+     "cause": "slip",
+     "round": 0
+    },
+    {
+     "task": {
+      "id": "p_laptop1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "laptop1",
+      "params": {
+       "compartment": "laptop",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_laptop1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 1
+    },
+    {
+     "task": {
+      "id": "g_book1",
+      "arm": "R",
+      "skill": "grasp",
+      "obj": "book1",
+      "params": {
+       "force": 10.84
+      },
+      "deps": []
+     },
+     "ok": false,
+     "cause": "slip",
+     "round": 1
+    },
+    {
+     "task": {
+      "id": "g_book2",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "book2",
+      "params": {
+       "force": 13.3
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 2
+    },
+    {
+     "task": {
+      "id": "g_book1",
+      "arm": "R",
+      "skill": "grasp",
+      "obj": "book1",
+      "params": {
+       "force": 12.57
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 2
+    },
+    {
+     "task": {
+      "id": "p_book2",
+      "arm": "L",
+      "skill": "place",
+      "obj": "book2",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_book2",
+       "p_laptop1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 3
+    },
+    {
+     "task": {
+      "id": "g_bottle1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "bottle1",
+      "params": {
+       "force": 9.94
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 4
+    },
+    {
+     "task": {
+      "id": "p_book1",
+      "arm": "R",
+      "skill": "place",
+      "obj": "book1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_book1",
+       "p_book2"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 4
+    },
+    {
+     "task": {
+      "id": "p_bottle1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "bottle1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_bottle1",
+       "p_book1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 5
+    },
+    {
+     "task": {
+      "id": "g_notebook2",
+      "arm": "R",
+      "skill": "grasp",
+      "obj": "notebook2",
+      "params": {
+       "force": 6.07
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 5
+    },
+    {
+     "task": {
+      "id": "g_pencilcase1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "pencilcase1",
+      "params": {
+       "force": 7.3
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 6
+    },
+    {
+     "task": {
+      "id": "p_pencilcase1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "pencilcase1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_pencilcase1",
+       "p_bottle1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 7
+    },
+    {
+     "task": {
+      "id": "g_notebook1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "notebook1",
+      "params": {
+       "force": 6.93
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 8
+    },
+    {
+     "task": {
+      "id": "p_notebook1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "notebook1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_notebook1",
+       "p_pencilcase1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 9
+    },
+    {
+     "task": {
+      "id": "g_lunchbox1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "lunchbox1",
+      "params": {
+       "force": 9.14
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 10
+    },
+    {
+     "task": {
+      "id": "p_notebook2",
+      "arm": "R",
+      "skill": "place",
+      "obj": "notebook2",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_notebook2",
+       "p_notebook1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 10
+    },
+    {
+     "task": {
+      "id": "p_lunchbox1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "lunchbox1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_lunchbox1",
+       "p_notebook2"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 11
+    }
+   ],
+   "plans": [
+    "{\"tasks\":[{\"id\":\"g_laptop1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"laptop1\",\"params\":{\"force\":18.28},\"deps\":[]},{\"id\":\"p_laptop1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"laptop1\",\"params\":{\"compartment\":\"laptop\",\"orientation\":\"upright\"},\"deps\":[\"g_laptop1\"]},{\"id\":\"g_book2\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"book2\",\"params\":{\"force\":13.3},\"deps\":[]},{\"id\":\"p_book2\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"book2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_book2\",\"p_laptop1\"]},{\"id\":\"g_book1\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"book1\",\"params\":{\"force\":10.84},\"deps\":[]},{\"id\":\"p_book1\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"book1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_book1\",\"p_book2\"]},{\"id\":\"g_bottle1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"bottle1\",\"params\":{\"force\":9.94},\"deps\":[]},{\"id\":\"p_bottle1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"bottle1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_bottle1\",\"p_book1\"]},{\"id\":\"g_pencilcase1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"pencilcase1\",\"params\":{\"force\":7.3},\"deps\":[]},{\"id\":\"p_pencilcase1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"pencilcase1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_pencilcase1\",\"p_bottle1\"]},{\"id\":\"g_notebook1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"notebook1\",\"params\":{\"force\":6.93},\"deps\":[]},{\"id\":\"p_notebook1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"notebook1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook1\",\"p_pencilcase1\"]},{\"id\":\"g_notebook2\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"notebook2\",\"params\":{\"force\":6.07},\"deps\":[]},{\"id\":\"p_notebook2\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"notebook2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook2\",\"p_notebook1\"]},{\"id\":\"g_lunchbox1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"lunchbox1\",\"params\":{\"force\":9.14},\"deps\":[]},{\"id\":\"p_lunchbox1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"lunchbox1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_lunchbox1\",\"p_notebook2\"]}],\"notes\":\"rules=bottle_upright,heavy_bottom,laptop_slot,leave_distractors,lunchbox_last\"}"
+   ],
+   "scene_final": {
+    "book1": {
+     "name": "book1",
+     "cls": "book",
+     "region": "bag:main",
+     "size": 2.0,
+     "mass_guess": 1.396,
+     "fragility_guess": 0.14,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "book2": {
+     "name": "book2",
+     "cls": "book",
+     "region": "bag:main",
+     "size": 2.0,
+     "mass_guess": 1.362,
+     "fragility_guess": 0.098,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "bottle1": {
+     "name": "bottle1",
+     "cls": "bottle",
+     "region": "bag:main",
+     "size": 1.5,
+     "mass_guess": 0.991,
+     "fragility_guess": 0.206,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "laptop1": {
+     "name": "laptop1",
+     "cls": "laptop",
+     "region": "bag:laptop",
+     "size": 3.0,
+     "mass_guess": 1.583,
+     "fragility_guess": 0.433,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "lunchbox1": {
+     "name": "lunchbox1",
+     "cls": "lunchbox",
+     "region": "bag:main",
+     "size": 2.5,
+     "mass_guess": 0.35,
+     "fragility_guess": 0.525,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "mug": {
+     "name": "mug",
+     "cls": "mug",
+     "region": "table_center",
+     "size": 1.0,
+     "mass_guess": 0.324,
+     "fragility_guess": 0.5,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "notebook1": {
+     "name": "notebook1",
+     "cls": "notebook",
+     "region": "bag:main",
+     "size": 1.0,
+     "mass_guess": 0.351,
+     "fragility_guess": 0.094,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "notebook2": {
+     "name": "notebook2",
+     "cls": "notebook",
+     "region": "bag:main",
+     "size": 1.0,
+     "mass_guess": 0.228,
+     "fragility_guess": 0.081,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "pencilcase1": {
+     "name": "pencilcase1",
+     "cls": "pencilcase",
+     "region": "bag:main",
+     "size": 1.0,
+     "mass_guess": 0.344,
+     "fragility_guess": 0.299,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "plate": {
+     "name": "plate",
+     "cls": "plate",
+     "region": "table_center",
+     "size": 1.0,
+     "mass_guess": 0.189,
+     "fragility_guess": 0.5,
+     "occluded": false,
+     "confidence": 0.9
+    }
+   }
+  },
+  "challenge": {
+   "success": true,
+   "score": 0.99,
+   "violations": [],
+   "crushed": [],
+   "missing": [],
+   "replans": 1,
+   "rounds": 15,
+   "looks": 0,
+   "challenges": 5,
+   "plan_retries": 2,
+   "plan_pass": true,
+   "failures": [
+    {
+     "agent": "Eye",
+     "cause": "slip",
+     "task": "g_book1",
+     "obj": "book1",
+     "detail": null,
+     "fatal": false
+    },
+    {
+     "agent": "Eye",
+     "cause": "slip",
+     "task": "g_book1",
+     "obj": "book1",
+     "detail": null,
+     "fatal": false
+    },
+    {
+     "agent": "Brain",
+     "cause": "plan_rejected",
+     "task": "-",
+     "obj": null,
+     "detail": "p_book1: place without prior grasp by R; p_book2: place without prior grasp by L",
+     "fatal": false
+    },
+    {
+     "agent": "Brain",
+     "cause": "plan_rejected",
+     "task": "-",
+     "obj": null,
+     "detail": "p_book1: place without prior grasp by R; p_book2: place without prior grasp by L",
+     "fatal": false
+    },
+    {
+     "agent": "Brain",
+     "cause": "static_infeasible",
+     "task": "-",
+     "obj": null,
+     "detail": "p_book1: place without prior grasp by R; p_book2: place without prior grasp by L",
+     "fatal": null
+    },
+    {
+     "agent": "Eye",
+     "cause": "slip",
+     "task": "r1_g_lunchbox1",
+     "obj": "lunchbox1",
+     "detail": null,
+     "fatal": false
+    },
+    {
+     "agent": "Arm",
+     "cause": "slip",
+     "task": "r1_g_lunchbox1",
+     "obj": "lunchbox1",
+     "detail": null,
+     "fatal": false
+    }
+   ],
+   "executed": [
+    {
+     "task": {
+      "id": "g_laptop1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "laptop1",
+      "params": {
+       "force": 18.28
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 0
+    },
+    {
+     "task": {
+      "id": "g_book1",
+      "arm": "R",
+      "skill": "grasp",
+      "obj": "book1",
+      "params": {
+       "force": 10.84
+      },
+      "deps": []
+     },
+     "ok": false,
+     "cause": "slip",
+     "round": 0
+    },
+    {
+     "task": {
+      "id": "p_laptop1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "laptop1",
+      "params": {
+       "compartment": "laptop",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_laptop1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 1
+    },
+    {
+     "task": {
+      "id": "g_book1",
+      "arm": "R",
+      "skill": "grasp",
+      "obj": "book1",
+      "params": {
+       "force": 10.84
+      },
+      "deps": []
+     },
+     "ok": false,
+     "cause": "slip",
+     "round": 1
+    },
+    {
+     "task": {
+      "id": "g_book2",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "book2",
+      "params": {
+       "force": 13.3
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 2
+    },
+    {
+     "task": {
+      "id": "g_book1",
+      "arm": "R",
+      "skill": "grasp",
+      "obj": "book1",
+      "params": {
+       "force": 12.57
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 2
+    },
+    {
+     "task": {
+      "id": "r1_p_book1",
+      "arm": "R",
+      "skill": "place",
+      "obj": "book1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 3
+    },
+    {
+     "task": {
+      "id": "r1_p_book2",
+      "arm": "L",
+      "skill": "place",
+      "obj": "book2",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "r1_p_book1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 4
+    },
+    {
+     "task": {
+      "id": "r1_g_notebook2",
+      "arm": "R",
+      "skill": "grasp",
+      "obj": "notebook2",
+      "params": {
+       "force": 7.24
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 4
+    },
+    {
+     "task": {
+      "id": "r1_g_bottle1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "bottle1",
+      "params": {
+       "force": 11.62
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 5
+    },
+    {
+     "task": {
+      "id": "r1_p_bottle1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "bottle1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "r1_g_bottle1",
+       "r1_p_book2"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 6
+    },
+    {
+     "task": {
+      "id": "r1_g_notebook1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "notebook1",
+      "params": {
+       "force": 9.16
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 7
+    },
+    {
+     "task": {
+      "id": "r1_p_notebook1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "notebook1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "r1_g_notebook1",
+       "r1_p_bottle1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 8
+    },
+    {
+     "task": {
+      "id": "r1_g_pencilcase1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "pencilcase1",
+      "params": {
+       "force": 7.55
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 9
+    },
+    {
+     "task": {
+      "id": "r1_p_pencilcase1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "pencilcase1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "r1_g_pencilcase1",
+       "r1_p_notebook1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 10
+    },
+    {
+     "task": {
+      "id": "r1_g_lunchbox1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "lunchbox1",
+      "params": {
+       "force": 8.25
+      },
+      "deps": []
+     },
+     "ok": false,
+     "cause": "slip",
+     "round": 11
+    },
+    {
+     "task": {
+      "id": "r1_p_notebook2",
+      "arm": "R",
+      "skill": "place",
+      "obj": "notebook2",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "r1_g_notebook2",
+       "r1_p_pencilcase1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 11
+    },
+    {
+     "task": {
+      "id": "r1_g_lunchbox1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "lunchbox1",
+      "params": {
+       "force": 8.25
+      },
+      "deps": []
+     },
+     "ok": false,
+     "cause": "slip",
+     "round": 12
+    },
+    {
+     "task": {
+      "id": "r1_g_lunchbox1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "lunchbox1",
+      "params": {
+       "force": 9.08
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 13
+    },
+    {
+     "task": {
+      "id": "r1_p_lunchbox1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "lunchbox1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "r1_g_lunchbox1",
+       "r1_p_notebook2"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 14
+    }
+   ],
+   "plans": [
+    "{\"tasks\":[{\"id\":\"g_laptop1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"laptop1\",\"params\":{\"force\":18.28},\"deps\":[]},{\"id\":\"p_laptop1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"laptop1\",\"params\":{\"compartment\":\"laptop\",\"orientation\":\"upright\"},\"deps\":[\"g_laptop1\"]},{\"id\":\"g_book2\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"book2\",\"params\":{\"force\":13.3},\"deps\":[]},{\"id\":\"p_book2\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"book2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_book2\",\"p_laptop1\"]},{\"id\":\"g_book1\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"book1\",\"params\":{\"force\":10.84},\"deps\":[]},{\"id\":\"p_book1\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"book1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_book1\",\"p_book2\"]},{\"id\":\"g_bottle1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"bottle1\",\"params\":{\"force\":9.94},\"deps\":[]},{\"id\":\"p_bottle1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"bottle1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_bottle1\",\"p_book1\"]},{\"id\":\"g_pencilcase1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"pencilcase1\",\"params\":{\"force\":7.3},\"deps\":[]},{\"id\":\"p_pencilcase1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"pencilcase1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_pencilcase1\",\"p_bottle1\"]},{\"id\":\"g_notebook1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"notebook1\",\"params\":{\"force\":6.93},\"deps\":[]},{\"id\":\"p_notebook1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"notebook1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook1\",\"p_pencilcase1\"]},{\"id\":\"g_notebook2\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"notebook2\",\"params\":{\"force\":6.07},\"deps\":[]},{\"id\":\"p_notebook2\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"notebook2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook2\",\"p_notebook1\"]},{\"id\":\"g_lunchbox1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"lunchbox1\",\"params\":{\"force\":9.14},\"deps\":[]},{\"id\":\"p_lunchbox1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"lunchbox1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_lunchbox1\",\"p_notebook2\"]}],\"notes\":\"rules=bottle_upright,heavy_bottom,laptop_slot,leave_distractors,lunchbox_last\"}",
+    "{\"tasks\":[{\"id\":\"p_book1\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"book1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[]},{\"id\":\"p_book2\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"book2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"p_book1\"]},{\"id\":\"g_bottle1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"bottle1\",\"params\":{\"force\":11.62},\"deps\":[]},{\"id\":\"p_bottle1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"bottle1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_bottle1\",\"p_book2\"]},{\"id\":\"g_notebook1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"notebook1\",\"params\":{\"force\":9.16},\"deps\":[]},{\"id\":\"p_notebook1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"notebook1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook1\",\"p_bottle1\"]},{\"id\":\"g_pencilcase1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"pencilcase1\",\"params\":{\"force\":7.55},\"deps\":[]},{\"id\":\"p_pencilcase1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"pencilcase1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_pencilcase1\",\"p_notebook1\"]},{\"id\":\"g_notebook2\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"notebook2\",\"params\":{\"force\":7.24},\"deps\":[]},{\"id\":\"p_notebook2\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"notebook2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook2\",\"p_pencilcase1\"]},{\"id\":\"g_lunchbox1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"lunchbox1\",\"params\":{\"force\":8.25},\"deps\":[]},{\"id\":\"p_lunchbox1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"lunchbox1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_lunchbox1\",\"p_notebook2\"]}],\"notes\":\"rules=bottle_upright,heavy_bottom,laptop_slot,leave_distractors,lunchbox_last\"}"
+   ],
+   "scene_final": {
+    "book1": {
+     "name": "book1",
+     "cls": "book",
+     "region": "bag:main",
+     "size": 2.0,
+     "mass_guess": 1.335,
+     "fragility_guess": 0.14,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "book2": {
+     "name": "book2",
+     "cls": "book",
+     "region": "bag:main",
+     "size": 2.0,
+     "mass_guess": 1.283,
+     "fragility_guess": 0.098,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "bottle1": {
+     "name": "bottle1",
+     "cls": "bottle",
+     "region": "bag:main",
+     "size": 1.5,
+     "mass_guess": 0.784,
+     "fragility_guess": 0.206,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "laptop1": {
+     "name": "laptop1",
+     "cls": "laptop",
+     "region": "bag:laptop",
+     "size": 3.0,
+     "mass_guess": 0.793,
+     "fragility_guess": 0.433,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "lunchbox1": {
+     "name": "lunchbox1",
+     "cls": "lunchbox",
+     "region": "bag:main",
+     "size": 2.5,
+     "mass_guess": 0.643,
+     "fragility_guess": 0.525,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "mug": {
+     "name": "mug",
+     "cls": "mug",
+     "region": "table_center",
+     "size": 1.0,
+     "mass_guess": 0.338,
+     "fragility_guess": 0.5,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "notebook1": {
+     "name": "notebook1",
+     "cls": "notebook",
+     "region": "bag:main",
+     "size": 1.0,
+     "mass_guess": 0.461,
+     "fragility_guess": 0.094,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "notebook2": {
+     "name": "notebook2",
+     "cls": "notebook",
+     "region": "bag:main",
+     "size": 1.0,
+     "mass_guess": 0.202,
+     "fragility_guess": 0.081,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "pencilcase1": {
+     "name": "pencilcase1",
+     "cls": "pencilcase",
+     "region": "bag:main",
+     "size": 1.0,
+     "mass_guess": 0.152,
+     "fragility_guess": 0.299,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "plate": {
+     "name": "plate",
+     "cls": "plate",
+     "region": "table_center",
+     "size": 1.0,
+     "mass_guess": 0.192,
+     "fragility_guess": 0.5,
+     "occluded": false,
+     "confidence": 0.9
+    }
+   }
+  },
+  "probe": {
+   "success": true,
+   "score": 1.0,
+   "violations": [],
+   "crushed": [],
+   "missing": [],
+   "replans": 0,
+   "rounds": 17,
+   "looks": 0,
+   "challenges": 0,
+   "plan_retries": 0,
+   "plan_pass": true,
+   "failures": [],
+   "executed": [
+    {
+     "task": {
+      "id": "g_laptop1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "laptop1",
+      "params": {
+       "force": 18.47
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 0
+    },
+    {
+     "task": {
+      "id": "g_book1",
+      "arm": "R",
+      "skill": "grasp",
+      "obj": "book1",
+      "params": {
+       "force": 14.83
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 0
+    },
+    {
+     "task": {
+      "id": "p_laptop1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "laptop1",
+      "params": {
+       "compartment": "laptop",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_laptop1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 1
+    },
+    {
+     "task": {
+      "id": "g_book2",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "book2",
+      "params": {
+       "force": 14.13
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 2
+    },
+    {
+     "task": {
+      "id": "p_book1",
+      "arm": "R",
+      "skill": "place",
+      "obj": "book1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_book1",
+       "p_laptop1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 2
+    },
+    {
+     "task": {
+      "id": "p_book2",
+      "arm": "L",
+      "skill": "place",
+      "obj": "book2",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_book2",
+       "p_book1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 3
+    },
+    {
+     "task": {
+      "id": "g_notebook2",
+      "arm": "R",
+      "skill": "grasp",
+      "obj": "notebook2",
+      "params": {
+       "force": 6.67
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 3
+    },
+    {
+     "task": {
+      "id": "g_bottle1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "bottle1",
+      "params": {
+       "force": 11.04
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 4
+    },
+    {
+     "task": {
+      "id": "p_bottle1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "bottle1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_bottle1",
+       "p_book2"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 5
+    },
+    {
+     "task": {
+      "id": "g_notebook1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "notebook1",
+      "params": {
+       "force": 8.46
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 6
+    },
+    {
+     "task": {
+      "id": "p_notebook1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "notebook1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_notebook1",
+       "p_bottle1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 7
+    },
+    {
+     "task": {
+      "id": "g_pencilcase1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "pencilcase1",
+      "params": {
+       "force": 6.34
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 8
+    },
+    {
+     "task": {
+      "id": "p_notebook2",
+      "arm": "R",
+      "skill": "place",
+      "obj": "notebook2",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_notebook2",
+       "p_notebook1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 8
+    },
+    {
+     "task": {
+      "id": "p_pencilcase1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "pencilcase1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_pencilcase1",
+       "p_notebook2"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 9
+    },
+    {
+     "task": {
+      "id": "g_lunchbox1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "lunchbox1",
+      "params": {
+       "force": 9.91
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 10
+    },
+    {
+     "task": {
+      "id": "p_lunchbox1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "lunchbox1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_lunchbox1",
+       "p_pencilcase1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 11
+    }
+   ],
+   "plans": [
+    "{\"tasks\":[{\"id\":\"g_laptop1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"laptop1\",\"params\":{\"force\":18.47},\"deps\":[]},{\"id\":\"p_laptop1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"laptop1\",\"params\":{\"compartment\":\"laptop\",\"orientation\":\"upright\"},\"deps\":[\"g_laptop1\"]},{\"id\":\"g_book1\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"book1\",\"params\":{\"force\":14.83},\"deps\":[]},{\"id\":\"p_book1\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"book1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_book1\",\"p_laptop1\"]},{\"id\":\"g_book2\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"book2\",\"params\":{\"force\":14.13},\"deps\":[]},{\"id\":\"p_book2\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"book2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_book2\",\"p_book1\"]},{\"id\":\"g_bottle1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"bottle1\",\"params\":{\"force\":11.04},\"deps\":[]},{\"id\":\"p_bottle1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"bottle1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_bottle1\",\"p_book2\"]},{\"id\":\"g_notebook1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"notebook1\",\"params\":{\"force\":8.46},\"deps\":[]},{\"id\":\"p_notebook1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"notebook1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook1\",\"p_bottle1\"]},{\"id\":\"g_notebook2\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"notebook2\",\"params\":{\"force\":6.67},\"deps\":[]},{\"id\":\"p_notebook2\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"notebook2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook2\",\"p_notebook1\"]},{\"id\":\"g_pencilcase1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"pencilcase1\",\"params\":{\"force\":6.34},\"deps\":[]},{\"id\":\"p_pencilcase1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"pencilcase1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_pencilcase1\",\"p_notebook2\"]},{\"id\":\"g_lunchbox1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"lunchbox1\",\"params\":{\"force\":9.91},\"deps\":[]},{\"id\":\"p_lunchbox1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"lunchbox1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_lunchbox1\",\"p_pencilcase1\"]}],\"notes\":\"rules=bottle_upright,heavy_bottom,laptop_slot,leave_distractors,lunchbox_last\"}"
+   ],
+   "scene_final": {
+    "book1": {
+     "name": "book1",
+     "cls": "book",
+     "region": "bag:main",
+     "size": 2.0,
+     "mass_guess": 1.311,
+     "fragility_guess": 0.14,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "book2": {
+     "name": "book2",
+     "cls": "book",
+     "region": "bag:main",
+     "size": 2.0,
+     "mass_guess": 1.217,
+     "fragility_guess": 0.098,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "bottle1": {
+     "name": "bottle1",
+     "cls": "bottle",
+     "region": "bag:main",
+     "size": 1.5,
+     "mass_guess": 0.805,
+     "fragility_guess": 0.206,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "laptop1": {
+     "name": "laptop1",
+     "cls": "laptop",
+     "region": "bag:laptop",
+     "size": 3.0,
+     "mass_guess": 1.894,
+     "fragility_guess": 0.433,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "lunchbox1": {
+     "name": "lunchbox1",
+     "cls": "lunchbox",
+     "region": "bag:main",
+     "size": 2.5,
+     "mass_guess": 0.655,
+     "fragility_guess": 0.525,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "mug": {
+     "name": "mug",
+     "cls": "mug",
+     "region": "table_center",
+     "size": 1.0,
+     "mass_guess": 0.261,
+     "fragility_guess": 0.5,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "notebook1": {
+     "name": "notebook1",
+     "cls": "notebook",
+     "region": "bag:main",
+     "size": 1.0,
+     "mass_guess": 0.461,
+     "fragility_guess": 0.094,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "notebook2": {
+     "name": "notebook2",
+     "cls": "notebook",
+     "region": "bag:main",
+     "size": 1.0,
+     "mass_guess": 0.223,
+     "fragility_guess": 0.081,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "pencilcase1": {
+     "name": "pencilcase1",
+     "cls": "pencilcase",
+     "region": "bag:main",
+     "size": 1.0,
+     "mass_guess": 0.179,
+     "fragility_guess": 0.299,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "plate": {
+     "name": "plate",
+     "cls": "plate",
+     "region": "table_center",
+     "size": 1.0,
+     "mass_guess": 0.411,
+     "fragility_guess": 0.5,
+     "occluded": false,
+     "confidence": 0.9
+    }
+   }
+  },
+  "scene_at_plan": "first plan() call of the no-fix run",
+  "planned_from_n_scenes": 1,
+  "challenge_msgs": [
+   {
+    "from": "arm_L",
+    "to": "brain",
+    "content": {
+     "obj": "book2",
+     "evidence": {
+      "measured_weight": 1.283,
+      "reported": 2.136
+     }
+    }
+   },
+   {
+    "from": "arm_R",
+    "to": "brain",
+    "content": {
+     "obj": "book1",
+     "evidence": {
+      "measured_weight": 1.335,
+      "reported": 0.5
+     }
+    }
+   },
+   {
+    "from": "arm_L",
+    "to": "brain",
+    "content": {
+     "obj": "bottle1",
+     "evidence": {
+      "measured_weight": 0.784,
+      "reported": 1.489
+     }
+    }
+   },
+   {
+    "from": "arm_L",
+    "to": "brain",
+    "content": {
+     "obj": "notebook1",
+     "evidence": {
+      "measured_weight": 0.461,
+      "reported": 0.131
+     }
+    }
+   },
+   {
+    "from": "arm_L",
+    "to": "brain",
+    "content": {
+     "obj": "lunchbox1",
+     "evidence": {
+      "measured_weight": 0.643,
+      "reported": 0.35
+     }
+    }
+   }
+  ],
+  "no_fix_exec": [
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "laptop1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "book1",
+    "ok": false,
+    "cause": "slip"
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "laptop1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "book1",
+    "ok": false,
+    "cause": "slip"
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "book2",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "book1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "book2",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "bottle1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "place",
+    "obj": "book1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "bottle1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "notebook2",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "pencilcase1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "pencilcase1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "notebook1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "notebook1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "lunchbox1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "place",
+    "obj": "notebook2",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "lunchbox1",
+    "ok": true,
+    "cause": ""
+   }
+  ],
+  "challenge_exec": [
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "laptop1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "book1",
+    "ok": false,
+    "cause": "slip"
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "laptop1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "book1",
+    "ok": false,
+    "cause": "slip"
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "book2",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "book1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "place",
+    "obj": "book1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "book2",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "notebook2",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "bottle1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "bottle1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "notebook1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "notebook1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "pencilcase1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "pencilcase1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "lunchbox1",
+    "ok": false,
+    "cause": "slip"
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "place",
+    "obj": "notebook2",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "lunchbox1",
+    "ok": false,
+    "cause": "slip"
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "lunchbox1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "lunchbox1",
+    "ok": true,
+    "cause": ""
+   }
+  ]
+ },
+ "loop": {
+  "seed": 11,
+  "amend_round": 3,
+  "injected": [
+   "no_grasp",
+   "wrong_arm"
+  ],
+  "instruction": "Pack Maya's bag for school: book1, book2, bottle1, laptop1, lunchbox1, notebook1, notebook2, pencilcase1. Heavy items at the bottom. Laptop in the front slot. Bottle upright and away from the laptop. lunchbox1 last. Leave mug and plate.",
+  "story": {
+   "success": true,
+   "score": 0.98,
+   "violations": [],
+   "crushed": [],
+   "missing": [],
+   "replans": 2,
+   "rounds": 12,
+   "looks": 1,
+   "challenges": 4,
+   "plan_retries": 6,
+   "plan_pass": false,
+   "failures": [
+    {
+     "agent": "Brain",
+     "cause": "plan_rejected",
+     "task": "-",
+     "obj": null,
+     "detail": "p_laptop1: place without prior grasp by L",
+     "fatal": false
+    },
+    {
+     "agent": "Brain",
+     "cause": "plan_rejected",
+     "task": "-",
+     "obj": null,
+     "detail": "item not packed: notebook2",
+     "fatal": false
+    },
+    {
+     "agent": "Brain",
+     "cause": "plan_rejected",
+     "task": "-",
+     "obj": null,
+     "detail": "p_book2: place without prior grasp by L",
+     "fatal": false
+    },
+    {
+     "agent": "Brain",
+     "cause": "plan_rejected",
+     "task": "-",
+     "obj": null,
+     "detail": "p_book2: place without prior grasp by L; g_lunchbox1: lunchbox1 in table_left not reachable by R",
+     "fatal": false
+    },
+    {
+     "agent": "Brain",
+     "cause": "static_infeasible",
+     "task": "-",
+     "obj": null,
+     "detail": "p_book2: place without prior grasp by L",
+     "fatal": null
+    },
+    {
+     "agent": "Brain",
+     "cause": "plan_rejected",
+     "task": "-",
+     "obj": null,
+     "detail": "p_book2: place without prior grasp by L",
+     "fatal": false
+    },
+    {
+     "agent": "Brain",
+     "cause": "plan_rejected",
+     "task": "-",
+     "obj": null,
+     "detail": "p_book2: place without prior grasp by L",
+     "fatal": false
+    },
+    {
+     "agent": "Brain",
+     "cause": "static_infeasible",
+     "task": "-",
+     "obj": null,
+     "detail": "p_book2: place without prior grasp by L",
+     "fatal": null
+    }
+   ],
+   "executed": [
+    {
+     "task": {
+      "id": "g_laptop1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "laptop1",
+      "params": {
+       "force": 17.31
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 0
+    },
+    {
+     "task": {
+      "id": "g_book1",
+      "arm": "R",
+      "skill": "grasp",
+      "obj": "book1",
+      "params": {
+       "force": 13.77
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 0
+    },
+    {
+     "task": {
+      "id": "p_laptop1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "laptop1",
+      "params": {
+       "compartment": "front",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_laptop1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 1
+    },
+    {
+     "task": {
+      "id": "g_book2",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "book2",
+      "params": {
+       "force": 13.42
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 2
+    },
+    {
+     "task": {
+      "id": "p_book1",
+      "arm": "R",
+      "skill": "place",
+      "obj": "book1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "g_book1",
+       "p_laptop1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 2
+    },
+    {
+     "task": {
+      "id": "r2_p_book2",
+      "arm": "L",
+      "skill": "place",
+      "obj": "book2",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 3
+    },
+    {
+     "task": {
+      "id": "r2_g_notebook2",
+      "arm": "R",
+      "skill": "grasp",
+      "obj": "notebook2",
+      "params": {
+       "force": 8.69
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 3
+    },
+    {
+     "task": {
+      "id": "r2_g_bottle1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "bottle1",
+      "params": {
+       "force": 10.87
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 4
+    },
+    {
+     "task": {
+      "id": "r2_p_bottle1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "bottle1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "r2_g_bottle1",
+       "r2_p_book2"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 5
+    },
+    {
+     "task": {
+      "id": "r2_g_pencilcase1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "pencilcase1",
+      "params": {
+       "force": 6.92
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 6
+    },
+    {
+     "task": {
+      "id": "r2_p_notebook2",
+      "arm": "R",
+      "skill": "place",
+      "obj": "notebook2",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "r2_g_notebook2",
+       "r2_p_bottle1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 6
+    },
+    {
+     "task": {
+      "id": "r2_g_notebook1",
+      "arm": "R",
+      "skill": "grasp",
+      "obj": "notebook1",
+      "params": {
+       "force": 7.2
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 7
+    },
+    {
+     "task": {
+      "id": "r2_p_notebook1",
+      "arm": "R",
+      "skill": "place",
+      "obj": "notebook1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "r2_g_notebook1",
+       "r2_p_notebook2"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 8
+    },
+    {
+     "task": {
+      "id": "r2_p_pencilcase1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "pencilcase1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "r2_g_pencilcase1",
+       "r2_p_notebook1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 9
+    },
+    {
+     "task": {
+      "id": "r2_g_lunchbox1",
+      "arm": "L",
+      "skill": "grasp",
+      "obj": "lunchbox1",
+      "params": {
+       "force": 8.73
+      },
+      "deps": []
+     },
+     "ok": true,
+     "cause": "",
+     "round": 10
+    },
+    {
+     "task": {
+      "id": "r2_p_lunchbox1",
+      "arm": "L",
+      "skill": "place",
+      "obj": "lunchbox1",
+      "params": {
+       "compartment": "main",
+       "orientation": "upright"
+      },
+      "deps": [
+       "r2_g_lunchbox1",
+       "r2_p_pencilcase1"
+      ]
+     },
+     "ok": true,
+     "cause": "",
+     "round": 11
+    }
+   ],
+   "plans": [
+    "{\"tasks\":[{\"id\":\"g_laptop1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"laptop1\",\"params\":{\"force\":15.06},\"deps\":[]},{\"id\":\"p_laptop1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"laptop1\",\"params\":{\"compartment\":\"front\",\"orientation\":\"upright\"},\"deps\":[\"g_laptop1\"]},{\"id\":\"g_book2\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"book2\",\"params\":{\"force\":13.42},\"deps\":[]},{\"id\":\"p_book2\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"book2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_book2\",\"p_laptop1\"]},{\"id\":\"g_book1\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"book1\",\"params\":{\"force\":13.02},\"deps\":[]},{\"id\":\"p_book1\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"book1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_book1\",\"p_book2\"]},{\"id\":\"g_bottle1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"bottle1\",\"params\":{\"force\":10.08},\"deps\":[]},{\"id\":\"p_bottle1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"bottle1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_bottle1\",\"p_book1\"]},{\"id\":\"g_notebook1\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"notebook1\",\"params\":{\"force\":7.28},\"deps\":[]},{\"id\":\"p_notebook1\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"notebook1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook1\",\"p_bottle1\"]},{\"id\":\"g_pencilcase1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"pencilcase1\",\"params\":{\"force\":6.63},\"deps\":[]},{\"id\":\"p_pencilcase1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"pencilcase1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_pencilcase1\",\"p_notebook1\"]},{\"id\":\"g_lunchbox1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"lunchbox1\",\"params\":{\"force\":9.49},\"deps\":[]},{\"id\":\"p_lunchbox1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"lunchbox1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_lunchbox1\",\"p_pencilcase1\"]}],\"notes\":\"rules=bottle_upright,heavy_bottom,laptop_slot,leave_distractors,lunchbox_last\"}",
+    "{\"tasks\":[{\"id\":\"g_laptop1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"laptop1\",\"params\":{\"force\":17.31},\"deps\":[]},{\"id\":\"p_laptop1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"laptop1\",\"params\":{\"compartment\":\"front\",\"orientation\":\"upright\"},\"deps\":[\"g_laptop1\"]},{\"id\":\"g_book1\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"book1\",\"params\":{\"force\":13.77},\"deps\":[]},{\"id\":\"p_book1\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"book1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_book1\",\"p_laptop1\"]},{\"id\":\"g_book2\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"book2\",\"params\":{\"force\":13.42},\"deps\":[]},{\"id\":\"p_book2\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"book2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_book2\",\"p_book1\"]},{\"id\":\"g_bottle1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"bottle1\",\"params\":{\"force\":8.94},\"deps\":[]},{\"id\":\"p_bottle1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"bottle1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_bottle1\",\"p_book2\"]},{\"id\":\"g_notebook2\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"notebook2\",\"params\":{\"force\":7.68},\"deps\":[]},{\"id\":\"p_notebook2\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"notebook2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook2\",\"p_bottle1\"]},{\"id\":\"g_notebook1\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"notebook1\",\"params\":{\"force\":6.63},\"deps\":[]},{\"id\":\"p_notebook1\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"notebook1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook1\",\"p_notebook2\"]},{\"id\":\"g_pencilcase1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"pencilcase1\",\"params\":{\"force\":6.17},\"deps\":[]},{\"id\":\"p_pencilcase1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"pencilcase1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_pencilcase1\",\"p_notebook1\"]},{\"id\":\"g_lunchbox1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"lunchbox1\",\"params\":{\"force\":10.66},\"deps\":[]},{\"id\":\"p_lunchbox1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"lunchbox1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_lunchbox1\",\"p_pencilcase1\"]}],\"notes\":\"rules=bottle_upright,heavy_bottom,laptop_slot,leave_distractors,lunchbox_last\"}",
+    "{\"tasks\":[{\"id\":\"p_book2\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"book2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[]},{\"id\":\"g_bottle1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"bottle1\",\"params\":{\"force\":10.87},\"deps\":[]},{\"id\":\"p_bottle1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"bottle1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_bottle1\",\"p_book2\"]},{\"id\":\"g_notebook2\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"notebook2\",\"params\":{\"force\":8.69},\"deps\":[]},{\"id\":\"p_notebook2\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"notebook2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook2\",\"p_bottle1\"]},{\"id\":\"g_notebook1\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"notebook1\",\"params\":{\"force\":7.2},\"deps\":[]},{\"id\":\"p_notebook1\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"notebook1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook1\",\"p_notebook2\"]},{\"id\":\"g_pencilcase1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"pencilcase1\",\"params\":{\"force\":6.92},\"deps\":[]},{\"id\":\"p_pencilcase1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"pencilcase1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_pencilcase1\",\"p_notebook1\"]},{\"id\":\"g_lunchbox1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"lunchbox1\",\"params\":{\"force\":8.73},\"deps\":[]},{\"id\":\"p_lunchbox1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"lunchbox1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_lunchbox1\",\"p_pencilcase1\"]}],\"notes\":\"rules=bottle_upright,heavy_bottom,laptop_slot,leave_distractors,lunchbox_last\"}",
+    "{\"tasks\":[{\"id\":\"p_book2\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"book2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[]},{\"id\":\"g_bottle1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"bottle1\",\"params\":{\"force\":10.87},\"deps\":[]},{\"id\":\"p_bottle1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"bottle1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_bottle1\",\"p_book2\"]},{\"id\":\"g_notebook2\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"notebook2\",\"params\":{\"force\":8.69},\"deps\":[]},{\"id\":\"p_notebook2\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"notebook2\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook2\",\"p_bottle1\"]},{\"id\":\"g_notebook1\",\"arm\":\"R\",\"skill\":\"grasp\",\"obj\":\"notebook1\",\"params\":{\"force\":7.2},\"deps\":[]},{\"id\":\"p_notebook1\",\"arm\":\"R\",\"skill\":\"place\",\"obj\":\"notebook1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_notebook1\",\"p_notebook2\"]},{\"id\":\"g_pencilcase1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"pencilcase1\",\"params\":{\"force\":6.92},\"deps\":[]},{\"id\":\"p_pencilcase1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"pencilcase1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_pencilcase1\",\"p_notebook1\"]},{\"id\":\"g_lunchbox1\",\"arm\":\"L\",\"skill\":\"grasp\",\"obj\":\"lunchbox1\",\"params\":{\"force\":8.73},\"deps\":[]},{\"id\":\"p_lunchbox1\",\"arm\":\"L\",\"skill\":\"place\",\"obj\":\"lunchbox1\",\"params\":{\"compartment\":\"main\",\"orientation\":\"upright\"},\"deps\":[\"g_lunchbox1\",\"p_pencilcase1\"]}],\"notes\":\"rules=bottle_upright,heavy_bottom,laptop_slot,leave_distractors,lunchbox_last\"}"
+   ],
+   "scene_final": {
+    "bottle1": {
+     "name": "bottle1",
+     "cls": "bottle",
+     "region": "bag:main",
+     "size": 1.5,
+     "mass_guess": 0.654,
+     "fragility_guess": 0.185,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "laptop1": {
+     "name": "laptop1",
+     "cls": "laptop",
+     "region": "bag:front",
+     "size": 3.0,
+     "mass_guess": 2.237,
+     "fragility_guess": 0.486,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "lunchbox1": {
+     "name": "lunchbox1",
+     "cls": "lunchbox",
+     "region": "bag:main",
+     "size": 2.5,
+     "mass_guess": 0.759,
+     "fragility_guess": 0.753,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "mug": {
+     "name": "mug",
+     "cls": "mug",
+     "region": "table_left",
+     "size": 1.0,
+     "mass_guess": 0.318,
+     "fragility_guess": 0.5,
+     "occluded": true,
+     "confidence": 0.5
+    },
+    "notebook1": {
+     "name": "notebook1",
+     "cls": "notebook",
+     "region": "bag:main",
+     "size": 1.0,
+     "mass_guess": 0.281,
+     "fragility_guess": 0.153,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "book1": {
+     "name": "book1",
+     "cls": "book",
+     "region": "bag:main",
+     "size": 2.0,
+     "mass_guess": 1.009,
+     "fragility_guess": 0.066,
+     "occluded": false,
+     "confidence": 0.9
+    },
+    "book2": {
+     "name": "book2",
+     "cls": "book",
+     "region": "bag:main",
+     "size": 2.0,
+     "mass_guess": 0.811,
+     "fragility_guess": 0.198,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "pencilcase1": {
+     "name": "pencilcase1",
+     "cls": "pencilcase",
+     "region": "bag:main",
+     "size": 1.0,
+     "mass_guess": 0.205,
+     "fragility_guess": 0.22,
+     "occluded": false,
+     "confidence": 1.0
+    },
+    "plate": {
+     "name": "plate",
+     "cls": "plate",
+     "region": "table_center",
+     "size": 1.0,
+     "mass_guess": 0.318,
+     "fragility_guess": 0.5,
+     "occluded": true,
+     "confidence": 0.5
+    },
+    "notebook2": {
+     "name": "notebook2",
+     "cls": "notebook",
+     "region": "bag:main",
+     "size": 1.0,
+     "mass_guess": 0.314,
+     "fragility_guess": 0.199,
+     "occluded": false,
+     "confidence": 0.9
+    }
+   }
+  },
+  "events": [
+   {
+    "ev": "msg",
+    "type": "ABILITY",
+    "from": "arm_L",
+    "to": "brain",
+    "content": {
+     "zones": [
+      "bag",
+      "table_center",
+      "table_left"
+     ],
+     "payload": 2.5,
+     "force_limit": 35.0,
+     "state": "idle"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "ABILITY",
+    "from": "arm_R",
+    "to": "brain",
+    "content": {
+     "zones": [
+      "bag",
+      "table_center",
+      "table_right"
+     ],
+     "payload": 2.5,
+     "force_limit": 35.0,
+     "state": "idle"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "table_left",
+       "size": 1.5,
+       "mass_guess": 0.677,
+       "fragility_guess": 0.185,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "table_center",
+       "size": 3.0,
+       "mass_guess": 1.341,
+       "fragility_guess": 0.486,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "table_left",
+       "size": 2.5,
+       "mass_guess": 0.599,
+       "fragility_guess": 0.753,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.351,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.304,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "table_right",
+       "size": 2.0,
+       "mass_guess": 1.069,
+       "fragility_guess": 0.066,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "table_left",
+       "size": 2.0,
+       "mass_guess": 1.122,
+       "fragility_guess": 0.198,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "table_left",
+       "size": 1.5,
+       "mass_guess": 0.687,
+       "fragility_guess": 0.185,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "table_center",
+       "size": 3.0,
+       "mass_guess": 2.603,
+       "fragility_guess": 0.486,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.387,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.218,
+       "fragility_guess": 0.22,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.427,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "LOOK",
+    "from": "brain",
+    "to": "all",
+    "content": {
+     "query": [
+      "notebook2"
+     ]
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "table_center",
+       "size": 3.0,
+       "mass_guess": 1.947,
+       "fragility_guess": 0.486,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "table_left",
+       "size": 2.5,
+       "mass_guess": 0.755,
+       "fragility_guess": 0.753,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.303,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.217,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "table_right",
+       "size": 1.0,
+       "mass_guess": 0.357,
+       "fragility_guess": 0.199,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.156,
+       "fragility_guess": 0.22,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "table_right",
+       "size": 2.0,
+       "mass_guess": 1.169,
+       "fragility_guess": 0.066,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "table_left",
+       "size": 1.5,
+       "mass_guess": 0.525,
+       "fragility_guess": 0.185,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "table_center",
+       "size": 3.0,
+       "mass_guess": 1.83,
+       "fragility_guess": 0.486,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "table_right",
+       "size": 1.0,
+       "mass_guess": 0.611,
+       "fragility_guess": 0.199,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.34,
+       "fragility_guess": 0.22,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.204,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "laptop1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "TOUCH",
+    "from": "arm_L",
+    "to": "brain",
+    "content": {
+     "obj": "laptop1",
+     "measured_weight": 1.82,
+     "slip": false,
+     "grasp_ok": true,
+     "peak_force": 17.31
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "book1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "TOUCH",
+    "from": "arm_R",
+    "to": "brain",
+    "content": {
+     "obj": "book1",
+     "measured_weight": 1.276,
+     "slip": false,
+     "grasp_ok": true,
+     "peak_force": 13.77
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "held:R",
+       "size": 2.0,
+       "mass_guess": 0.866,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "table_left",
+       "size": 2.0,
+       "mass_guess": 0.942,
+       "fragility_guess": 0.198,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "table_left",
+       "size": 1.5,
+       "mass_guess": 0.447,
+       "fragility_guess": 0.185,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "held:L",
+       "size": 3.0,
+       "mass_guess": 3.302,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.283,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.356,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "table_right",
+       "size": 1.0,
+       "mass_guess": 0.49,
+       "fragility_guess": 0.199,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.178,
+       "fragility_guess": 0.22,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.395,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "held:R",
+       "size": 2.0,
+       "mass_guess": 0.491,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "table_left",
+       "size": 1.5,
+       "mass_guess": 0.927,
+       "fragility_guess": 0.185,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "held:L",
+       "size": 3.0,
+       "mass_guess": 1.837,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.351,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.145,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "laptop1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "held:R",
+       "size": 2.0,
+       "mass_guess": 1.826,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "table_left",
+       "size": 2.0,
+       "mass_guess": 0.446,
+       "fragility_guess": 0.198,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "table_left",
+       "size": 1.5,
+       "mass_guess": 0.446,
+       "fragility_guess": 0.185,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 1.839,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.075,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.179,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "held:R",
+       "size": 2.0,
+       "mass_guess": 1.228,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "table_left",
+       "size": 2.0,
+       "mass_guess": 0.752,
+       "fragility_guess": 0.198,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "table_left",
+       "size": 1.5,
+       "mass_guess": 0.566,
+       "fragility_guess": 0.185,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 2.112,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "table_left",
+       "size": 2.5,
+       "mass_guess": 0.738,
+       "fragility_guess": 0.753,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.309,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "book2",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "TOUCH",
+    "from": "arm_L",
+    "to": "brain",
+    "content": {
+     "obj": "book2",
+     "measured_weight": 0.811,
+     "slip": false,
+     "grasp_ok": true,
+     "peak_force": 13.42
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "CHALLENGE",
+    "from": "arm_L",
+    "to": "brain",
+    "content": {
+     "obj": "book2",
+     "evidence": {
+      "measured_weight": 0.811,
+      "reported": 0.446
+     }
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "place",
+    "obj": "book1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.875,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "held:L",
+       "size": 2.0,
+       "mass_guess": 1.12,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "table_left",
+       "size": 1.5,
+       "mass_guess": 0.782,
+       "fragility_guess": 0.185,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 2.643,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "table_left",
+       "size": 2.5,
+       "mass_guess": 0.497,
+       "fragility_guess": 0.753,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.293,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.256,
+       "fragility_guess": 0.22,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.273,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "held:L",
+       "size": 2.0,
+       "mass_guess": 1.295,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 0.698,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.387,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.287,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "table_right",
+       "size": 1.0,
+       "mass_guess": 0.492,
+       "fragility_guess": 0.199,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.187,
+       "fragility_guess": 0.22,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.29,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.875,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "held:L",
+       "size": 2.0,
+       "mass_guess": 1.12,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "table_left",
+       "size": 1.5,
+       "mass_guess": 0.782,
+       "fragility_guess": 0.185,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 2.643,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "table_left",
+       "size": 2.5,
+       "mass_guess": 0.497,
+       "fragility_guess": 0.753,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.293,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.256,
+       "fragility_guess": 0.22,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.273,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "held:L",
+       "size": 2.0,
+       "mass_guess": 1.295,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 0.698,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.387,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.287,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "table_right",
+       "size": 1.0,
+       "mass_guess": 0.492,
+       "fragility_guess": 0.199,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.187,
+       "fragility_guess": 0.22,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.29,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "AMEND",
+    "from": "human",
+    "to": "brain",
+    "content": {
+     "text": "Pack Maya's bag for school: book1, book2, bottle1, laptop1, lunchbox1, notebook1, notebook2, pencilcase1. Heavy items at the bottom. Laptop in the front slot. Bottle upright and away from the laptop. lunchbox1 last. Leave mug and plate."
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.875,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "held:L",
+       "size": 2.0,
+       "mass_guess": 1.12,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "table_left",
+       "size": 1.5,
+       "mass_guess": 0.782,
+       "fragility_guess": 0.185,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 2.643,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "table_left",
+       "size": 2.5,
+       "mass_guess": 0.497,
+       "fragility_guess": 0.753,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.293,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.256,
+       "fragility_guess": 0.22,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.273,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "held:L",
+       "size": 2.0,
+       "mass_guess": 1.295,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 0.698,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.387,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.287,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "table_right",
+       "size": 1.0,
+       "mass_guess": 0.492,
+       "fragility_guess": 0.199,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.187,
+       "fragility_guess": 0.22,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.29,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "book2",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "notebook2",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "TOUCH",
+    "from": "arm_R",
+    "to": "brain",
+    "content": {
+     "obj": "notebook2",
+     "measured_weight": 0.435,
+     "slip": false,
+     "grasp_ok": true,
+     "peak_force": 8.69
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.746,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.097,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "table_left",
+       "size": 1.5,
+       "mass_guess": 0.467,
+       "fragility_guess": 0.185,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 1.706,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "table_left",
+       "size": 2.5,
+       "mass_guess": 0.826,
+       "fragility_guess": 0.753,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "held:R",
+       "size": 1.0,
+       "mass_guess": 0.307,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.317,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.549,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.757,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 2.174,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "table_left",
+       "size": 2.5,
+       "mass_guess": 0.765,
+       "fragility_guess": 0.753,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.178,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "held:R",
+       "size": 1.0,
+       "mass_guess": 0.277,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.271,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "bottle1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "TOUCH",
+    "from": "arm_L",
+    "to": "brain",
+    "content": {
+     "obj": "bottle1",
+     "measured_weight": 0.654,
+     "slip": false,
+     "grasp_ok": true,
+     "peak_force": 10.87
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "CHALLENGE",
+    "from": "arm_L",
+    "to": "brain",
+    "content": {
+     "obj": "bottle1",
+     "evidence": {
+      "measured_weight": 0.654,
+      "reported": 0.467
+     }
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.655,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.522,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "held:L",
+       "size": 1.5,
+       "mass_guess": 0.638,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 1.725,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.327,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "held:R",
+       "size": 1.0,
+       "mass_guess": 0.644,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.321,
+       "fragility_guess": 0.22,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.336,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.344,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.971,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "held:L",
+       "size": 1.5,
+       "mass_guess": 0.84,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 1.342,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "table_left",
+       "size": 2.5,
+       "mass_guess": 0.653,
+       "fragility_guess": 0.753,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.349,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.207,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "held:R",
+       "size": 1.0,
+       "mass_guess": 0.691,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.233,
+       "fragility_guess": 0.22,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "bottle1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.472,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.216,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.848,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 1.973,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "table_left",
+       "size": 2.5,
+       "mass_guess": 0.944,
+       "fragility_guess": 0.753,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.217,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.088,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "held:R",
+       "size": 1.0,
+       "mass_guess": 0.416,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.354,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.014,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.544,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.397,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 1.617,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "table_left",
+       "size": 2.5,
+       "mass_guess": 0.707,
+       "fragility_guess": 0.753,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.297,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "held:R",
+       "size": 1.0,
+       "mass_guess": 0.42,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.14,
+       "fragility_guess": 0.22,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "pencilcase1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "TOUCH",
+    "from": "arm_L",
+    "to": "brain",
+    "content": {
+     "obj": "pencilcase1",
+     "measured_weight": 0.205,
+     "slip": false,
+     "grasp_ok": true,
+     "peak_force": 6.92
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "CHALLENGE",
+    "from": "arm_L",
+    "to": "brain",
+    "content": {
+     "obj": "pencilcase1",
+     "evidence": {
+      "measured_weight": 0.205,
+      "reported": 0.14
+     }
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "place",
+    "obj": "notebook2",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.776,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.877,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.305,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 2.733,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.428,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.162,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.176,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "held:L",
+       "size": 1.0,
+       "mass_guess": 0.181,
+       "fragility_guess": 0.22,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.354,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.511,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.336,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.551,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 2.237,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "table_left",
+       "size": 2.5,
+       "mass_guess": 0.607,
+       "fragility_guess": 0.753,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.335,
+       "fragility_guess": 0.153,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.522,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "held:L",
+       "size": 1.0,
+       "mass_guess": 0.182,
+       "fragility_guess": 0.22,
+       "occluded": false,
+       "confidence": 0.9
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "notebook1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "TOUCH",
+    "from": "arm_R",
+    "to": "brain",
+    "content": {
+     "obj": "notebook1",
+     "measured_weight": 0.281,
+     "slip": false,
+     "grasp_ok": true,
+     "peak_force": 7.2
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "CHALLENGE",
+    "from": "arm_R",
+    "to": "brain",
+    "content": {
+     "obj": "notebook1",
+     "evidence": {
+      "measured_weight": 0.281,
+      "reported": 0.162
+     }
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.021,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.495,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.338,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 0.545,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.246,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "held:R",
+       "size": 1.0,
+       "mass_guess": 0.193,
+       "fragility_guess": 0.153,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.38,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "held:L",
+       "size": 1.0,
+       "mass_guess": 0.317,
+       "fragility_guess": 0.22,
+       "occluded": false,
+       "confidence": 0.9
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.33,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.056,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.688,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 1.766,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "table_left",
+       "size": 2.5,
+       "mass_guess": 0.596,
+       "fragility_guess": 0.753,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.192,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "held:R",
+       "size": 1.0,
+       "mass_guess": 0.106,
+       "fragility_guess": 0.153,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.621,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "held:L",
+       "size": 1.0,
+       "mass_guess": 0.242,
+       "fragility_guess": 0.22,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.387,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "R",
+    "skill": "place",
+    "obj": "notebook1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.211,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.853,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.427,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 1.632,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.127,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.174,
+       "fragility_guess": 0.153,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.123,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "held:L",
+       "size": 1.0,
+       "mass_guess": 0.28,
+       "fragility_guess": 0.22,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.333,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.682,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.152,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.365,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 0.799,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.294,
+       "fragility_guess": 0.153,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.344,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "held:L",
+       "size": 1.0,
+       "mass_guess": 0.356,
+       "fragility_guess": 0.22,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.428,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "pencilcase1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.692,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.033,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.495,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 3.881,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.318,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.308,
+       "fragility_guess": 0.153,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.23,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.247,
+       "fragility_guess": 0.22,
+       "occluded": false,
+       "confidence": 0.9
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.344,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.24,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.515,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 1.414,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.349,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.29,
+       "fragility_guess": 0.153,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.384,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.169,
+       "fragility_guess": 0.22,
+       "occluded": false,
+       "confidence": 0.9
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "lunchbox1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "TOUCH",
+    "from": "arm_L",
+    "to": "brain",
+    "content": {
+     "obj": "lunchbox1",
+     "measured_weight": 0.555,
+     "slip": false,
+     "grasp_ok": true,
+     "peak_force": 8.73
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.56,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.385,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.633,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 1.287,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "held:L",
+       "size": 2.5,
+       "mass_guess": 0.727,
+       "fragility_guess": 0.753,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.15,
+       "fragility_guess": 0.153,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.534,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.257,
+       "fragility_guess": 0.22,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.376,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.247,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.611,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.944,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 2.263,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "held:L",
+       "size": 2.5,
+       "mass_guess": 0.907,
+       "fragility_guess": 0.753,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.294,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.186,
+       "fragility_guess": 0.153,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.417,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.258,
+       "fragility_guess": 0.22,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.204,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "exec",
+    "arm": "L",
+    "skill": "place",
+    "obj": "lunchbox1",
+    "ok": true,
+    "cause": ""
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_A",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.009,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.236,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.817,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 2.237,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "bag:main",
+       "size": 2.5,
+       "mass_guess": 0.759,
+       "fragility_guess": 0.753,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "mug",
+       "cls": "mug",
+       "region": "table_left",
+       "size": 1.0,
+       "mass_guess": 0.318,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.32,
+       "fragility_guess": 0.153,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.314,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.135,
+       "fragility_guess": 0.22,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.318,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "A"
+    },
+    "note": "",
+    "ok": true
+   },
+   {
+    "ev": "msg",
+    "type": "SCENE",
+    "from": "eye_B",
+    "to": "all",
+    "content": {
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 1.959,
+       "fragility_guess": 0.066,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "book2",
+       "cls": "book",
+       "region": "bag:main",
+       "size": 2.0,
+       "mass_guess": 0.357,
+       "fragility_guess": 0.198,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "bottle1",
+       "cls": "bottle",
+       "region": "bag:main",
+       "size": 1.5,
+       "mass_guess": 0.416,
+       "fragility_guess": 0.185,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "laptop1",
+       "cls": "laptop",
+       "region": "bag:front",
+       "size": 3.0,
+       "mass_guess": 1.59,
+       "fragility_guess": 0.486,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "lunchbox1",
+       "cls": "lunchbox",
+       "region": "bag:main",
+       "size": 2.5,
+       "mass_guess": 0.365,
+       "fragility_guess": 0.753,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook1",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.165,
+       "fragility_guess": 0.153,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "notebook2",
+       "cls": "notebook",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.535,
+       "fragility_guess": 0.199,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "pencilcase1",
+       "cls": "pencilcase",
+       "region": "bag:main",
+       "size": 1.0,
+       "mass_guess": 0.094,
+       "fragility_guess": 0.22,
+       "occluded": false,
+       "confidence": 0.9
+      },
+      {
+       "name": "plate",
+       "cls": "plate",
+       "region": "table_center",
+       "size": 1.0,
+       "mass_guess": 0.386,
+       "fragility_guess": 0.5,
+       "occluded": true,
+       "confidence": 0.5
+      }
+     ],
+     "view": "B"
+    },
+    "note": "",
+    "ok": true
+   }
+  ]
+ },
+ "messages": {
+  "schema": {
+   "ABILITY": [
+    "force_limit",
+    "payload",
+    "state",
+    "zones"
+   ],
+   "SCENE": [
+    "objects",
+    "view"
+   ],
+   "CLAIM": [
+    "task"
+   ],
+   "OFFER": [
+    "task"
+   ],
+   "DECLINE": [
+    "reason",
+    "task"
+   ],
+   "STATUS": [
+    "progress",
+    "task"
+   ],
+   "BLOCKED": [
+    "reason",
+    "task"
+   ],
+   "TOUCH": [
+    "grasp_ok",
+    "measured_weight",
+    "obj",
+    "peak_force",
+    "slip"
+   ],
+   "LOOK": [
+    "query"
+   ],
+   "CHALLENGE": [
+    "evidence",
+    "obj"
+   ],
+   "HANDOVER": [
+    "obj",
+    "phase"
+   ],
+   "LOCK": [
+    "action",
+    "zone"
+   ],
+   "AMEND": [
+    "text"
+   ]
+  },
+  "examples": {
+   "SCENE": {
+    "type": "SCENE",
+    "sender": "eye_A",
+    "receiver": "all",
+    "content": {
+     "view": "A",
+     "objects": [
+      {
+       "name": "book1",
+       "cls": "book",
+       "region": "table_right",
+       "size": 2.0,
+       "mass_guess": 0.779,
+       "fragility_guess": 0.14,
+       "occluded": false,
+       "confidence": 0.9
+      }
+     ]
+    },
+    "n_tokens_proxy": 67
+   },
+   "TOUCH": {
+    "type": "TOUCH",
+    "sender": "arm_L",
+    "receiver": "brain",
+    "content": {
+     "obj": "laptop1",
+     "measured_weight": 1.936,
+     "slip": false,
+     "grasp_ok": true,
+     "peak_force": 18.28
+    },
+    "n_tokens_proxy": 47
+   },
+   "CHALLENGE": {
+    "type": "CHALLENGE",
+    "sender": "arm_L",
+    "receiver": "brain",
+    "content": {
+     "obj": "book2",
+     "evidence": {
+      "measured_weight": 1.283,
+      "reported": 2.136
+     }
+    },
+    "n_tokens_proxy": 42
+   }
+  },
+  "chars_per_token_proxy": 4
+ },
+ "harness": {
+  "n_files": 19,
+  "docs": [
+   {
+    "id": "arm_L",
+    "type": "agent",
+    "keywords": "left arm L reach table_left table_center",
+    "path": "harness_files/agents/arm_L.md",
+    "text": "Arm L reaches table_left and table_center and the bag."
+   },
+   {
+    "id": "arm_R",
+    "type": "agent",
+    "keywords": "right arm R reach table_right table_center",
+    "path": "harness_files/agents/arm_R.md",
+    "text": "Arm R reaches table_right and table_center and the bag."
+   },
+   {
+    "id": "eye",
+    "type": "agent",
+    "keywords": "eye camera scene report occlusion",
+    "path": "harness_files/agents/eye.md",
+    "text": "Eyes report objects with class, region, size, and estimated mass and fragility. Objects in a blind region may be missing; ask for another LOOK."
+   },
+   {
+    "id": "episodes",
+    "type": "memory",
+    "keywords": "episodic memory past failures lessons",
+    "path": "harness_files/memory/episodes.md",
+    "text": "Lessons from past episodes are appended below by the monitor."
+   },
+   {
+    "id": "obj_book",
+    "type": "object",
+    "keywords": "book textbook heavy robust",
+    "path": "harness_files/objects/book.md",
+    "text": "Books are heavy and robust; they go at the bottom."
+   },
+   {
+    "id": "obj_bottle",
+    "type": "object",
+    "keywords": "bottle water liquid upright",
+    "path": "harness_files/objects/bottle.md",
+    "text": "Water bottles are about 0.9 kg and can leak if laid flat."
+   },
+   {
+    "id": "obj_laptop",
+    "type": "object",
+    "keywords": "laptop heavy fragile notebook computer",
+    "path": "harness_files/objects/laptop.md",
+    "text": "Laptops are heavy (about 1.8 kg) and moderately fragile. Grip gently."
+   },
+   {
+    "id": "obj_lunchbox",
+    "type": "object",
+    "keywords": "lunchbox food container",
+    "path": "harness_files/objects/lunchbox.md",
+    "text": "Lunchboxes are light to medium and fragile to crushing."
+   },
+   {
+    "id": "bag_exclusive",
+    "type": "rule",
+    "keywords": "bag opening exclusive lock one arm at a time",
+    "path": "harness_files/rules/bag_exclusive.md",
+    "text": "Only one arm may place into the bag at a time. Serialize place tasks with dependencies."
+   },
+   {
+    "id": "bottle_upright",
+    "type": "rule",
+    "keywords": "bottle water upright away laptop leak",
+    "path": "harness_files/rules/bottle_upright.md",
+    "text": "Water bottles go in upright and in a different compartment from the laptop. Use orientation=upright."
+   },
+   {
+    "id": "heavy_bottom",
+    "type": "rule",
+    "keywords": "heavy bottom stack order weight mass main compartment",
+    "path": "harness_files/rules/heavy_bottom.md",
+    "text": "Place heavier items first so they sit at the bottom of the main compartment; lighter items go on top. Sort items by estimated mass, descending."
+   },
+   {
+    "id": "laptop_slot",
+    "type": "rule",
+    "keywords": "laptop padded slot compartment protect",
+    "path": "harness_files/rules/laptop_slot.md",
+    "text": "The laptop goes in the compartment named by the instruction (default: the padded laptop slot). Never stack other items on or beside it in the same compartment."
+   },
+   {
+    "id": "leave_distractors",
+    "type": "rule",
+    "keywords": "leave distractor mug plate untouched not pack",
+    "path": "harness_files/rules/leave_distractors.md",
+    "text": "Items the instruction says to leave (for example the mug and the plate) must not be touched, moved or pushed aside."
+   },
+   {
+    "id": "lunchbox_last",
+    "type": "rule",
+    "keywords": "lunchbox last final order top",
+    "path": "harness_files/rules/lunchbox_last.md",
+    "text": "The lunchbox is packed last so it sits on top and stays accessible."
+   },
+   {
+    "id": "grasp",
+    "type": "skill",
+    "keywords": "grasp force slip crush payload",
+    "path": "harness_files/skills/grasp.md",
+    "text": "grasp(obj, force): force must exceed the slip threshold (about 4 + 6*mass newtons) and stay below the crush limit (about 30 - 22*fragility). Payload per arm is 2.5 kg. If a grasp slips, raise force using the measured weight from TOUCH; if it crushes, lower force."
+   },
+   {
+    "id": "handover",
+    "type": "skill",
+    "keywords": "handover transfer arm center",
+    "path": "harness_files/skills/handover.md",
+    "text": "handover(obj, to): both arms must be able to reach table_center; the receiving arm must have a free hand and enough payload."
+   },
+   {
+    "id": "place",
+    "type": "skill",
+    "keywords": "place compartment orientation insert bag capacity",
+    "path": "harness_files/skills/place.md",
+    "text": "place(obj, compartment, orientation): requires a prior grasp by the same arm and the bag lock. Check compartment capacity. The laptop slot accepts only laptops and notebooks."
+   },
+   {
+    "id": "push_aside",
+    "type": "skill",
+    "keywords": "push aside clear occlusion",
+    "path": "harness_files/skills/push_aside.md",
+    "text": "push_aside(obj): moves an object out of the way. Never use on items the instruction says to leave."
+   },
+   {
+    "id": "pack_backpack",
+    "type": "task",
+    "keywords": "pack backpack school bag items instruction",
+    "path": "harness_files/tasks/pack_backpack.md",
+    "text": "Packing task: pick each requested item, place it in the bag following the packing rules, and leave distractors untouched."
+   }
+  ],
+  "instruction": "Pack Maya's bag for school: book1, book2, bottle1, laptop1, lunchbox1, notebook1, notebook2, pencilcase1. Heavy items at the bottom. Laptop in the laptop slot. Bottle upright and away from the laptop. lunchbox1 last. Leave mug and plate.",
+  "required_rules": [
+   "bottle_upright",
+   "heavy_bottom",
+   "laptop_slot",
+   "leave_distractors",
+   "lunchbox_last"
+  ],
+  "retrieved_rules_new": [
+   "bottle_upright",
+   "laptop_slot",
+   "leave_distractors",
+   "lunchbox_last",
+   "heavy_bottom"
+  ],
+  "retrieved_other_new": [
+   "obj_book",
+   "obj_laptop",
+   "obj_lunchbox"
+  ],
+  "retrieved_rules_old": [
+   "bottle_upright",
+   "leave_distractors",
+   "laptop_slot",
+   "heavy_bottom",
+   "lunchbox_last"
+  ],
+  "tok_new": [
+   "lunchbox",
+   "1",
+   "last"
+  ],
+  "tok_old": [
+   "lunchbox1",
+   "last"
+  ],
+  "recall_new": 1.0,
+  "recall_old": 1.0,
+  "types": [
+   "agent",
+   "memory",
+   "object",
+   "rule",
+   "skill",
+   "task"
+  ],
+  "rule_rank_old": [
+   [
+    "bottle_upright",
+    21.553
+   ],
+   [
+    "leave_distractors",
+    16.807
+   ],
+   [
+    "laptop_slot",
+    15.382
+   ],
+   [
+    "heavy_bottom",
+    9.937
+   ],
+   [
+    "lunchbox_last",
+    6.135
+   ],
+   [
+    "bag_exclusive",
+    5.345
+   ]
+  ],
+  "rule_rank_new": [
+   [
+    "bottle_upright",
+    26.779
+   ],
+   [
+    "laptop_slot",
+    17.939
+   ],
+   [
+    "leave_distractors",
+    16.807
+   ],
+   [
+    "lunchbox_last",
+    13.475
+   ],
+   [
+    "heavy_bottom",
+    9.937
+   ],
+   [
+    "bag_exclusive",
+    5.345
+   ]
+  ]
+ },
+ "tools": {
+  "seed": 12,
+  "instruction": "Pack Maya's bag for school: book1, book2, bottle1, laptop1, lunchbox1, notebook1, notebook2, pencilcase1. Heavy items at the bottom. Laptop in the front slot. Bottle upright and away from the laptop. lunchbox1 last. Leave mug and plate.",
+  "tool_names": [
+   "check_rule",
+   "query_scene",
+   "look",
+   "dry_run",
+   "submit_plan"
+  ],
+  "draft_tasks": [
+   {
+    "id": "g_laptop1",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "laptop1",
+    "deps": []
+   },
+   {
+    "id": "p_laptop1",
+    "arm": "L",
+    "skill": "place",
+    "obj": "laptop1",
+    "deps": [
+     "g_laptop1"
+    ]
+   },
+   {
+    "id": "g_book2",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "book2",
+    "deps": []
+   },
+   {
+    "id": "p_book2",
+    "arm": "R",
+    "skill": "place",
+    "obj": "book2",
+    "deps": [
+     "g_book2",
+     "p_laptop1"
+    ]
+   },
+   {
+    "id": "g_book1",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "book1",
+    "deps": []
+   },
+   {
+    "id": "p_book1",
+    "arm": "L",
+    "skill": "place",
+    "obj": "book1",
+    "deps": [
+     "g_book1",
+     "p_book2"
+    ]
+   },
+   {
+    "id": "g_bottle1",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "bottle1",
+    "deps": []
+   },
+   {
+    "id": "p_bottle1",
+    "arm": "R",
+    "skill": "place",
+    "obj": "bottle1",
+    "deps": [
+     "g_bottle1",
+     "p_book1"
+    ]
+   },
+   {
+    "id": "g_notebook2",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "notebook2",
+    "deps": []
+   },
+   {
+    "id": "p_notebook2",
+    "arm": "R",
+    "skill": "place",
+    "obj": "notebook2",
+    "deps": [
+     "g_notebook2",
+     "p_bottle1"
+    ]
+   },
+   {
+    "id": "g_notebook1",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "notebook1",
+    "deps": []
+   },
+   {
+    "id": "p_notebook1",
+    "arm": "L",
+    "skill": "place",
+    "obj": "notebook1",
+    "deps": [
+     "g_notebook1",
+     "p_notebook2"
+    ]
+   },
+   {
+    "id": "g_pencilcase1",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "pencilcase1",
+    "deps": []
+   },
+   {
+    "id": "p_pencilcase1",
+    "arm": "L",
+    "skill": "place",
+    "obj": "pencilcase1",
+    "deps": [
+     "g_pencilcase1"
+    ]
+   },
+   {
+    "id": "g_lunchbox1",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "lunchbox1",
+    "deps": []
+   },
+   {
+    "id": "p_lunchbox1",
+    "arm": "R",
+    "skill": "place",
+    "obj": "lunchbox1",
+    "deps": [
+     "g_lunchbox1",
+     "p_notebook1"
+    ]
+   }
+  ],
+  "good_tasks": [
+   {
+    "id": "g_laptop1",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "laptop1",
+    "deps": []
+   },
+   {
+    "id": "p_laptop1",
+    "arm": "L",
+    "skill": "place",
+    "obj": "laptop1",
+    "deps": [
+     "g_laptop1"
+    ]
+   },
+   {
+    "id": "g_book2",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "book2",
+    "deps": []
+   },
+   {
+    "id": "p_book2",
+    "arm": "R",
+    "skill": "place",
+    "obj": "book2",
+    "deps": [
+     "g_book2",
+     "p_laptop1"
+    ]
+   },
+   {
+    "id": "g_book1",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "book1",
+    "deps": []
+   },
+   {
+    "id": "p_book1",
+    "arm": "L",
+    "skill": "place",
+    "obj": "book1",
+    "deps": [
+     "g_book1",
+     "p_book2"
+    ]
+   },
+   {
+    "id": "g_bottle1",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "bottle1",
+    "deps": []
+   },
+   {
+    "id": "p_bottle1",
+    "arm": "R",
+    "skill": "place",
+    "obj": "bottle1",
+    "deps": [
+     "g_bottle1",
+     "p_book1"
+    ]
+   },
+   {
+    "id": "g_notebook2",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "notebook2",
+    "deps": []
+   },
+   {
+    "id": "p_notebook2",
+    "arm": "R",
+    "skill": "place",
+    "obj": "notebook2",
+    "deps": [
+     "g_notebook2",
+     "p_bottle1"
+    ]
+   },
+   {
+    "id": "g_notebook1",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "notebook1",
+    "deps": []
+   },
+   {
+    "id": "p_notebook1",
+    "arm": "L",
+    "skill": "place",
+    "obj": "notebook1",
+    "deps": [
+     "g_notebook1",
+     "p_notebook2"
+    ]
+   },
+   {
+    "id": "g_pencilcase1",
+    "arm": "L",
+    "skill": "grasp",
+    "obj": "pencilcase1",
+    "deps": []
+   },
+   {
+    "id": "p_pencilcase1",
+    "arm": "L",
+    "skill": "place",
+    "obj": "pencilcase1",
+    "deps": [
+     "g_pencilcase1",
+     "p_notebook1"
+    ]
+   },
+   {
+    "id": "g_lunchbox1",
+    "arm": "R",
+    "skill": "grasp",
+    "obj": "lunchbox1",
+    "deps": []
+   },
+   {
+    "id": "p_lunchbox1",
+    "arm": "R",
+    "skill": "place",
+    "obj": "lunchbox1",
+    "deps": [
+     "g_lunchbox1",
+     "p_pencilcase1"
+    ]
+   }
+  ],
+  "dry_run_draft": {
+   "static_ok": true,
+   "static_errors": [],
+   "success": false,
+   "violations": [
+    "lunchbox_last: lunchbox1 not last"
+   ],
+   "missing": [],
+   "failed_tasks": []
+  },
+  "dry_run_final": {
+   "static_ok": true,
+   "static_errors": [],
+   "success": true,
+   "violations": [],
+   "missing": [],
+   "failed_tasks": []
+  },
+  "corruption": "swap: ordering dependencies of two placements exchanged",
+  "max_turns_default": 6
+ },
+ "signals": {
+  "weights": {
+   "format": 0.1,
+   "feasible": 0.2,
+   "rules": 0.6,
+   "length": 0.1
+  },
+  "rollout_weight": 0.5,
+  "r_rules_penalty": 0.25,
+  "length_cap": 24,
+  "episode_reward": {
+   "w_viol": 0.15,
+   "w_crush": 0.3,
+   "w_replan": 0.01
+  }
+ },
+ "credit": {
+  "seed": 24,
+  "eye": "A",
+  "base_score": 0.85,
+  "base_success": false,
+  "rows": {
+   "empty": {
+    "credit": 0.275,
+    "cf_score": 0.575,
+    "cf_success": false
+   },
+   "degraded": {
+    "credit": -0.15000000000000002,
+    "cf_score": 1.0,
+    "cf_success": true
+   },
+   "oracle": {
+    "credit": -0.15000000000000002,
+    "cf_score": 1.0,
+    "cf_success": true
+   },
+   "oracle_mass_guess": {
+    "credit": -0.15000000000000002,
+    "cf_score": 1.0,
+    "cf_success": true
+   },
+   "oracle_cls": {
+    "credit": 0.0,
+    "cf_score": 0.85,
+    "cf_success": false
+   },
+   "oracle_fragility_guess": {
+    "credit": 0.0,
+    "cf_score": 0.85,
+    "cf_success": false
+   },
+   "oracle_region": {
+    "credit": 0.0,
+    "cf_score": 0.85,
+    "cf_success": false
+   }
+  },
+  "oracle_gain": 0.15000000000000002,
+  "field_gain": {
+   "mass_guess": 0.15000000000000002,
+   "cls": -0.0,
+   "fragility_guess": -0.0,
+   "region": -0.0
+  },
+  "config": "scripted Brain, no challenge, verify none, mass noise 0.45 on both Eyes"
+ },
+ "hindsight": {
+  "seed": 24,
+  "orig_instruction": "Pack Maya's bag for school: book1, book2, bottle1, laptop1, lunchbox1, notebook1, notebook2, pencilcase1. Heavy items at the bottom. Laptop in the laptop slot. Bottle upright and away from the laptop. lunchbox1 last. Leave mug and plate.",
+  "orig_success": false,
+  "orig_violations": [
+   {
+    "rule": "heavy_bottom",
+    "detail": "notebook1 above lighter pencilcase1"
+   }
+  ],
+  "relabeled_instruction": "Pack Maya's bag for school: laptop1, book2, book1, bottle1, pencilcase1, notebook1, notebook2, lunchbox1. Laptop in the laptop slot. Bottle upright and away from the laptop. lunchbox1 last. Leave mug and plate.",
+  "replay_success": true,
+  "replay_score": 1.0,
+  "n_tasks": 16,
+  "dropped": [
+   "heavy_bottom"
+  ]
+ },
+ "bridge": {
+  "zone_x": {
+   "table_left": -0.34,
+   "table_center": 0.0,
+   "table_right": 0.34
+  },
+  "arm_base": {
+   "L": [
+    -0.46,
+    -0.3,
+    0.0
+   ],
+   "R": [
+    0.46,
+    -0.3,
+    0.0
+   ]
+  },
+  "row_y": [
+   -0.02,
+   0.07,
+   0.16
+  ],
+  "layout": {
+   "zone_axis": 0,
+   "left_max": -0.17,
+   "right_min": 0.17,
+   "table_z": 0.0,
+   "bag_center": [
+    0.0,
+    0.42
+   ],
+   "bag_half": [
+    0.2,
+    0.17
+   ],
+   "bag_floor_z": 0.0,
+   "bag_height": 0.3,
+   "laptop_slot_depth": 0.11,
+   "front_pocket_depth": 0.08
+  },
+  "eye_poses": {
+   "A": [
+    [
+     -0.75,
+     -0.75,
+     0.75
+    ],
+    [
+     0.0,
+     0.15,
+     0.0
+    ]
+   ],
+   "B": [
+    [
+     0.75,
+     -0.75,
+     0.75
+    ],
+    [
+     0.0,
+     0.15,
+     0.0
+    ]
+   ]
+  },
+  "skill_outcomes": [
+   "success",
+   "slip",
+   "crush",
+   "out_of_reach",
+   "wrong_slot",
+   "no_space",
+   "locked",
+   "overload",
+   "not_holding",
+   "hand_full"
+  ]
+ }
+}

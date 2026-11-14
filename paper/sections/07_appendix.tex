@@ -1,0 +1,73 @@
+\section{Message schema}\label{app:messages}
+\Cref{tab:messages} in \cref{sec:bus} lists the \nMsgTypes{} message types with their required fields as implemented; the bus rejects a message that lacks a required field and charges tokens at about four characters per token.
+
+\section{Harness files}\label{app:harness}
+\begin{table}[h]
+\centering\scriptsize
+\input{generated/table_harness_files}
+\caption{The \nHarnessFiles{} harness files with their retrieval keywords.}
+\end{table}
+
+\section{Reward and score definitions}\label{app:rewards}
+\paragraph{Brain plan reward.} $R = 0.1\,r_{\text{format}} + 0.2\,r_{\text{feasible}} + 0.6\,r_{\text{rules}} + 0.1\,r_{\text{length}}$ with an optional closed-loop rollout term of weight 0.5.
+$r_{\text{format}}$ checks that the output parses as a plan; $r_{\text{feasible}}$ is 1 if the static check passes and otherwise falls with the fraction of erroneous tasks; $r_{\text{rules}}$ is the valid-item fraction from a deterministic dry run minus 0.25 per rule violation and per crush, floored at 0; $r_{\text{length}}$ is 1 up to 24 tasks and falls linearly to 0 at 48.
+\paragraph{Episode score.} The valid-item fraction minus 0.15 per violation, 0.3 per crushed item and 0.01 per replan.
+\paragraph{Credit.} $C(i,r)=R(\text{real})-R(i,r)$; oracle gain $G=-C(i,\text{oracle})$ (\cref{sec:signals}).
+
+\section{Upstream facts and the scorer toy case}\label{app:viki}
+The scorer facts in \cref{sec:scorer} were read from the upstream VIKI-R repository by the authors: simulator-free feasibility check, \texttt{random.choice} over each asset's candidate start positions on every call, correctness as feasible and length ratio at least 0.99, reward 0.1 format plus 0.9 correctness, evaluation scripts reading the first 900 level-2 and 1000 level-1 rows, and the level-2 script reading one split file while writing to a directory with another name.
+\todo{Pin the repository commit; re-run the toy case (18 of 40 unseeded draws, exhaustive average 0.5, position-agnostic plan 40 of 40) against the upstream scorer. The toy numbers are from an earlier run by the authors and could not be re-run in this build because the upstream code was not available to it, which also left the scorer tests skipped.}
+
+\section{Environment and tests}\label{app:env}
+The code base is a Python package with a symbolic world, a pose-level simulator, the loop, the harness and training scripts; the planned pairing for physics is Isaac Sim 5.x with Isaac Lab 2.3.
+On CPU without torch the test suite gives 137 passed and 13 skipped (the skips need torch or the upstream clone); this proves that the code runs and that the wiring is consistent, and is not evidence about model quality.
+\todo{Report the full-environment test count from the authors' machine; the planning notes record a larger count than the one measured here.}
+
+\section{Fixture mechanics checks}\label{app:fixture}
+All runs here are class FIXTURE: a symbolic world, a scripted Brain, parametric Eyes and a flaky-planner wrapper, seeds 0 to \fxN{} minus one.
+They check that mechanisms behave as designed and are not claims about trained agents.
+The numbers come from \texttt{scripts/collect\_fixture.py}.
+
+\begin{table}[h]
+\centering\small
+\input{generated/table_fx_verify}
+\caption{Plan verification against a planner wrapped to inject errors with probability 0.5 (clean Eyes).}
+\end{table}
+\begin{table}[h]
+\centering\small
+\input{generated/table_fx_comm}
+\caption{Communication modes (noisy Eyes): message tokens are a four-characters-per-token proxy.}
+\end{table}
+\begin{table}[h]
+\centering\small
+\input{generated/table_fx_mass}
+\caption{Heavy Eye mass noise ($\sigma=0.45$ on both Eyes): weighing probe, challenge only, and no fix.}
+\end{table}
+\begin{table}[h]
+\centering\small
+\input{generated/table_fx_look}
+\caption{Effect of the look request when each Eye omits an item with probability 0.4.}
+\end{table}
+\begin{table}[h]
+\centering\small
+\input{generated/table_fx_credit}
+\caption{Oracle gain $G$ for Eye~A by injected fault type, with the breakdown by field: the estimator puts the gain in the field that carries the fault.}
+\end{table}
+
+\section{Reproducing the figures and numbers}\label{app:repro}
+\begin{table}[h]
+\centering\small
+\input{generated/table_repro}
+\caption{Reproducibility facts.}
+\end{table}
+\begin{small}
+\begin{verbatim}
+python scripts/collect_figdata.py --project ../robot_team
+python scripts/collect_fixture.py --project ../robot_team
+python scripts/build_diagrams.py     # 12 figures, SVG + PDF
+python scripts/audit_diagram_text.py; python scripts/audit_diagram_arrows.py
+python scripts/build_paper.py        # tables, number macros, pending lists
+python scripts/verify_paper.py       # numbers, citations, pending cells
+pdflatex main; bibtex main; pdflatex main; pdflatex main
+\end{verbatim}
+\end{small}

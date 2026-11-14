@@ -1,0 +1,9 @@
+pytest
+numpy
+# optional, for the parts that need them:
+# torch
+# trl
+# peft
+# datasets
+# pandas
+# pyarrow

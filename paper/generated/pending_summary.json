@@ -1,0 +1,17 @@
+{
+ "messages": 0,
+ "rules": 0,
+ "harness_files": 0,
+ "trackA": 24,
+ "main": 8,
+ "ablations": 44,
+ "credit": 15,
+ "attribution": 9,
+ "evidence": 3,
+ "repro": 0,
+ "fx_verify": 0,
+ "fx_comm": 0,
+ "fx_mass": 0,
+ "fx_look": 0,
+ "fx_credit": 0
+}

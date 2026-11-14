@@ -1,0 +1,38 @@
+{
+ "table": "main",
+ "n_pending_cells": 8,
+ "cells": [
+  {
+   "row": "Full system, LLM-SYMBOLIC",
+   "column": "Success [95\\% Wilson]"
+  },
+  {
+   "row": "Full system, LLM-SYMBOLIC",
+   "column": "Plan pass"
+  },
+  {
+   "row": "Full system, LLM-SYMBOLIC",
+   "column": "Replans"
+  },
+  {
+   "row": "Full system, LLM-SYMBOLIC",
+   "column": "Msg tokens"
+  },
+  {
+   "row": "Full system, ISAAC",
+   "column": "Success [95\\% Wilson]"
+  },
+  {
+   "row": "Full system, ISAAC",
+   "column": "Plan pass"
+  },
+  {
+   "row": "Full system, ISAAC",
+   "column": "Replans"
+  },
+  {
+   "row": "Full system, ISAAC",
+   "column": "Msg tokens"
+  }
+ ]
+}

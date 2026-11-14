@@ -1,0 +1,182 @@
+{
+ "table": "ablations",
+ "n_pending_cells": 44,
+ "cells": [
+  {
+   "row": "No harness",
+   "column": "Success [95\\% Wilson]"
+  },
+  {
+   "row": "No harness",
+   "column": "Plan pass"
+  },
+  {
+   "row": "No harness",
+   "column": "Replans"
+  },
+  {
+   "row": "No harness",
+   "column": "Msg tokens"
+  },
+  {
+   "row": "Verification: none",
+   "column": "Success [95\\% Wilson]"
+  },
+  {
+   "row": "Verification: none",
+   "column": "Plan pass"
+  },
+  {
+   "row": "Verification: none",
+   "column": "Replans"
+  },
+  {
+   "row": "Verification: none",
+   "column": "Msg tokens"
+  },
+  {
+   "row": "Verification: static",
+   "column": "Success [95\\% Wilson]"
+  },
+  {
+   "row": "Verification: static",
+   "column": "Plan pass"
+  },
+  {
+   "row": "Verification: static",
+   "column": "Replans"
+  },
+  {
+   "row": "Verification: static",
+   "column": "Msg tokens"
+  },
+  {
+   "row": "Verification: dry run",
+   "column": "Success [95\\% Wilson]"
+  },
+  {
+   "row": "Verification: dry run",
+   "column": "Plan pass"
+  },
+  {
+   "row": "Verification: dry run",
+   "column": "Replans"
+  },
+  {
+   "row": "Verification: dry run",
+   "column": "Msg tokens"
+  },
+  {
+   "row": "No CHALLENGE, no probe",
+   "column": "Success [95\\% Wilson]"
+  },
+  {
+   "row": "No CHALLENGE, no probe",
+   "column": "Plan pass"
+  },
+  {
+   "row": "No CHALLENGE, no probe",
+   "column": "Replans"
+  },
+  {
+   "row": "No CHALLENGE, no probe",
+   "column": "Msg tokens"
+  },
+  {
+   "row": "Probe on",
+   "column": "Success [95\\% Wilson]"
+  },
+  {
+   "row": "Probe on",
+   "column": "Plan pass"
+  },
+  {
+   "row": "Probe on",
+   "column": "Replans"
+  },
+  {
+   "row": "Probe on",
+   "column": "Msg tokens"
+  },
+  {
+   "row": "One Eye",
+   "column": "Success [95\\% Wilson]"
+  },
+  {
+   "row": "One Eye",
+   "column": "Plan pass"
+  },
+  {
+   "row": "One Eye",
+   "column": "Replans"
+  },
+  {
+   "row": "One Eye",
+   "column": "Msg tokens"
+  },
+  {
+   "row": "Communication: push",
+   "column": "Success [95\\% Wilson]"
+  },
+  {
+   "row": "Communication: push",
+   "column": "Plan pass"
+  },
+  {
+   "row": "Communication: push",
+   "column": "Replans"
+  },
+  {
+   "row": "Communication: push",
+   "column": "Msg tokens"
+  },
+  {
+   "row": "Communication: delta",
+   "column": "Success [95\\% Wilson]"
+  },
+  {
+   "row": "Communication: delta",
+   "column": "Plan pass"
+  },
+  {
+   "row": "Communication: delta",
+   "column": "Replans"
+  },
+  {
+   "row": "Communication: delta",
+   "column": "Msg tokens"
+  },
+  {
+   "row": "Communication: pull",
+   "column": "Success [95\\% Wilson]"
+  },
+  {
+   "row": "Communication: pull",
+   "column": "Plan pass"
+  },
+  {
+   "row": "Communication: pull",
+   "column": "Replans"
+  },
+  {
+   "row": "Communication: pull",
+   "column": "Msg tokens"
+  },
+  {
+   "row": "Communication: init-only",
+   "column": "Success [95\\% Wilson]"
+  },
+  {
+   "row": "Communication: init-only",
+   "column": "Plan pass"
+  },
+  {
+   "row": "Communication: init-only",
+   "column": "Replans"
+  },
+  {
+   "row": "Communication: init-only",
+   "column": "Msg tokens"
+  }
+ ]
+}

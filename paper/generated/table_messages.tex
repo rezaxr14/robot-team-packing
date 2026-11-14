@@ -1,0 +1,19 @@
+\begin{tabular}{lp{0.38\linewidth}p{0.3\linewidth}}
+\toprule
+Type & Required fields & Sender in the recorded episode \\
+\midrule
+\texttt{ABILITY} & force\_limit, payload, state, zones & arm \\
+\texttt{SCENE} & objects, view & eye \\
+\texttt{CLAIM} & task & not exchanged in the recorded episode \\
+\texttt{OFFER} & task & not exchanged in the recorded episode \\
+\texttt{DECLINE} & reason, task & not exchanged in the recorded episode \\
+\texttt{STATUS} & progress, task & not exchanged in the recorded episode \\
+\texttt{BLOCKED} & reason, task & not exchanged in the recorded episode \\
+\texttt{TOUCH} & grasp\_ok, measured\_weight, obj, peak\_force, slip & arm \\
+\texttt{LOOK} & query & brain \\
+\texttt{CHALLENGE} & evidence, obj & arm \\
+\texttt{HANDOVER} & obj, phase & not exchanged in the recorded episode \\
+\texttt{LOCK} & action, zone & not exchanged in the recorded episode \\
+\texttt{AMEND} & text & human \\
+\bottomrule
+\end{tabular}

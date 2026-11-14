@@ -1,0 +1,42 @@
+{
+ "table": "attribution",
+ "n_pending_cells": 9,
+ "cells": [
+  {
+   "row": "Eye",
+   "column": "Episodes labelled by hand"
+  },
+  {
+   "row": "Eye",
+   "column": "Agreement with the heuristic"
+  },
+  {
+   "row": "Eye",
+   "column": "Cohen's kappa"
+  },
+  {
+   "row": "Brain",
+   "column": "Episodes labelled by hand"
+  },
+  {
+   "row": "Brain",
+   "column": "Agreement with the heuristic"
+  },
+  {
+   "row": "Brain",
+   "column": "Cohen's kappa"
+  },
+  {
+   "row": "Arm",
+   "column": "Episodes labelled by hand"
+  },
+  {
+   "row": "Arm",
+   "column": "Agreement with the heuristic"
+  },
+  {
+   "row": "Arm",
+   "column": "Cohen's kappa"
+  }
+ ]
+}

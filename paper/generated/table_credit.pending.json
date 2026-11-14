@@ -1,0 +1,66 @@
+{
+ "table": "credit",
+ "n_pending_cells": 15,
+ "cells": [
+  {
+   "row": "Plain SFT Eye",
+   "column": "Oracle gain G"
+  },
+  {
+   "row": "Plain SFT Eye",
+   "column": "mass"
+  },
+  {
+   "row": "Plain SFT Eye",
+   "column": "class"
+  },
+  {
+   "row": "Plain SFT Eye",
+   "column": "fragility"
+  },
+  {
+   "row": "Plain SFT Eye",
+   "column": "region"
+  },
+  {
+   "row": "Rejection-sampled Eye",
+   "column": "Oracle gain G"
+  },
+  {
+   "row": "Rejection-sampled Eye",
+   "column": "mass"
+  },
+  {
+   "row": "Rejection-sampled Eye",
+   "column": "class"
+  },
+  {
+   "row": "Rejection-sampled Eye",
+   "column": "fragility"
+  },
+  {
+   "row": "Rejection-sampled Eye",
+   "column": "region"
+  },
+  {
+   "row": "Fixed-Brain counterfactual",
+   "column": "Oracle gain G"
+  },
+  {
+   "row": "Fixed-Brain counterfactual",
+   "column": "mass"
+  },
+  {
+   "row": "Fixed-Brain counterfactual",
+   "column": "class"
+  },
+  {
+   "row": "Fixed-Brain counterfactual",
+   "column": "fragility"
+  },
+  {
+   "row": "Fixed-Brain counterfactual",
+   "column": "region"
+  }
+ ]
+}

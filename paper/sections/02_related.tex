@@ -1,0 +1,20 @@
+\section{Related work}\label{sec:related}
+
+\paragraph{Cooperative embodied agents with language models.}
+VIKI-R \citep{kang2025vikir} introduces VIKI-Bench, a hierarchical benchmark for embodied multi-agent cooperation with vision-language models, and a two-stage recipe of supervised fine-tuning followed by reinforcement learning; it is our starting point, and \cref{sec:track-a} reuses its released data and checkpoints.
+RoCo \citep{mandi2024roco} has language-model agents, one per robot arm, discuss and agree a plan that is grounded by motion planning.
+CoELA \citep{zhang2024coela} builds embodied agents from separate perception, memory, communication, planning and execution modules around a language model.
+Our work differs in emphasis: we fix the roles by interface, so that a failure has an owner, and we treat the team's own failures as the source of training signal.
+\todo{Related work to read and add before submission: further multi-agent embodied and robot-team papers (the plan names CHORUS, D-VLC, MAAP, C3/CCPO and others by name only; none has been opened yet, so none is cited or compared).}
+
+\paragraph{Credit assignment and hindsight.}
+Hindsight experience replay \citep{andrychowicz2017her} relabels a failed attempt with the goal it did reach; our team hindsight relabeling applies the idea to instructions and adds a replay check (\cref{sec:signals}).
+Counterfactual baselines for multi-agent credit \citep{foerster2018coma} replace one agent's action and compare returns; our Eye credit replaces one Eye's \emph{report} and replays the whole episode.
+\todo{Confirm and cite the difference-rewards literature if it is kept in the final text.}
+
+\paragraph{Training signals and simulation.}
+We use group-relative policy optimization \citep{shao2024deepseekmath} for the Brain, flow matching \citep{lipman2023flowmatching} for the Arm policy, low-rank adaptation \citep{hu2022lora} for the language and vision models, and Isaac Lab \citep{mittal2025isaaclab} for physics. \todo{Citations marked TODO-verify in \texttt{refs.bib}: confirm each against its source before submission.}
+
+\paragraph{Benchmark scoring.}
+A level-2 plan is scored by a simulator-free checker in the upstream VIKI-R repository; we read that code and report an audit in \cref{sec:scorer}.
+\todo{LOCUS-Bench, a derived benchmark, was only available as an anonymized review artifact marked not for redistribution; it is neither cited nor compared. Revisit if it becomes public.}

@@ -1,0 +1,107 @@
+\section{Evaluation protocol and status}\label{sec:experiments}
+
+This section fixes the protocol before any trained result exists, so that the results cannot shape the questions.
+\Cref{fig:design} is the planned design and \cref{tab:evidence} the status of each evidence class; every cell that no run has produced is a red flag.
+
+\begin{figure*}[tbp]
+\centering
+\includegraphics[width=0.95\textwidth]{fig_design}
+\caption{\textbf{Planned evaluation design.} Five questions, the experiment that answers each, its evidence class and where it is reported. Track A uses real benchmark data and released models; Track B tests the packing team. Every outcome is pending, and fixture runs are kept out of the design (appendix~F).}
+\label{fig:design}
+\end{figure*}
+
+\begin{table}[tbp]
+\centering\small
+\input{generated/table_evidence}
+\caption{Evidence classes. A number is reported under exactly one class and never pooled with another.}
+\label{tab:evidence}
+\end{table}
+
+\subsection{Protocol}\label{sec:protocol}
+\paragraph{Evidence classes.}
+TRACK~A is real VIKI-Bench data with real released models; ISAAC is physics episodes in Isaac Lab; LLM-SYMBOLIC is a served language-model Brain on the symbolic task; FIXTURE is a scripted Brain with a flaky-planner wrapper and parametric Eyes, used only to check mechanisms; engineering tests prove that code runs.
+Each reported number carries its class.
+\paragraph{Seeds and statistics.}
+Training and data seeds are at least 100000 and evaluation seeds are below 100000, so no evaluation episode is in the training set.
+Success rates are reported with Wilson 95\% intervals, and comparisons between conditions with paired bootstrap intervals over seeds; the claim a comparison supports is stated with its interval, never a bare rate.
+Random draws are keyed so that conditions see the same episodes.
+\paragraph{Compute.}
+\todo{Compute is dual T4 GPUs on Kaggle (two 16\,GB cards). Confirm the memory plan for fine-tuning with LoRA in fp16 without bf16, the model sizes that fit, the run times, and whether Isaac Sim can run in that environment at all; if it cannot, the ISAAC class is limited to the pose-level simulator and this must be stated.}
+
+\subsection{Track A: real benchmark data and released models}\label{sec:track-a}
+Track A re-evaluates the released VIKI-R checkpoints on VIKI-Bench with our own runner, and decomposes a level-1 error into perception and reasoning by giving a text-only Brain oracle descriptions, no description, or a real Eye description of the same image (\cref{tab:trackA}).
+If compute allows, a matched-base control trains the same base model with the upstream recipe, so that any difference from our additions is attributable.
+\todo{Pin the upstream VIKI-R repository commit and dataset revision; record licences.}
+
+\begin{table}[tbp]
+\centering\small
+\input{generated/table_trackA}
+\caption{Track A design. L1 and L2 are VIKI-Bench levels. All cells are pending.}
+\label{tab:trackA}
+\end{table}
+
+\subsection{An audit of the upstream level-2 scorer}\label{sec:scorer}
+We read the upstream level-2 scoring code.
+It checks a plan with a pure-Python feasibility function, so no simulator is involved; for each asset it draws a start position with \texttt{random.choice} on every call, and a plan counts as correct if it is feasible and the ratio of reference length to plan length is at least 0.99; the reward is 0.1 for format plus 0.9 for correctness.
+The evaluation scripts read only the first 900 level-2 rows and the first 1000 level-1 rows, and the level-2 script loads one split file but writes to a directory with another name.
+\Cref{fig:scorer} shows the consequence on a toy case we built: if a plan is valid only for some start positions, an unseeded scorer passes it by luck of the draw.
+In the toy case, 40 unseeded draws pass 18 times, the exhaustive average over start positions is 0.5, and a position-agnostic plan passes 40 of 40.
+This is a synthetic demonstration of the mechanism; how many real VIKI-Bench items depend on a random start position is unknown until the inventory script runs on the dataset, and we make no claim about the published numbers.
+\todo{Run the inventory on the released data; report the fraction of items affected, and rescore the released checkpoints with a seeded and an exhaustive scorer.}
+
+\begin{figure*}[tbp]
+\centering
+\includegraphics[width=\textwidth]{fig_scorer_audit}
+\caption{\textbf{Audit of the upstream level-2 scorer.} (a)~The scoring path as read from the code; the highlighted step draws start positions at random on every call. (b)~A synthetic toy case: a plan valid only for some start positions passes 18 of 40 unseeded draws, has an exhaustive average of 0.5, and a position-agnostic plan passes 40 of 40. The toy case is not a statement about the published VIKI-R numbers.}
+\label{fig:scorer}
+\end{figure*}
+
+\subsection{Track B: the packing team}\label{sec:track-b}
+Track B runs the team on procedurally generated packing tasks, in the symbolic world with a served Brain (LLM-SYMBOLIC) and in Isaac Lab (ISAAC) (\cref{tab:main}).
+The headline measurement is the gap between plan validity and physical success: the fraction of episodes whose plan passes the dry run but whose physical episode fails, split by the agent the loop charges.
+\Cref{fig:results} draws the results from the results bundle when one exists, and is otherwise a red placeholder.
+
+\begin{table}[tbp]
+\centering\small
+\input{generated/table_main}
+\caption{Track B main results (pending). Success with a Wilson interval, the fraction of plans passing the dry run, replans per episode and message tokens.}
+\label{tab:main}
+\end{table}
+
+\begin{figure*}[tbp]
+\centering
+\includegraphics[width=0.95\textwidth]{fig_results}
+\caption{\textbf{Results figure, generated from the results bundle.} (a)~Success per configuration with Wilson intervals. (b)~Plan pass against success. (c)~Oracle gain by injected fault and field. With no bundle present every bar is empty and marked pending; nothing here is simulated.}
+\label{fig:results}
+\end{figure*}
+
+\subsection{Ablations}\label{sec:ablations}
+\Cref{tab:ablations} lists the ablations: the harness, the three verification modes, challenge and probe, one Eye against two, and the four communication modes.
+Each is a code configuration, so the comparison differs in one factor.
+\begin{table}[tbp]
+\centering\small
+\input{generated/table_ablations}
+\caption{Ablations (pending).}
+\label{tab:ablations}
+\end{table}
+
+\subsection{Counterfactual credit and hindsight}\label{sec:credit-eval}
+We evaluate the credit signal on whether rejection sampling guided by it produces Eyes with a smaller oracle gain than plain fine-tuning, and report the gain with its field breakdown (\cref{tab:credit}).
+The fixture version of the credit estimate, which checks that the estimator recovers the injected fault, is in appendix~F.
+For hindsight relabeling we compare Brain training with and without relabeled records at fixed total size.
+\begin{table}[tbp]
+\centering\small
+\input{generated/table_credit}
+\caption{Oracle gain $G$ of trained Eyes and its breakdown by field (pending).}
+\label{tab:credit}
+\end{table}
+
+\subsection{Is the attribution right?}\label{sec:attribution-eval}
+The attribution rules are heuristics, so we check them against hand labels on a sample of failed episodes and report agreement and Cohen's $\kappa$ per agent (\cref{tab:attribution}).
+\todo{Choose the number of episodes to hand-label and who labels them.}
+\begin{table}[tbp]
+\centering\small
+\input{generated/table_attribution}
+\caption{Agreement of the loop's attribution with hand labels (pending).}
+\label{tab:attribution}
+\end{table}

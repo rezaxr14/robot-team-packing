@@ -1,0 +1,18 @@
+{
+ "table": "evidence",
+ "n_pending_cells": 3,
+ "cells": [
+  {
+   "row": "TRACK A",
+   "column": "Status in this version"
+  },
+  {
+   "row": "ISAAC",
+   "column": "Status in this version"
+  },
+  {
+   "row": "LLM-SYMBOLIC",
+   "column": "Status in this version"
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+\begin{tabular}{lp{0.74\linewidth}}
+\toprule
+Rule file & Text given to the Brain (verbatim from the harness file) \\
+\midrule
+\texttt{bag\_exclusive} & Only one arm may place into the bag at a time. Serialize place tasks with dependencies. \\
+\texttt{bottle\_upright} & Water bottles go in upright and in a different compartment from the laptop. Use orientation=upright. \\
+\texttt{heavy\_bottom} & Place heavier items first so they sit at the bottom of the main compartment; lighter items go on top. Sort items by estimated mass, descending. \\
+\texttt{laptop\_slot} & The laptop goes in the compartment named by the instruction (default: the padded laptop slot). Never stack other items on or beside it in the same compartment. \\
+\texttt{leave\_distractors} & Items the instruction says to leave (for example the mug and the plate) must not be touched, moved or pushed aside. \\
+\texttt{lunchbox\_last} & The lunchbox is packed last so it sits on top and stays accessible. \\
+\bottomrule
+\end{tabular}

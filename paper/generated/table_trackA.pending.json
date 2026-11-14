@@ -1,0 +1,102 @@
+{
+ "table": "trackA",
+ "n_pending_cells": 24,
+ "cells": [
+  {
+   "row": "Released VIKI-R checkpoints, upstream-style scoring",
+   "column": "L1 accuracy"
+  },
+  {
+   "row": "Released VIKI-R checkpoints, upstream-style scoring",
+   "column": "L2 accuracy"
+  },
+  {
+   "row": "Released VIKI-R checkpoints, upstream-style scoring",
+   "column": "Format rate"
+  },
+  {
+   "row": "Released VIKI-R checkpoints, upstream-style scoring",
+   "column": "Failed items"
+  },
+  {
+   "row": "Released checkpoints, position-robust scoring, full split",
+   "column": "L1 accuracy"
+  },
+  {
+   "row": "Released checkpoints, position-robust scoring, full split",
+   "column": "L2 accuracy"
+  },
+  {
+   "row": "Released checkpoints, position-robust scoring, full split",
+   "column": "Format rate"
+  },
+  {
+   "row": "Released checkpoints, position-robust scoring, full split",
+   "column": "Failed items"
+  },
+  {
+   "row": "Text-only Brain with oracle descriptions",
+   "column": "L1 accuracy"
+  },
+  {
+   "row": "Text-only Brain with oracle descriptions",
+   "column": "L2 accuracy"
+  },
+  {
+   "row": "Text-only Brain with oracle descriptions",
+   "column": "Format rate"
+  },
+  {
+   "row": "Text-only Brain with oracle descriptions",
+   "column": "Failed items"
+  },
+  {
+   "row": "Same Brain, no Eye description",
+   "column": "L1 accuracy"
+  },
+  {
+   "row": "Same Brain, no Eye description",
+   "column": "L2 accuracy"
+  },
+  {
+   "row": "Same Brain, no Eye description",
+   "column": "Format rate"
+  },
+  {
+   "row": "Same Brain, no Eye description",
+   "column": "Failed items"
+  },
+  {
+   "row": "Same Brain, real Eye description",
+   "column": "L1 accuracy"
+  },
+  {
+   "row": "Same Brain, real Eye description",
+   "column": "L2 accuracy"
+  },
+  {
+   "row": "Same Brain, real Eye description",
+   "column": "Format rate"
+  },
+  {
+   "row": "Same Brain, real Eye description",
+   "column": "Failed items"
+  },
+  {
+   "row": "Matched-base control (Qwen2.5-VL-3B), if compute allows",
+   "column": "L1 accuracy"
+  },
+  {
+   "row": "Matched-base control (Qwen2.5-VL-3B), if compute allows",
+   "column": "L2 accuracy"
+  },
+  {
+   "row": "Matched-base control (Qwen2.5-VL-3B), if compute allows",
+   "column": "Format rate"
+  },
+  {
+   "row": "Matched-base control (Qwen2.5-VL-3B), if compute allows",
+   "column": "Failed items"
+  }
+ ]
+}
