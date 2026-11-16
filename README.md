@@ -3,6 +3,11 @@
 Research code for the paper draft in the project Doc. Everything here runs on CPU in pure Python
 (+ numpy for one test). The symbolic world is a **test fixture and reward source, not a physics result**.
 
+**V2 design (two Eyes, one Qwen3.5-4B vision Brain, two blind Arms): [`docs/ARCHITECTURE_V2.md`](docs/ARCHITECTURE_V2.md).**
+Hardware profiles, verified model facts, eye tool surface and training plan live there; every user
+decision and constraint is recorded in [`DECISIONS.md`](DECISIONS.md). `rtp` = **Robot Team Protocol**.
+The sections below describe the v1 code that already exists and is tested.
+
 ## Layout
 | path | what |
 |---|---|
@@ -62,7 +67,7 @@ Research code for the paper draft in the project Doc. Everything here runs on CP
    to the first 900 (L2) / 1000 (L1) rows and have an id/ood naming mismatch. Our runner reports upstream-style,
    position-robust, and full-split numbers separately.
 
-**Architecture: `ARCHITECTURE.md`.** **GPU days: start with `RUNBOOK_4DAY.md`** (preflight, installs, gates, fallbacks, paste-back protocol); stages live in `ops/plan.py`.
+**Architecture v1 (implemented): `ARCHITECTURE.md`; v2 (target): `docs/ARCHITECTURE_V2.md`.** **GPU days: start with `RUNBOOK_4DAY.md`** (preflight, installs, gates, fallbacks, paste-back protocol); stages live in `ops/plan.py`.
 See `TRACKA_CONTROL.md` for the upstream recipe, why it is not retrained here, and the fair-comparison checklist.
 
 ## Quickstart

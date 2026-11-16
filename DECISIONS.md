@@ -1,17 +1,74 @@
-# Defaults chosen while building (flip any; each is one config or one module)
+# Decisions
 
-1. **Eyes:** two Eyes with different viewpoints in the main system (occlusion makes per-Eye credit
+Two lists. **A. User decisions** are authoritative and override anything else, including the
+Claude plan when it lands. **B. Defaults we chose while building** are ours; each is one config or
+one module, flip any.
+
+Labels: **[V]** verified from a real file/source (path or URL given), **[U]** unverified, must not be
+quoted as fact, **[!]** blocked on the user.
+
+## A. User decisions (authoritative)
+
+| id | decision | status |
+|---|---|---|
+| D-01 | GitHub repo is `robot-team-packing`, remote `https://github.com/rezaxr14/robot-team-packing.git`. Commit and push in meaningful increments; no micro-commit spam. First push is the architecture/decision docs. | done (remote synced, `main` pushed) |
+| D-02 | `rtp` = **Robot Team Protocol**: the typed message bus + harness. | done |
+| D-03 | Physics is **Isaac Lab + Newton**. Not optional, not "a limitation". | [V] `source/isaaclab_newton` (`isaaclab_newton 17.2.3`, `requires-python >=3.12`) imports `warp` + `newton`; `NewtonManager.backend_name == "newton"` |
+| D-04 | **Two Eyes, two Arms.** Eyes are movable ceiling-mounted sensors, **skewed, not overhead**, placed on circular paths around the workspace, occludable by columns/objects, able to rotate, zoom, reposition, orbit, and run CV kernels. | design in `docs/ARCHITECTURE_V2.md` §2–3 |
+| D-05 | Eyes are **not LLMs**. YOLO-class detectors + classical CV for items/obstacles/edges/features. They send features/images to the Brain and obey its commands. They must be **trained** to detect obstacles and objects. | design §3 |
+| D-06 | **One Brain**: Qwen3.5-4B (vision-capable) commands both Arms and both Eyes. | [V] local checkpoint `~/models/Qwen3.5-4B`, `Qwen3_5ForConditionalGeneration` |
+| D-07 | Train **all relevant blocks**: full attention, gated DeltaNet, vision merger, and the up/down projections — not just language layers. Verify which modules exist and are trainable. | [V] module names in `docs/ARCHITECTURE_V2.md` §7; implemented as adapter coverage (D-15) |
+| D-08 | **Download and inspect the real Qwen config/model files before training.** Never guess the architecture. | [V] config + index + tokenizer downloaded to `~/models/Qwen3.5-4B`; structure table in §7 |
+| D-09 | Hardware profiles: **RTX 4050 (QLoRA)**, **RTX 4090 (LoRA bf16 + FlashAttention)**, **dual T4 (LoRA fp16 + SDPA)**, plus future **NVIDIA Pro 6000** and **TPU v5e-8 / v6e-1 / v5e-1**. FlashAttention and bf16 only where genuinely supported, with fallbacks. | [V] FA2 README: Ampere/Ada/Hopper mainline, bf16 requires Ampere+, head_dim ≤256; Turing needs a separate fork; no bf16 on T4 |
+| D-10 | **One config dict/selector in the notebooks.** Selecting a profile configures the whole run; no digging through code. | `rtp/profiles.py` (to write); notebook sets `ACTIVE` only |
+| D-11 | Profiles are **fully isolated**: own derived folders, adapters, checkpoints, optimizer state, logs, resume cursors. They never touch each other and resume independently. | layout in §8 |
+| D-12 | **Reusable installation/setup script** for every dependency, including **LangGraph**. | `ops/install.sh --profile <p>` (to write) |
+| D-13 | Use a **reputable, maintained vector database alongside BM25** (hybrid). Chroma/LanceDB/FAISS-class suggestions are rejected. | **Qdrant** [V] Rust, Apache-2.0, local mode `QdrantClient(path=...)`, named + sparse vectors, payload filters |
+| D-14 | **Kaggle Frontier AI API** generates task-grounded synthetic CoT traces for the VLM. Verify the real API/models/limits/workflow; do not assume. Separate from hardware profiles; works with every profile. | **[U] blocked**: `kaggle.com/docs/frontier-ai` and `/docs/api` return HTTP 403 anonymously (2026-11-16); no auth until authorised |
+| D-15 | Capture **episodes**: images, eye observations/features, generated traces, tool calls/results, eye commands, arm actions, success/failure. Feed success/failure RAG into the Kaggle benchmark/AI workflows, retrieval, recovery and hindsight learning. | schema in §10 (to implement) |
+| D-16 | **SFT then GRPO**, with a reward strategy and **KL regularisation against the SFT adapter**. | plan in §11 |
+| D-17 | Benchmark against relevant **omni models** with defined tasks, metrics and reproducible tests. | [U] baseline list pending model servers |
+| D-18 | **Work locally first. Do not authenticate or launch cloud jobs until authorised.** | in force |
+| D-19 | **Record every decision in the repo docs.** | this file |
+| D-20 | **Do not fabricate** facts, capabilities, compatibility, API features or results. Verify from files/sources; label unverified. | this file's labelling scheme |
+| D-21 | Research and **report Newton's real GPU/software requirements with sources**. | [V] §15: Turing cc 7.5+, driver R580+ for Warp ≥1.18 (else `warp-lang==1.17.0`), Python 3.11+, MuJoCo Warp primary backend |
+| D-22 | **Do not research or redesign SAC, flow matching, impedance control, or robot safety** — Claude handles that research; implement related work only as directed. | in force; no SAC/flow work started |
+| D-23 | Work **one step at a time**: implement, test, document, report. Never jump ahead or make silent decisions. | in force |
+| D-24 | A Claude **implementation plan** will be placed in the repo root; use it as the step-by-step checklist, but user decisions override it. | **[!] not present yet** |
+
+### Consequences recorded from A (not new decisions)
+
+- `tuning: qlora|lora|full` is a profile field. "Train the full attention + DeltaNet + merger +
+  up/down blocks" means **adapter coverage over those block types** (plus `full` where VRAM allows),
+  not "unfreeze 4.66 B params on a 6 GB card".
+- `mamba_ssm_dtype: float32` [V] means the DeltaNet recurrence stays fp32 under any autocast; the
+  loader asserts it and fails loudly otherwise.
+- Dual T4 does not run Isaac Sim (needs RT cores); it runs `mjsim` for control experiments and
+  Qwen adapters for eval/serving. Newton's cc 7.5 floor is met but that is not the binding constraint.
+
+## B. Defaults chosen while building (ours; flip any)
+
+1. **Eyes:** two Eyes with different stations in the main system (occlusion makes per-Eye credit
    non-trivial); one Eye is an ablation. `default_eyes()` in `datagen.py`.
-2. **Eye output:** SCENE JSON (class, coarse region, size, mass/fragility guess, occluded, confidence).
-   Metric poses come from a simulator depth/segmentation tool, not from the VLM.
+2. **Eye output:** structured geometry (`OBS`/`SCENE`: class, coarse region, size, mass/fragility
+   guess, occluded, confidence) plus optional image tiles. Metric poses come from a simulator
+   depth/segmentation tool, not from the VLM.
 3. **Arm head:** per-arm flow-matching head; MLP head is the ablation (`ArmPolicy(head=...)`).
    A joint two-arm head for handover is not implemented.
 4. **Latent messages:** out of the main system; only the typed text layer exists.
 5. **Task family:** one family (backpack packing) with amendments and injected faults for Track B;
    Track A uses VIKI-Bench unchanged.
-6. **Base models:** Qwen3.5-4B for Eye and Brain as in the plan; support in your TRL/vLLM versions is
-   unverified. A Qwen2.5-VL-based control is required for Track A.
-7. **Heavy-bottom rule** ignores the explicitly "last" item (otherwise "heavy at bottom" and "lunchbox
-   last" contradict each other for light lunchboxes).
+6. **Base models:** Qwen3.5-4B for Brain and Eyes per D-06; a Qwen2.5-VL-based control is required for
+   Track A. `transformers 5.23.0` in the active venv exposes `qwen3_5` [V].
+7. **Heavy-bottom rule** ignores the explicitly "last" item (otherwise "heavy at bottom" and
+   "lunchbox last" contradict each other for light lunchboxes).
 8. **Failure attribution** (Eye/Brain/Arm) is rule-based and heuristic (`loop.attribute`); report it as
    such, and validate on a hand-labelled subset before using it as a result.
+9. **Eye budget** default 6 slots/round, 24/episode, with tool costs in §3 — a knob, because
+   "success vs eye calls" is a paper axis.
+10. **Detector** default `ultralytics` YOLO11n-seg (AGPL-3.0, flagged); BSD fallback
+    `torchvision` RetinaNet/Mask R-CNN behind `rtp/eyes/detector.py`. Licence call pending.
+11. **Dense embedder** default `BAAI/bge-small-en-v1.5` (384-d, CPU) with a hash fallback for offline
+    tests.
+12. **Physics profiles** carry `physics: mjsim|isaac_physx|isaac_newton`; only the 4090/4050/Pro 6000
+    profiles are candidates for Isaac in this cycle.
