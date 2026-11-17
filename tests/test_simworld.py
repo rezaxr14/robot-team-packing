@@ -103,3 +103,18 @@ def test_state_diff_backend_runs_full_episodes_like_direct():
         b = run_episode(w, default_eyes(s, False), ScriptedBrain(), spec, H, LoopConfig())
         _, a = direct(s, False, 0.0)
         assert (a.success, a.n_valid, a.rounds) == (b.success, b.n_valid, b.rounds), s
+
+
+def test_resolve_cause_promotes_a_token_detail_but_not_prose():
+    from rtp.simworld import resolve_cause
+    # success is success, whatever the detail says
+    assert resolve_cause("success", "gripped at 11.2 N") == "success"
+    assert resolve_cause("", "") == ""
+    # FakeSim reports a coarse category and the loop's own cause in `detail`
+    assert resolve_cause("other_failure", "arm_noise") == "arm_noise"
+    # prose from a physics backend never becomes a cause (the loop matches causes exactly)
+    assert resolve_cause("other_failure", "Crush: 92.0 N on bottle1") == "other_failure"
+    assert resolve_cause("other_failure", "unknown object") == "other_failure"
+    # a specific category is never overwritten by a detail token
+    assert resolve_cause("not_found", "arm_noise") == "not_found"
+    assert resolve_cause("crush", "arm_noise") == "crush"

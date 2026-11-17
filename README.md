@@ -1,77 +1,69 @@
-# robot_team: language-coordinated robot team (Eye / Brain / blind Arms)
+# robot-team-packing: two Eyes, one Brain, two Arms
 
-Research code for the paper draft in the project Doc. Everything here runs on CPU in pure Python
-(+ numpy for one test). The symbolic world is a **test fixture and reward source, not a physics result**.
+Research code for a two-arm, two-eye kitchen manipulation system. The Brain is one **Qwen3.5-4B**
+vision-language model; the Eyes are conventional CV (detector + OpenCV kernels, never an LLM);
+the simulator is **Isaac Lab 3.0 + Newton** and nothing else.
 
-**V2 design (two Eyes, one Qwen3.5-4B vision Brain, two blind Arms): [`docs/ARCHITECTURE_V2.md`](docs/ARCHITECTURE_V2.md).**
-Hardware profiles, verified model facts, eye tool surface and training plan live there; every user
-decision and constraint is recorded in [`DECISIONS.md`](DECISIONS.md). `rtp` = **Robot Team Protocol**.
-The sections below describe the v1 code that already exists and is tested.
+* Step-by-step plan (authoritative checklist): [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md)
+* Every user decision and constraint: [`DECISIONS.md`](DECISIONS.md)
+* V2 design (eye geometry/tools, schemas, profiles, retrieval, training): [`docs/ARCHITECTURE_V2.md`](docs/ARCHITECTURE_V2.md)
+* Paper sources and specs: `docs/{SIMULATION,HARDWARE,IMPEDANCE_SPEC,COMPATIBILITY,SCHEMAS,ASSETS,SOURCE_REGISTER}.md`
+* `paper/` is user-owned and frozen; nothing here modifies it. `paper/scripts/` holds the older v1
+  Track-A scripts that used to live in `scripts/`.
 
-## Layout
+`rtp` = **Robot Team Protocol** (typed bus + harness). The symbolic world is a **test fixture and
+reward source, not a physics result**.
+
+## Current status (P0)
+
+* `pytest tests -q` → **165 passed, 10 skipped** on the 4050 laptop (2026-11-17; CPU-only sandbox
+  baseline recorded in `DECISIONS.md` D-36).
+* The legacy 2.3-era Isaac launcher stack is purged (D-35): no `ops/12_env_isaac.sh`, no EULA export,
+  no RT-core preflight branch, no `isaac/bringup/`, no VIKI/LLaMA-Factory launcher stages.
+* Qwen3.5-4B is downloaded and sha256-verified; `reports/qwen35_modules.json` (gate G-1) and
+  `reports/g2_fastpath.json` (gate G-2) are produced by the scripts under `ops/`.
+* Gate G-3 (Isaac Lab 3.0 + Newton run on each profile GPU) is **not run yet** — it needs the large
+  Isaac/Newton install and a T4 session; see `IMPLEMENTATION_PLAN.md` §12.
+
+## Layout (current code)
+
 | path | what |
 |---|---|
 | `rtp/messages.py` | typed messages (ABILITY, SCENE, CLAIM, ..., AMEND), schema validation, token-budget bus |
 | `rtp/world.py` | symbolic packing world; force-aware skills (slip/crush), bag lock, common random numbers |
-| `rtp/perception.py` | Eyes with viewpoint occlusion + fault injection; counterfactual report replacement; `VLMEye` adapter |
+| `rtp/perception.py` | Eyes with viewpoint occlusion + fault injection; counterfactual report replacement |
 | `rtp/plan.py` | plan DAG schema, robust JSON parsing, round scheduler (bag lock, soft ordering deps) |
 | `rtp/rules.py` | `TaskSpec`, final-state rule checker, static feasibility, deterministic dry run |
-| `rtp/harness.py` | .md skills/rules/notes, BM25 (+optional embedding fusion), monitor write-back |
-| `rtp/brain.py` | `ScriptedBrain` (teacher/fixture), `LLMBrain` adapter + prompt builder |
+| `rtp/harness.py` | `.md` skills/rules/notes, BM25 (+ optional embedding fusion), monitor write-back |
+| `rtp/brain.py` | `ScriptedBrain` (fixture), `LLMBrain` adapter + prompt builder |
 | `rtp/loop.py` | closed loop: comm modes, recovery ladder, replan, amendments, failure attribution |
-| `rtp/credit.py` | counterfactual Eye credit under common random numbers |
-| `rtp/hindsight.py` | team hindsight relabeling + replay validation |
-| `rtp/rewards.py` | episode score; plan-level GRPO rewards; TRL adapters |
-| `rtp/datagen.py` | scenes, specs, Brain SFT / GRPO prompt / Eye SFT data |
-| `rtp/flowmath.py`, `rtp/flowhead.py` | flow-matching math (tested) and the arm policy (torch, untested here) |
-| `rtp/trackA.py` | load the VIKI-R L2 scorer without verl; seeded / exhaustive scoring |
-| `rtp/llm_client.py` | stdlib OpenAI-compatible chat client (vLLM) |
-| `rtp/experiments.py`, `rtp/tables.py` | config grid -> per-episode records -> markdown tables (Wilson, paired bootstrap) |
-| `rtp/eye_rewards.py` | Eye rewards: format, field accuracy, and counterfactual team credit (the paper's Eye-training comparison) |
-| `rtp/skills.py` | arm skill spec + executor-agnostic regression suite (symbolic executor now; sim executor later) |
-| `rtp/simbridge.py` | simulator state -> regions/compartments/upright -> `World`; skill outcome classification (tested on synthetic poses) |
-| `rtp/simworld.py`, `rtp/fakesim.py` | `SimBackend` interface, `SimWorld` adapter (runs the loop on any simulator), `StateDiffBackend`, pose-level `FakeSim` test double |
+| `rtp/credit.py`, `rtp/hindsight.py`, `rtp/rewards.py` | counterfactual Eye credit, hindsight relabelling, GRPO rewards |
+| `rtp/datagen.py` | scenes, specs, Brain SFT / GRPO prompt data |
+| `rtp/flowmath.py`, `rtp/flowhead.py` | flow-matching math (tested) and the arm policy (torch) |
+| `rtp/llm_client.py` | stdlib OpenAI-compatible chat client (vLLM/HF server) |
+| `rtp/experiments.py`, `rtp/tables.py`, `rtp/figures.py` | config grid → records → tables/figures (Wilson, paired bootstrap) |
+| `rtp/skills.py`, `rtp/simbridge.py`, `rtp/simworld.py`, `rtp/fakesim.py` | skill spec, sim→symbolic bridge, `SimBackend`, pose-level `FakeSim` |
 | `rtp/toolbrain.py` | multi-turn LLM Brain with tools (check_rule, query_scene, look, dry_run, submit_plan) |
-| `rtp/trackA_pipeline.py` | Eye->Brain pipeline on VIKI L2 with oracle / no-Eye / real-Eye conditions |
-| `rtp/fixtures.py` | `FlakyBrain`: imperfect-planner fixture (ghost objects, missing grasps, wrong arm, rule-breaking order, dropped items, garbage) |
-| `ops/` | preflight (GPU arch detection), env installs, model downloads, vLLM helper, stage runner with logging/resume, bundler, stage plan |
-| `isaac/packing_sim.py`, `isaac/bringup/` | Isaac Lab 2.3 scene + scripted IK skills implementing `SimBackend`; staged bring-up scripts 01-07 (never run) |
-| `rtp/vlm_eye.py` | the real Eye: renders a view, asks a VLM for SCENE JSON, parses; failures become empty reports attributed to the Eye |
-| `rtp/policy_rollout.py` | receding-horizon execution of a learned arm policy (tested on a toy arm) |
-| `isaac/learned_sim.py`, `isaac/regression.py` | learned-arm simulator; regression-suite executor for the simulator |
-| `rtp/eye_rft.py` | Eye rejection-sampling fine-tuning (best-of-K by accuracy or credit) + selection-disagreement measure |
-| `rtp/figures.py`, `scripts/build_report.py` | paper figures; one report with an evidence ledger (TRACK A / ISAAC / LLM-SYMBOLIC / FIXTURE) and missing-input list |
-| `rtp/attribution_eval.py` | hand-labelling export and agreement (accuracy, Cohen's kappa) for Eye/Brain/Arm attribution |
-| `scripts/`, `train/`, `isaac/` | Stage 0 scripts, experiment grid, dataset generation, SFT/GRPO/arm-distillation, Isaac Lab skeleton |
-| `RUNBOOK.md` | what to run, in order, and what to paste back |
-
-## Status
-- **Implemented and tested (173 tests, `python -m pytest tests -q`)**: everything in `rtp/` (the torch tests skip automatically where torch/TRL are absent)
-  (including the Track A runner against the real upstream scorer code and prompts).
-- **Run on CPU with torch/TRL/PEFT (tiny random model)**: `rtp/flowhead.py`, `train/{sft_brain,grpo_brain,distill_arm,merge_lora}.py`.
-- **Implemented, NOT run** (no GPU/Isaac/HF access in the authoring sandbox): `train/grpo_eye.py`, `scripts/s0_inventory.py` (schema-tolerant, never run on real data),
-  `scripts/s0_trackA_eval.py` end-to-end against a real model server (its components are tested with a fake model).
-- **Not implemented**: Isaac Lab scene and skills (`isaac/team_env.py` is a partly grounded skeleton, see
-  `isaac/DESIGN.md`; its sim-to-symbolic bridge is implemented in `rtp/simbridge.py`), privileged-state RL experts, distillation, online arm RL, VLM Eye fine-tuning,
-  Brain SFT/GRPO runs, latent-message ablation, all paper experiments.
-- No result in this repo is evidence for a paper claim. `scripts/pipeline_check.py` only checks plumbing.
-
-## Findings so far that affect the plan
-1. VIKI-R's L1/L2 scorers are offline Python (no simulator needed), so Track A needs no simulator port.
-2. The upstream L2 `eval_single` draws a random start position per asset per call: on a synthetic case the
-   same prediction passed 18/40 unseeded draws. Whether real VIKI-Bench items are exposed is untested
-   (run `scripts/s0_inventory.py`). Report seeded or exhaustive scoring (`rtp/trackA.py`).
-3. VIKI-R is built on Qwen2.5-VL (3B/7B); a same-base control is needed for a fair Track A comparison.
-4. Upstream L2 "correct" means feasible AND the predicted plan is not longer than the reference
-   (`len(ref)/len(pred) >= 0.99`); a valid but longer plan counts as wrong. The upstream eval scripts also truncate
-   to the first 900 (L2) / 1000 (L1) rows and have an id/ood naming mismatch. Our runner reports upstream-style,
-   position-robust, and full-split numbers separately.
-
-**Architecture v1 (implemented): `ARCHITECTURE.md`; v2 (target): `docs/ARCHITECTURE_V2.md`.** **GPU days: start with `RUNBOOK_4DAY.md`** (preflight, installs, gates, fallbacks, paste-back protocol); stages live in `ops/plan.py`.
-See `TRACKA_CONTROL.md` for the upstream recipe, why it is not retrained here, and the fair-comparison checklist.
+| `rtp/profiles.py` | hardware profiles, isolated per-profile paths, runtime fallbacks (P1) |
+| `isaac/` | 2.3-era modules (`packing_sim.py`, `team_env.py`, `cameras.py`, ...) awaiting the P2 port to Isaac Lab 3.0 + Newton |
+| `ops/preflight.py` | GPU/arch/system report and install-branch recommendation (Newton floor, Warp pin) |
+| `ops/install.sh` | one installer per profile (`--profile`), optional Isaac Lab 3.0 + Newton venv |
+| `ops/download_model.sh` | resumable, sha256-verified HF download |
+| `ops/g1_module_dump.py` | gate G-1: real module tree of the checkpoint (meta device, no weights) |
+| `ops/g2_fastpath.py` | gate G-2: DeltaNet kernel binding + optional QLoRA training smoke |
+| `ops/plan.py` | stage registry for the phases that exist (`p0`, `bundle`) with logging/resume |
+| `ops/stage.py`, `ops/bundle.py` | stage runner (timing, logs, skip-if-done) and report bundler |
+| `harness_files/brain/{rules,skills}.md` | the Brain's own rules and skills (prompt material + format fixture) |
 
 ## Quickstart
-    pip install pytest numpy
-    python -m pytest tests -q
-    python scripts/pipeline_check.py 50          # plumbing check only
-    python -m rtp.flowhead                       # needs torch; toy sanity check of the arm head
+
+```bash
+ops/install.sh --profile local_4050 --dry-run     # what would be installed, per profile
+ops/install.sh --profile local_4050               # torch + training/retrieval/agents/eyes venv
+ops/download_model.sh Qwen/Qwen3.5-4B ~/models/Qwen3.5-4B
+source ops/env.sh && python ops/plan.py list      # p0: preflight, model integrity, G-1, G-2
+python -m pytest tests -q
+```
+
+No result in this repo is evidence for a paper claim until it carries a run id, config hash, git SHA
+and a seed, produced by the Isaac Lab + Newton pipeline.

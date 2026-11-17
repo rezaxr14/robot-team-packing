@@ -155,7 +155,7 @@ contract. Legal params are declared in `rtp/skills.py`: `grasp.force` (N), `plac
 (`main|front|laptop`), `place.orientation` (`upright|flat`), `handover.to` (`L|R`); `weigh`,
 `release`, `retreat`, `push_aside` take none. The Brain never emits joint values, waypoints, gains
 or velocities. Cartesian waypoints and joint targets are produced downstream by differential IK + PD
-(`isaac/packing_sim.py::goto`, `mjsim/backend.py`).
+(`isaac/packing_sim.py::goto`, ported to the Isaac Lab 3.0 + Newton API in P2).
 
 ## 7. Qwen3.5-4B — verified structure
 
@@ -328,8 +328,8 @@ the docs.
 | 2 | Claude's implementation plan | file in repo root (not present yet) |
 | 3 | YOLO licence (AGPL) vs BSD fallback | user call |
 | 4 | Eye ring radius/height/station counts | user call, defaults in §2 |
-| 5 | Isaac/Newton on this laptop | 6 GB 4050 cannot host a full scene; Newton floor is cc 7.5 + driver R580+ (§15) |
-| 6 | Isaac Sim RT-core requirement for T4 | documented limitation, T4 stays on `mjsim` |
+| 5 | Isaac Lab 3.0 + Newton on this laptop | 6 GB 4050: scene size is the binding limit, not Newton (cc 8.9); gate G-3 records pass/fail |
+| 6 | Isaac Lab 3.0 + Newton on a dual-T4 session | cc 7.5 is exactly Newton's floor; gate G-3 records pass/fail on Kaggle T4 (no stack fallback exists, D-25) |
 
 ## 15. Newton / Isaac Lab platform facts
 
@@ -348,18 +348,17 @@ deprecated `warp.sim`).
 
 Practical reading: an RTX 4050 (cc 8.9) and 4090 (cc 8.9) satisfy Newton's floor; the 4050's 6 GB is
 the binding limit for scene size, not for Newton itself. A T4 is cc 7.5 — exactly on Newton's
-boundary — but Isaac Sim requires an RTX-class GPU with RT cores, which a T4 lacks, so dual-T4
-profiles run `mjsim` (MuJoCo CPU) for control experiments and only serve/evaluate models.
+boundary; whether Isaac Lab 3.0 + Newton runs there is settled by gate G-3 on a Kaggle T4 session,
+never assumed, and D-25 leaves no second simulator stack to fall back to.
 
 ## 16. Evidence classes
 
 | class | what it proves | where |
 |---|---|---|
 | `FIXTURE` | mechanics only (scripted Brain, parametric Eyes) | `rtp/world.py`, `tests/` |
-| `MJSIM` | laptop physics regression (MuJoCo, gantry surrogate) | `mjsim/` |
-| `ISAAC_NEWTON` | physics results, reportable | `isaac/` (not yet runnable end-to-end) |
+| `ISAAC_NEWTON` | physics results, reportable (Isaac Lab 3.0 + Newton is the only simulator, D-25) | `isaac/` (port to 3.0 in P2) |
 | `LLM-SYMBOLIC` | claims scoped to the symbolic task | `rtp/loop.py` + real model server |
 | `MODEL` | training/eval of Qwen3.5-4B adapters | `train/`, `runs/<profile>/` |
 
-`mjsim` is never ISAAC evidence. Fixture results never become physics claims. Paper cells stay
-`\todo` until the corresponding class has a real run.
+Fixture results never become physics claims. Paper cells stay `\todo` until the corresponding class
+has a real run.

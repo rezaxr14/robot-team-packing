@@ -1,9 +1,6 @@
 import json
-import os
 import tarfile
 from pathlib import Path
-
-import pytest
 
 from ops import preflight, stage, bundle
 
@@ -27,17 +24,18 @@ def test_recommendations_branch_on_architecture_and_memory():
     b96 = preflight.recommend(preflight.parse_nvidia_smi(BW96)[0])
     b48 = preflight.recommend(preflight.parse_nvidia_smi(BW48)[0])
     assert ada["arch"] == "ada" and b96["arch"] == b48["arch"] == "blackwell"
-    assert ada["isaac_line"] == "2.3" and ada["torch_index"] == "cu128"
-    assert any("predate Blackwell" in n for n in b48["notes"])                   # the upstream pins warning
+    assert ada["isaac_line"] == "3.0" and ada["sim_stack"] == "isaac_lab_3.0_newton"
+    assert ada["torch_index"] == "cu128" and ada["newton_ok"] and ada["qlora_4b_fits"]
+    assert ada["warp_pin"] == "1.17.0" and b96["warp_pin"] is None        # R550 -> Warp 1.17 pin; R580 -> unpinned
     assert not ada["can_run_isaac_vllm_and_train_together"] and b96["can_run_isaac_vllm_and_train_together"]
     assert b96["vllm_gpu_memory_utilization_4b"] < ada["vllm_gpu_memory_utilization_4b"] <= 0.5
     old = preflight.recommend(preflight.parse_nvidia_smi(BW96.replace("580.65.06", "535.1"))[0])
-    assert any("driver" in w for w in old["warnings"])
+    assert old["warp_pin"] == "1.17.0" and any("warp-lang" in n for n in old["notes"])
 
 
-def test_datacenter_gpu_without_rt_cores_is_a_hard_fail():
-    r = preflight.recommend(preflight.parse_nvidia_smi(H100)[0])
-    assert any(w.startswith("FAIL") for w in r["warnings"])
+def test_gpu_below_newtons_floor_is_flagged():
+    v100 = preflight.recommend(preflight.parse_nvidia_smi("Tesla V100-SXM2-16GB, 16384 MiB, 7.0, 550.54")[0])
+    assert not v100["newton_ok"] and any("Newton's floor" in w for w in v100["warnings"])
 
 
 def test_stage_runner_logs_resumes_and_reports_failures(tmp_path, monkeypatch):
@@ -80,9 +78,9 @@ def test_plan_commands_reference_real_files_and_names_are_unique():
     names = [n for _, n, _ in plan.all_stages()]
     assert len(names) == len(set(names))
     for g, n, cmd in plan.all_stages():
-        for m in re.findall(r"(?:ops|scripts|train|isaac/bringup)/[\w./-]+\.(?:sh|py)", cmd):
+        for m in re.findall(r"(?:ops|scripts|train)/[\w./-]+\.(?:sh|py)", cmd):
             assert (root / m).exists(), f"{n}: {m} does not exist"
-    assert {"setup", "smoke", "trackA", "isaac", "data", "train", "eval", "bundle"} == set(plan.GROUPS)
+    assert {"p0", "bundle"} == set(plan.GROUPS)
 
 
 def test_plan_run_executes_stages_in_order_and_stops_on_failure(tmp_path, monkeypatch):
@@ -98,44 +96,23 @@ def test_plan_run_executes_stages_in_order_and_stops_on_failure(tmp_path, monkey
     assert plan.main(["run", "bundle", "--force"]) == 0
 
 
-def test_lf_config_writer(tmp_path):
-    import json
-    from ops.make_lf_config import build
-    (tmp_path / "eye").mkdir()
-    cfg = build(str(tmp_path / "eye"), "/m/Qwen2.5-VL-3B", "qwen2_vl", str(tmp_path / "out"))
-    y = cfg.read_text()
-    assert "template: qwen2_vl" in y and "dataset: eye_sft" in y and f"dataset_dir: {tmp_path / 'eye'}" in y
-    info = json.loads((tmp_path / "eye" / "dataset_info.json").read_text())
-    assert info["eye_sft"]["columns"]["images"] == "images" and info["eye_sft"]["formatting"] == "sharegpt"
-
-
-def test_lf_config_merges_datasets_and_names_them(tmp_path):
-    import json
-    from ops.make_lf_config import build
-    (tmp_path / "eye").mkdir()
-    build(str(tmp_path / "eye"), "/m", "qwen2_vl", str(tmp_path / "o1"))
-    cfg = build(str(tmp_path / "eye"), "/m2", "qwen2_vl", str(tmp_path / "o2"), file_name="rft_credit.jsonl", name="eye_rft_credit")
-    info = json.loads((tmp_path / "eye" / "dataset_info.json").read_text())
-    assert set(info) == {"eye_sft", "eye_rft_credit"} and info["eye_rft_credit"]["file_name"] == "rft_credit.jsonl"
-    assert "dataset: eye_rft_credit" in cfg.read_text()
-
-
 def test_plan_lint_is_clean_and_catches_problems(monkeypatch):
     from ops import plan
     assert plan.lint() == []
-    bad = list(plan.GROUPS["train"]) + [("oops_stage", "source ops/env.sh; python x.py --model $RUNS/never_made --data $NOPE_VAR")]
-    monkeypatch.setitem(plan.GROUPS, "train", bad)
+    bad = list(plan.GROUPS["p0"]) + [("oops_stage", "source ops/env.sh; python x.py --model $RUNS/never_made --data $NOPE_VAR")]
+    monkeypatch.setitem(plan.GROUPS, "p0", bad)
     probs = plan.lint()
     assert any("undefined variable $NOPE_VAR" in p for p in probs) and any("$RUNS/never_made" in p for p in probs)
 
 
 def test_missing_vars_blocks_stages_that_need_config(tmp_path, monkeypatch):
     from ops import plan
-    assert plan.missing_vars("trackA_L2_id", {}) == ["VIKI_CKPT_L2", "L2_ID"]
-    assert plan.missing_vars("trackA_L2_id", {"VIKI_CKPT_L2": "/m", "L2_ID": "/d.parquet"}) == []
-    assert plan.missing_vars("env_train", {}) == []
+    assert plan.missing_vars("g1_module_dump", {}) == []
+    monkeypatch.setitem(plan.REQUIRES, "g1_module_dump", ["MODEL_DIR"])
+    assert plan.missing_vars("g1_module_dump", {}) == ["MODEL_DIR"]
+    assert plan.missing_vars("g1_module_dump", {"MODEL_DIR": "/m"}) == []
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(stage, "LOG", Path("reports/stage_log.jsonl"))
     monkeypatch.setattr(plan, "_config_env", lambda: {})
-    monkeypatch.setitem(plan.GROUPS, "bundle", [("trackA_L2_id", "echo should-not-run")])
-    assert plan.main(["run", "bundle"]) == 2 and "trackA_L2_id" not in stage.latest()       # refused before running
+    monkeypatch.setitem(plan.GROUPS, "bundle", [("g1_module_dump", "echo should-not-run")])
+    assert plan.main(["run", "bundle"]) == 2 and "g1_module_dump" not in stage.latest()       # refused before running

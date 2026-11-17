@@ -5,7 +5,6 @@ Pure functions (parse_nvidia_smi, arch_of, recommend) are unit-tested; the probe
 """
 from __future__ import annotations
 import json
-import os
 import re
 import shutil
 import subprocess
@@ -61,30 +60,38 @@ def arch_of(g: GPU) -> str:
     return "unknown"
 
 
-NO_RT_CORES = ("a100", "h100", "h200", "b200", "gb200")
-
-
 def recommend(g: GPU) -> dict:
+    """Install-branch recommendation under D-25: Isaac Lab 3.0 + Newton, no other physics stack."""
     arch = arch_of(g)
     notes, warns = [], []
-    if any(k in g.name.lower() for k in NO_RT_CORES):
-        warns.append("FAIL: Isaac Sim needs RT cores for rendering; this data-center GPU has none. Use a workstation/GeForce GPU.")
     if arch in ("blackwell", "blackwell_datacenter"):
-        notes.append("Blackwell (sm_120): use CUDA 12.8+ PyTorch wheels (cu128) in every env; the upstream VIKI-R pins "
-                     "(torch 2.6.0, vllm 0.8.4, flash-attn 2.7.4) predate Blackwell and will not run: use the envs from ops/.")
-        major = int(re.match(r"\d+", g.driver).group()) if re.match(r"\d+", g.driver or "") else 0
-        if major and major < 570:
-            warns.append(f"driver {g.driver} may be too old for Blackwell (R570 or newer recommended; unverified threshold)")
+        notes.append("Blackwell (sm_120): use CUDA 12.8+ PyTorch wheels (cu128); fluid-kernel builds need the CUDA 12.8+ toolkit.")
     if arch == "ada":
         notes.append("Ada (sm_89): cu128 wheels also work; no special handling.")
     if arch == "unknown":
         warns.append("could not classify the GPU architecture; check `nvidia-smi --query-gpu=compute_cap --format=csv`")
+
+    # Newton's floor is Turing, cc 7.5 [V:S-17]; Warp >= 1.18 needs driver R580+, else pin warp-lang 1.17.0 [V:S-19].
+    cc = g.cc
+    newton_ok = cc is not None and cc >= (7, 5)
+    major = int(re.match(r"\d+", g.driver).group()) if re.match(r"\d+", g.driver or "") else 0
+    warp_pin = None if (not major or major >= 580) else "1.17.0"
+    if not newton_ok:
+        warns.append(f"cc {cc} is below Newton's floor (7.5): Isaac Lab 3.0 + Newton cannot run on this GPU [V:S-17]")
+    if warp_pin:
+        notes.append(f"driver {g.driver} < R580: pin warp-lang=={warp_pin} for Newton [V:S-19]")
+
     vram = g.vram_gb
     return {
         "arch": arch,
         "torch_index": "cu128",
-        "isaac_line": "2.3",                       # Isaac Sim 5.x, Python 3.11, torch 2.7 cu128; supports Ada and Blackwell
+        "sim_stack": "isaac_lab_3.0_newton",       # D-25; no mjsim/PhysX line exists any more
+        "isaac_line": "3.0",
+        "newton_min_cc": "7.5",
+        "newton_ok": newton_ok,
+        "warp_pin": warp_pin,
         "vllm_gpu_memory_utilization_4b": round(min(0.5, 18.0 / vram), 2) if vram else 0.3,
+        "qlora_4b_fits": vram >= 6,
         "train_lora_4b_fits": vram >= 24,
         "can_run_isaac_and_vllm_together": vram >= 40,
         "can_run_isaac_vllm_and_train_together": vram >= 90,
@@ -116,9 +123,9 @@ def system_checks() -> list:
         mem_gb = int(re.search(r"MemTotal:\s+(\d+)", Path("/proc/meminfo").read_text()).group(1)) / 1024 / 1024
     except Exception:                                                  # noqa: BLE001
         mem_gb = 0.0
-    out.append(("ram >= 32 GB", mem_gb >= 32, f"{mem_gb:.0f} GB", "fail"))
+    out.append(("ram >= 32 GB (sim workstation; dev laptops are fine)", mem_gb >= 32, f"{mem_gb:.0f} GB", "warn"))
     free = shutil.disk_usage(".").free / 1e9
-    out.append(("disk free >= 300 GB (Isaac Sim, models, renders)", free >= 300, f"{free:.0f} GB", "warn"))
+    out.append(("disk free >= 100 GB (models, renders, Isaac checkout)", free >= 100, f"{free:.0f} GB", "warn"))
     for tool in ("git", "curl", "gcc", "nvidia-smi"):
         out.append((f"tool: {tool}", shutil.which(tool) is not None, shutil.which(tool) or "missing", "fail" if tool in ("git", "nvidia-smi") else "warn"))
     out.append(("uv or conda", bool(shutil.which("uv") or shutil.which("conda")), shutil.which("uv") or shutil.which("conda") or "missing (ops/01_install_uv.sh installs uv)", "warn"))

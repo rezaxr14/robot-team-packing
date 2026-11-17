@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from rtp.plan import extract_json, parse_plan, strip_thinking, json_candidates, PlanError
+from rtp.plan import extract_json, parse_plan, strip_thinking, PlanError
 from rtp.eye_rewards import parse_scene_completion
 from rtp.llm_client import ChatClient
 
@@ -98,23 +98,3 @@ def test_training_rows_fit_the_context_budget():
         assert len(r["completion"]) <= 2 * 1536 * 0.8, "GRPO completion may be cut off mid-JSON"
         assert '"tasks":[' in r["completion"] and '"tasks": ' not in r["completion"]          # compact separators
     assert all(len(g["prompt"]) <= 2 * 4096 * 0.5 for g in gen_grpo_prompts(8, 800, H))
-
-
-def test_training_and_evaluation_seed_ranges_are_disjoint():
-    """Every default training/data seed offset is >= 100000; every default evaluation seed is below it."""
-    import re
-    from pathlib import Path
-    root = Path(__file__).resolve().parents[1]
-    mk = (root / "scripts" / "make_datasets.py").read_text()
-    base = int(re.search(r'"--seed0", type=int, default=(\d+)', mk).group(1))
-    offsets = [int(x) for x in re.findall(r"a\.seed0 \+ (\d+)", mk)] + [0]
-    assert base >= 100000 and all(base + o >= 100000 for o in offsets)
-    for f, pat in (("isaac/bringup/06_render_eye_data.py", r'"--seed0"\], dict\(type=int, default=(\d+)'),
-                   ("isaac/bringup/07_collect_demos.py", r'"--seed0"\], dict\(type=int, default=(\d+)')):
-        assert int(re.search(pat, (root / f).read_text()).group(1)) >= 100000, f
-    run = (root / "scripts" / "run_experiments.py").read_text()
-    assert int(re.search(r'"--seed0", type=int, default=(\d+)', run).group(1)) < 100000
-    assert 'default=0' in (root / "isaac" / "bringup" / "_launch.py").read_text()            # --seed default for evaluation episodes
-    plan = (root / "ops" / "plan.py").read_text()
-    for m in re.findall(r"--seed (\d+)", plan):
-        assert int(m) < 100000

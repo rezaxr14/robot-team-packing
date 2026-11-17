@@ -1,18 +1,10 @@
-"""Tests that need torch / TRL / PEFT (skipped where unavailable): the arm policy, distillation, and the training
-scripts in --smoke mode against the INSTALLED library versions."""
-import json
-import subprocess
-import sys
-from pathlib import Path
+"""Arm-policy tests that need torch (skipped where unavailable).
 
+Script-level SFT/GRPO smoke tests are re-added in P8 against the P7 dataset; the deleted Track-A
+scripts they used are gone (D-35)."""
 import pytest
 
 torch = pytest.importorskip("torch")
-ROOT = Path(__file__).resolve().parents[1]
-
-
-def run(*args, timeout=600):
-    return subprocess.run([sys.executable, *args], cwd=ROOT, capture_output=True, text=True, timeout=timeout)
 
 
 def batch(n=32, H=16, A=8):
@@ -59,29 +51,3 @@ def test_flow_head_samples_vary_but_condition_matters():
     assert not torch.allclose(a1, a2)                                 # stochastic (different noise seeds)
 
 
-def test_distill_script_synthetic_end_to_end(tmp_path):
-    r = run("train/distill_arm.py", "--synthetic", "--steps", "40", "--batch", "32", "--head", "flow", "--out", str(tmp_path / "o"))
-    assert r.returncode == 0, r.stderr[-800:]
-    rep = json.loads((tmp_path / "o" / "report.json").read_text())
-    assert rep["head"] == "flow" and 0 < rep["heldout_mae_mean"] < 1 and (tmp_path / "o" / "arm.pt").exists()
-
-
-trl = pytest.importorskip("trl")
-pytest.importorskip("peft")
-
-
-def test_training_scripts_smoke_chain_on_a_tiny_model(tmp_path):
-    """make_datasets -> tiny model -> SFT (LoRA) -> merge -> GRPO with our rewards (+ rollout), all in smoke mode."""
-    d = tmp_path / "d"
-    r = run("scripts/make_datasets.py", "--out", str(d), "--brain-sft", "12", "--grpo", "12", "--hindsight", "0", "--eye", "0", "--noisy-eyes")
-    assert r.returncode == 0, r.stderr[-500:]
-    r = run("ops/make_tiny_model.py", "--data", str(d / "brain_sft.jsonl"), "--out", str(tmp_path / "tiny"))
-    assert r.returncode == 0, r.stderr[-500:]
-    r = run("train/sft_brain.py", "--model", str(tmp_path / "tiny"), "--data", str(d / "brain_sft.jsonl"), "--out", str(tmp_path / "sft"), "--smoke")
-    assert r.returncode == 0 and (tmp_path / "sft" / "adapter_config.json").exists(), r.stderr[-800:]
-    r = run("train/merge_lora.py", "--base", str(tmp_path / "tiny"), "--adapter", str(tmp_path / "sft"), "--out", str(tmp_path / "merged"))
-    assert r.returncode == 0 and (tmp_path / "merged" / "model.safetensors").exists(), r.stderr[-800:]
-    r = run("train/grpo_brain.py", "--model", str(tmp_path / "merged"), "--data", str(d / "grpo.jsonl"), "--out", str(tmp_path / "grpo"),
-            "--smoke", "--num_generations", "2", "--rollout-reward")
-    assert r.returncode == 0, r.stderr[-1200:]
-    assert "rewards/rollout_reward/mean" in (r.stdout + r.stderr) and "rewards/rules_reward/mean" in (r.stdout + r.stderr)

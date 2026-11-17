@@ -45,7 +45,7 @@ suite (`rtp/skills.py`) and by running full episodes through the pose-level path
 | team hindsight relabeling (instruction rewritten to what was achieved; admitted only if replay succeeds) | Brain | `rtp/hindsight.py` |
 | counterfactual Eye credit (episode score with this report vs with the Eye silent, common random numbers) | Eye | `rtp/credit.py`, `rtp/eye_rewards.py` |
 | Eye rejection sampling (best-of-K by accuracy or credit) | Eye | `rtp/eye_rft.py` |
-| distillation of scripted IK skills into a blind flow-matching policy | Arms | `isaac/bringup/07`, `train/distill_arm.py`, `rtp/flowhead.py` |
+| distillation of scripted IK skills into a blind flow-matching policy | Arms | `train/distill_arm.py`, `rtp/flowhead.py` |
 
 ## Evidence levels (what each result may be used for)
 TRACK A (real benchmark, real model) and ISAAC (physics) can support claims. LLM-SYMBOLIC supports claims scoped to the symbolic

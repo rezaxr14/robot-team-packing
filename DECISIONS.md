@@ -43,8 +43,8 @@ quoted as fact, **[!]** blocked on the user.
   not "unfreeze 4.66 B params on a 6 GB card".
 - `mamba_ssm_dtype: float32` [V] means the DeltaNet recurrence stays fp32 under any autocast; the
   loader asserts it and fails loudly otherwise.
-- Dual T4 does not run Isaac Sim (needs RT cores); it runs `mjsim` for control experiments and
-  Qwen adapters for eval/serving. Newton's cc 7.5 floor is met but that is not the binding constraint.
+- Dual T4: Newton's floor is met (cc 7.5). Whether Isaac Lab 3.0 + Newton runs on a T4 session is
+  settled by gate G-3, never assumed; D-25 leaves no second simulator stack to fall back to.
 
 ## B. Defaults chosen while building (ours; flip any)
 
@@ -70,8 +70,8 @@ quoted as fact, **[!]** blocked on the user.
     `torchvision` RetinaNet/Mask R-CNN behind `rtp/eyes/detector.py`. Licence call pending.
 11. **Dense embedder** default `BAAI/bge-small-en-v1.5` (384-d, CPU) with a hash fallback for offline
     tests.
-12. **Physics profiles** carry `physics: mjsim|isaac_physx|isaac_newton`; only the 4090/4050/Pro 6000
-    profiles are candidates for Isaac in this cycle.
+12. **Physics profiles** carry `physics: isaac_newton` for every profile (D-25); the simulator is
+    Isaac Lab 3.0 + Newton and there is no mjsim/PhysX branch any more.
 
 
 ## C. Decisions of 2026-11-17 (from the user; authoritative)
@@ -93,5 +93,25 @@ quoted as fact, **[!]** blocked on the user.
 | D-30 | Eyes: Eye-A ONVIF PTZ on ring-rail carriage with 12 calibrated stations; Eye-B machine-vision + servo head as fallback. |
 | D-31 | Layers: L0 hardware safety / L1 1 kHz impedance with plan-clock gate, leash, clamps / L2 planner, skills, bounded learned deltas / L3 Brain. |
 | D-32 | Brain adapters, profiles, isolation, Qdrant+BM25, LangGraph unchanged from the V2 architecture. |
+| D-35 | **P0 legacy purge.** Deleted with the old stack: `ops/12_env_isaac.sh`, the `OMNI_KIT_ACCEPT_EULA` export, the RT-core preflight branch, `isaac/bringup/`, the VIKI/LLaMA-Factory launcher pieces (`ops/13_models.sh`, `ops/14_env_lf.sh`, `ops/make_lf_config.py`, `ops/list_viki_collection.py`, `ops/config.example.sh`, `tests/test_cli_integration.py`), and the script-level tests of the deleted Track-A CLIs. `ops/plan.py` is now a thin registry of stages that exist (`p0`, `bundle`), not a store of paths to deleted files. `rtp/trackA*.py` stay as an inert scoring library with its (VIKI-skipped) tests; nothing in the new pipeline calls them. |
+| D-36 | **Measured test baseline.** `pytest tests -q` = **165 passed, 10 skipped, 46 s** in the training venv (Python 3.12.16, torch 2.15.0+cu132, transformers 5.23.0) on this 4050 laptop. The plan's earlier 137/13/15 s figure was the CPU-only sandbox before the training stack was installed; this row supersedes it as the current baseline. |
 
 ## E. Gates (open items closed by measurement): G-1…G-12 in `IMPLEMENTATION_PLAN.md` §12.
+
+## F. P0 gate record (2026-11-17)
+
+* **G-1 PASS** — `ops/g1_module_dump.py --model ~/models/Qwen3.5-4B --out reports/qwen35_modules.json`
+  builds the model on the meta device (no weights) and checks the adapter map against the real graph:
+  `Qwen3_5Attention{q,k,v,o_proj}`, `Qwen3_5GatedDeltaNet{in_proj_qkv,in_proj_z,in_proj_b,in_proj_a,out_proj}`
+  (+`A_log`,`dt_bias`, no `D`), `Qwen3_5MLP{gate,up,down}`, `Qwen3_5VisionAttention{qkv,proj}`,
+  `Qwen3_5VisionMLP`/`Qwen3_5VisionPatchMerger{linear_fc1,linear_fc2}` — all present, dense (no experts).
+  Checkpoint tensors, read from the safetensors headers: **738 tensors, 4,659,865,088 parameters**
+  (language 4.206 B, vision 333.5 M, MTP 120.6 M); `lm_head` is tied (absent from the index); the model
+  graph instantiates 5,174,964,736 parameters because it materialises an untied `lm_head` and no MTP.
+* **G-2 PASS (binding)** — `ops/g2_fastpath.py` resolves the four Qwen3.5 DeltaNet kernels to
+  `causal_conv1d.causal_conv1d_interface.{causal_conv1d_fn,causal_conv1d_update}` and
+  `fla.ops.gated_delta_rule.{chunk,fused_recurrent}.…` (versions 1.7.0 / 0.6.0), and both tiny GPU
+  calls are finite on the 4050 (cc 8.9). The 100-step finite-loss smoke is still to run; `flash-attn`
+  is not in this venv yet (PyPI sdist 2.8.3.post2 is built locally for sm_89 only).
+* **G-3 not run** — needs the Isaac Lab 3.0 + Newton install; blocked on time/space, not on a decision.
+

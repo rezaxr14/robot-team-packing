@@ -4,15 +4,16 @@ IMPLEMENTS rtp.simworld.SimBackend with SCRIPTED differential-IK skills (grasp, 
 closed loop (rtp.loop.run_episode through rtp.simworld.SimWorld) runs on real physics without RL. The same
 skills generate demonstrations for distilling the blind arm policy (isaac/collect_demos.py).
 
-STATUS: written against the Isaac Lab 2.3 docs and tutorials; NEVER RUN (the authoring sandbox has no Isaac Sim).
-Use isaac/bringup/01..06 in order; each checks one layer and prints diagnostics.
+STATUS: LEGACY. Written against the Isaac Lab 2.3 docs and tutorials; NEVER RUN, and the 2.3-era
+bring-up scripts that used to drive it were removed by the P0 purge (D-35). It is kept as reference
+for the P2 port to Isaac Lab 3.0 + Newton (D-25); nothing imports it today.
 VERIFIED in docs: DifferentialIKController(Cfg), FRANKA_PANDA_HIGH_PD_CFG (+ .replace), SceneEntityCfg(joint_names,
   body_names).resolve(scene), robot.set_joint_position_target(.., joint_ids=..), subtract_frame_transforms, SimulationCfg,
   InteractiveScene, sim.reset(). VERIFY on first run (from memory): shape-spawner kwargs, RigidObject write_* methods,
   root_physx_view.get_jacobians / set_masses, Camera API, TCP offset and finger stiffness, `.data` field names.
 Quaternions: Isaac Lab 2.x is (w, x, y, z). For 3.0 (x, y, z, w) set QUAT_ORDER and fix the two helpers below.
 
-Import AFTER the simulation app is launched (see bringup scripts).
+Import AFTER the simulation app is launched (the P2 Newton runner will own that launcher).
 """
 from __future__ import annotations
 import math

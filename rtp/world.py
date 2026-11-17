@@ -58,6 +58,7 @@ class Result:
     arm: str = ""
     skill: str = ""
     obj: str = ""
+    detail: str = ""                 # optional prose from the simulator (kept out of `cause`: the loop matches on cause)
 
 
 class World:

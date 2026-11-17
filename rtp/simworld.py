@@ -5,6 +5,7 @@ touch dict; it also exposes simulator state as `ObjState`s. `SimWorld` mirrors t
 after every skill via `simbridge.world_from_sim`, so the loop, rules, attribution and rewards see one interface.
 """
 from __future__ import annotations
+import re
 from dataclasses import dataclass, field
 from typing import Protocol
 
@@ -17,6 +18,25 @@ class SkillReport:
     category: str                      # one of rtp.skills.CATEGORIES (or 'other_failure')
     touch: dict = field(default_factory=dict)
     detail: str = ""                   # optional finer cause from simulator diagnostics (e.g. 'arm_noise')
+
+
+_CAUSE_TOKEN = re.compile(r"^[a-z][a-z0-9_]*$")
+
+
+def resolve_cause(category: str, detail: str = "") -> str:
+    """The cause the loop dispatches on, from a backend's (category, detail) pair.
+
+    A backend reports what it can prove: a coarse `category` from `rtp.skills.CATEGORIES` plus a
+    free-form `detail`. When the category is the catch-all and the detail is a single-token
+    identifier (FakeSim: `other_failure` + `arm_noise`), the token *is* the cause the recovery
+    ladder and attribution key on, so it is promoted. Prose detail from a physics backend
+    (`Crush: 92.0 N ...`) is kept out of `cause`, because the loop matches causes exactly.
+    """
+    if category in ("", "success"):
+        return category
+    if category == "other_failure" and detail and _CAUSE_TOKEN.match(detail):
+        return detail
+    return category
 
 
 class SimBackend(Protocol):
@@ -67,7 +87,8 @@ class SimWorld(World):
             if ok and skill == "place":
                 self.pack_order.append(obj)
             self._refresh()
-            res = Result(ok, "" if ok else (rep.detail or rep.category), rep.touch)
+            cause = resolve_cause(rep.category, rep.detail)
+            res = Result(ok, "" if ok else cause, rep.touch, detail=rep.detail)
         res.arm, res.skill, res.obj = arm, skill, obj or ""
         self.history.append(res)
         return res

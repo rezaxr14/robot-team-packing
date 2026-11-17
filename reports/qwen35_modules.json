@@ -1,0 +1,241 @@
+{
+  "gate": "G-1",
+  "model_dir": "/home/reza/models/Qwen3.5-4B",
+  "dtype_on_meta": "torch.float32",
+  "config": {
+    "model_type": "qwen3_5",
+    "architectures": [
+      "Qwen3_5ForConditionalGeneration"
+    ],
+    "tie_word_embeddings": true,
+    "vocab_size": 248320,
+    "hidden_size": 2560,
+    "num_hidden_layers": 32,
+    "num_attention_heads": 16,
+    "num_key_value_heads": 4,
+    "head_dim": 256,
+    "full_attention_interval": 4,
+    "mtp_num_hidden_layers": 1,
+    "linear_num_key_heads": 16,
+    "linear_num_value_heads": 32,
+    "linear_key_head_dim": 128,
+    "linear_value_head_dim": 128,
+    "linear_conv_kernel_dim": 4,
+    "mamba_ssm_dtype": "float32",
+    "vision_hidden_size": 1024,
+    "vision_depth": 24,
+    "vision_patch_size": 16,
+    "vision_spatial_merge_size": 2,
+    "layer_types": [
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention"
+    ],
+    "layer_type_counts": {
+      "linear_attention": 24,
+      "full_attention": 8
+    }
+  },
+  "modules": {
+    "Linear": 347,
+    "Qwen3_5RMSNorm": 81,
+    "LayerNorm": 49,
+    "Qwen3_5DecoderLayer": 32,
+    "Qwen3_5MLP": 32,
+    "SiLUActivation": 32,
+    "Qwen3_5VisionBlock": 24,
+    "Qwen3_5VisionAttention": 24,
+    "Qwen3_5VisionMLP": 24,
+    "GELUTanh": 24,
+    "Qwen3_5GatedDeltaNet": 24,
+    "Conv1d": 24,
+    "Qwen3_5RMSNormGated": 24,
+    "Qwen3_5Attention": 8,
+    "Embedding": 2,
+    "ModuleList": 2,
+    "Qwen3_5ForConditionalGeneration": 1,
+    "Qwen3_5Model": 1,
+    "Qwen3_5VisionModel": 1,
+    "Qwen3_5VisionPatchEmbed": 1,
+    "Conv3d": 1,
+    "Qwen3_5VisionRotaryEmbedding": 1,
+    "Qwen3_5VisionPatchMerger": 1,
+    "GELU": 1,
+    "Qwen3_5TextModel": 1,
+    "Qwen3_5TextRotaryEmbedding": 1
+  },
+  "module_count": 763,
+  "parameter_count_meta_graph": 5174964736,
+  "parameter_count_from_headers": 4659865088,
+  "own_parameters": {
+    "Qwen3_5VisionAttention": [
+      "proj",
+      "qkv"
+    ],
+    "Qwen3_5VisionMLP": [
+      "act_fn",
+      "linear_fc1",
+      "linear_fc2"
+    ],
+    "Qwen3_5VisionPatchMerger": [
+      "act_fn",
+      "linear_fc1",
+      "linear_fc2",
+      "norm"
+    ],
+    "Qwen3_5GatedDeltaNet": [
+      "A_log",
+      "conv1d",
+      "dt_bias",
+      "in_proj_a",
+      "in_proj_b",
+      "in_proj_qkv",
+      "in_proj_z",
+      "norm",
+      "out_proj"
+    ],
+    "Qwen3_5MLP": [
+      "act_fn",
+      "down_proj",
+      "gate_proj",
+      "up_proj"
+    ],
+    "Qwen3_5Attention": [
+      "k_norm",
+      "k_proj",
+      "o_proj",
+      "q_norm",
+      "q_proj",
+      "v_proj"
+    ]
+  },
+  "checks": {
+    "adapter_targets": {
+      "Qwen3_5Attention.q_proj": true,
+      "Qwen3_5Attention.k_proj": true,
+      "Qwen3_5Attention.v_proj": true,
+      "Qwen3_5Attention.o_proj": true,
+      "Qwen3_5GatedDeltaNet.in_proj_qkv": true,
+      "Qwen3_5GatedDeltaNet.in_proj_z": true,
+      "Qwen3_5GatedDeltaNet.in_proj_b": true,
+      "Qwen3_5GatedDeltaNet.in_proj_a": true,
+      "Qwen3_5GatedDeltaNet.out_proj": true,
+      "Qwen3_5MLP.gate_proj": true,
+      "Qwen3_5MLP.up_proj": true,
+      "Qwen3_5MLP.down_proj": true,
+      "Qwen3_5VisionAttention.qkv": true,
+      "Qwen3_5VisionAttention.proj": true,
+      "Qwen3_5VisionMLP.linear_fc1": true,
+      "Qwen3_5VisionMLP.linear_fc2": true,
+      "Qwen3_5VisionPatchMerger.linear_fc1": true,
+      "Qwen3_5VisionPatchMerger.linear_fc2": true
+    },
+    "adapter_targets_all_present": true,
+    "dense_no_experts": true,
+    "gated_deltanet_present": true,
+    "full_attention_present": true,
+    "vision_blocks_present": true,
+    "merger_present": true,
+    "gated_deltanet_no_D_param": true,
+    "frozen_suffixes_seen": {
+      "A_log": true,
+      "dt_bias": true,
+      "conv1d": true,
+      "input_layernorm": false,
+      "post_attention_layernorm": false,
+      "norm": true
+    }
+  },
+  "adapter_targets_expected": {
+    "Qwen3_5Attention": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj"
+    ],
+    "Qwen3_5GatedDeltaNet": [
+      "in_proj_qkv",
+      "in_proj_z",
+      "in_proj_b",
+      "in_proj_a",
+      "out_proj"
+    ],
+    "Qwen3_5MLP": [
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ],
+    "Qwen3_5VisionAttention": [
+      "qkv",
+      "proj"
+    ],
+    "Qwen3_5VisionMLP": [
+      "linear_fc1",
+      "linear_fc2"
+    ],
+    "Qwen3_5VisionPatchMerger": [
+      "linear_fc1",
+      "linear_fc2"
+    ]
+  },
+  "frozen_suffixes_expected": [
+    "A_log",
+    "dt_bias",
+    "conv1d",
+    "input_layernorm",
+    "post_attention_layernorm",
+    "norm"
+  ],
+  "checkpoint": {
+    "index": "/home/reza/models/Qwen3.5-4B/model.safetensors.index.json",
+    "index_parameter_count": 738,
+    "index_total_size_bytes": 9319737856,
+    "index_shards": [
+      "model.safetensors-00001-of-00002.safetensors",
+      "model.safetensors-00002-of-00002.safetensors"
+    ],
+    "tensor_count": 738,
+    "parameter_count": 4659865088,
+    "parameters_by_branch": {
+      "language_model": 4205751296,
+      "visual": 333514240,
+      "layers": 107484672,
+      "fc": 13107200,
+      "norm": 2560,
+      "pre_fc_norm_embedding": 2560,
+      "pre_fc_norm_hidden": 2560
+    },
+    "has_lm_head": false,
+    "has_mtp": true
+  },
+  "result": "PASS"
+}
