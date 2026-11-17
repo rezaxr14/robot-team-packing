@@ -72,3 +72,26 @@ quoted as fact, **[!]** blocked on the user.
     tests.
 12. **Physics profiles** carry `physics: mjsim|isaac_physx|isaac_newton`; only the 4090/4050/Pro 6000
     profiles are candidates for Isaac in this cycle.
+
+
+## C. Decisions of 2026-11-17 (from the user; authoritative)
+
+| id | decision |
+|---|---|
+| D-25 | Simulation is **Isaac Lab 3.0 + Newton only**. No other simulator/renderer stack. Legacy 2.3-era bring-up files are purged in Phase 0. |
+| D-26 | Human safety is a property of the robot's controller: Cartesian **impedance control** — a human can push an arm, it acts as a spring, then returns to its planned pose. Object fragility is not a design driver. |
+| D-27 | Kaggle-hosted frontier models (Claude Opus/Sonnet/Haiku, Gemini family, others) are the teacher/judge pool. Access and terms are authorised by the user; model catalogue and calling method come from the user-supplied Kaggle skill and CLI auth. |
+| D-28 | Build from the ground up; unverified items are closed by verification gates with pass criteria, not by open questions. |
+| D-33 | Local-first sequencing: everything not needing Kaggle is built and run locally first. Teacher/judge data comes from the Kaggle-hosted frontier models and starts when the user supplies the skill and CLI auth; no substitute data source. |
+| D-34 | Assets: SimReady USD assets for objects/furniture/kitchen; manufacturer models for robots (Franka URDF/USD/MJCF, MuJoCo Menagerie MJCF); own CAD only for fixtures that do not exist. |
+
+## D. Decisions taken by the v2 plan (defaults; changeable by logged decision)
+
+| id | decision |
+|---|---|
+| D-29 | Arms: 2 × Franka Research 3 + Franka Hand. |
+| D-30 | Eyes: Eye-A ONVIF PTZ on ring-rail carriage with 12 calibrated stations; Eye-B machine-vision + servo head as fallback. |
+| D-31 | Layers: L0 hardware safety / L1 1 kHz impedance with plan-clock gate, leash, clamps / L2 planner, skills, bounded learned deltas / L3 Brain. |
+| D-32 | Brain adapters, profiles, isolation, Qdrant+BM25, LangGraph unchanged from the V2 architecture. |
+
+## E. Gates (open items closed by measurement): G-1…G-12 in `IMPLEMENTATION_PLAN.md` §12.
