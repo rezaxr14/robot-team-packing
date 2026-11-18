@@ -224,7 +224,7 @@ Resolution order: **attached Kaggle dataset → local cache → normal download 
 |---|---|---|---|
 | G-1 | real Qwen3.5-4B config/modules/chat template; dense vs MoE | module dump matches adapter map; dense confirmed | 0 |
 | G-2 | DeltaNet fast path per GPU | `is_fast_path_available`; 100-step finite loss; tokens/s + peak VRAM logged | 0/2 |
-| G-3 | Newton-only Isaac Lab install runs a camera task with `physics=newton_mjwarp` + Newton Warp renderer | task steps with rgb+depth on each profile GPU; versions logged; Kaggle T4 pass/fail recorded | 0/2 |
+| G-3 | Newton-only Isaac Lab install runs a camera task with `physics=newton_mjwarp` + Newton Warp renderer | **PASS on both**: 4050 (`reports/g3_sim.json`) and Kaggle T4 (`reports/g3_sim_t4.json`) — 30 steps, rgb+depth contracts, all six checks, versions logged (D-39, D-51) | 0/2 |
 | G-4 | Teacher client integration (runs when your Kaggle skill is supplied; **non-blocking** for every other phase) | `rtp/teacher/client.py` returns a parseable plan for an image+text scene from ≥ 1 model per tier; cost per call logged | 7 |
 | G-5 | FR3 / FR3 Duo + Franka Hand load in Newton from Franka's official model (`add_urdf`/`add_mjcf`) and from Menagerie `franka_fr3_v2`/`franka_fr3_duo`; effort-mode override works | masses/limits within 2 % of datasheet; zero-pose reach test; both sources agree on kinematics within 1 mm | 2 |
 | G-6 | sim impedance vs analytic mass-spring-damper | step response error ≤ 5 %; stable at chosen dt | 3 |

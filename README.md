@@ -27,7 +27,8 @@ reward source, not a physics result**.
   long-context SFT runs on `local_4090` or `kaggle_t4x2`.
 * **G-3 PASS on the 4050** (D-39): Isaac Lab v3.0.0 from its own `uv.lock` with Newton +
   `mujoco-warp` and **no Isaac Sim / no PhysX**; 30 steps at 21 steps/s with rgb+depth contracts
-  (`ops/g3_sim.py`, `reports/g3_sim.json`). Kaggle T4 is still unverified.
+  (`ops/g3_sim.py`, `reports/g3_sim.json`) **and on Kaggle T4** via a private GPU kernel
+  (`reports/g3_sim_t4.json`, D-51). It is still a cube-fall rgb/depth gate, not manipulation.
 * **Storage is live** (D-40): every asset resolves **local cache -> attached Kaggle dataset ->
   our private Kaggle dataset -> our private HF repo** (`Reza-Nadimi/robot-team-packing`). Round-trips
   for publish/fetch/checkpoint are measured, not assumed.

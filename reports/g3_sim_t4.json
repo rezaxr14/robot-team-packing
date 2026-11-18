@@ -1,0 +1,60 @@
+{
+  "versions": {
+    "python": "3.12.16",
+    "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+    "isaaclab": "28.0.0",
+    "isaaclab-newton": "9.1.4",
+    "newton": "1.6.1",
+    "warp-lang": "1.17.0",
+    "mujoco-warp": "3.12.0",
+    "torch": "2.11.0+cu130",
+    "numpy": "2.5.1"
+  },
+  "renderer": "newton_warp",
+  "physics": "newton_mjwarp",
+  "device": "cuda:0",
+  "steps": 30,
+  "width": 160,
+  "height": 120,
+  "envs": 1,
+  "seconds": 36.851,
+  "steps_per_s": 0.8,
+  "cube_z_start": 1.0,
+  "cube_z_end": 0.6832,
+  "rgb": {
+    "shape": [
+      1,
+      120,
+      160,
+      3
+    ],
+    "dtype": "uint8",
+    "min": 104,
+    "max": 197
+  },
+  "depth": {
+    "shape": [
+      1,
+      120,
+      160,
+      1
+    ],
+    "dtype": "float32",
+    "hits": 19200,
+    "max": 1.8
+  },
+  "frames_differ": true,
+  "images": [
+    "rgb_029.png",
+    "depth_029.png"
+  ],
+  "checks": {
+    "physics_stepped": true,
+    "rgb_contract": true,
+    "depth_contract": true,
+    "rgb_not_blank": true,
+    "geometry_rendered": true,
+    "frames_differ": true
+  },
+  "result": "PASS"
+}
