@@ -56,11 +56,19 @@ def kaggle_proxy(env: Mapping[str, str] | None = None) -> str:
     return env.get(KAGGLE_PROXY_ENV) or env.get("HTTPS_PROXY") or DEFAULT_KAGGLE_PROXY
 
 
+#: Hosts that must NOT go through the Kaggle proxy: HF is reachable directly here, and routing it
+#: through the proxy produced intermittent TLS EOFs. Kaggle stays proxied (that is the whole point).
+NO_PROXY_HOSTS = ("huggingface.co", ".huggingface.co", "hf.co", ".hf.co", "localhost", "127.0.0.1")
+
+
 def configure_kaggle_proxy(proxy: str | None = None) -> str:
     """Set the proxy for both requests-style and curl-style Kaggle clients; return the URL."""
     url = proxy or kaggle_proxy()
     for key in ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"):
         os.environ[key] = url
+    existing = [h for h in os.environ.get("NO_PROXY", "").split(",") if h]
+    os.environ["NO_PROXY"] = ",".join(dict.fromkeys(existing + list(NO_PROXY_HOSTS)))
+    os.environ["no_proxy"] = os.environ["NO_PROXY"]
     return url
 
 
@@ -70,13 +78,26 @@ def kaggle_slug(spec: AssetSpec) -> str:
 
 
 def hf_repo_id(env: Mapping[str, str] | None = None, client=None) -> str:
-    """Only our repo; the account is read from the authenticated token, never guessed."""
+    """Only our repo; the account is read from the authenticated token, never guessed.
+
+    ``HF_USERNAME`` short-circuits the network call (useful on a flaky link); otherwise ``whoami``
+    is retried twice and a failure raises :class:`RemoteError` rather than a bare SSL traceback.
+    """
     env = os.environ if env is None else env
     owner = env.get("HF_USERNAME")
     if owner and client is None:
         return f"{owner}/{HF_REPO_NAME}"
     client = client or _hf_api()
-    return f"{client.whoami()['name']}/{HF_REPO_NAME}"
+    last = None
+    for attempt in range(2):
+        try:
+            return f"{client.whoami()['name']}/{HF_REPO_NAME}"
+        except Exception as exc:                                    # noqa: BLE001
+            last = type(exc).__name__
+            if attempt == 0:
+                import time
+                time.sleep(1)
+    raise RemoteError(f"cannot read the HF account ({last}); check HF_TOKEN and the network")
 
 
 def _hf_api():
@@ -144,7 +165,13 @@ def from_env(env_path: Path | str = ".env", *, with_kaggle: bool = True,
         kaggle = _kaggle_api()
     if with_hf:
         hf = _hf_api()
-        repo = hf_repo_id(client=hf)
+        try:
+            repo = hf_repo_id(client=hf)
+        except RemoteError as exc:
+            if not os.environ.get("HF_USERNAME"):
+                raise
+            repo = hf_repo_id()
+            print(f"note: {exc}; using HF_USERNAME={os.environ['HF_USERNAME']}")
     return RemoteStore(kaggle=kaggle, hf=hf, hf_repo=repo)
 
 

@@ -144,3 +144,14 @@ def test_resume_mid_epoch_reproduces_the_uninterrupted_trajectory(tmp_path):
     got = [h["loss"] for h in t3.state.history]
     assert got[:3] == pytest.approx(reference[:3], abs=2e-4)
     assert got[3:] == pytest.approx(reference[3:], abs=2e-3)
+
+
+def test_a_short_epoch_still_takes_its_update():
+    """grad_accum larger than the epoch must not loop forever without stepping (the 4050 default)."""
+    ex = tokenize_pairs(rows(4), _Tok(), max_len=32)
+    model, opt = build()
+    t = Trainer(model, optimizer=opt, examples=ex, pad_id=0, micro_batch=1, grad_accum=8,
+                epochs=2.0, lr=1e-3, log=lambda _m: None)
+    state = t.fit()
+    assert state.step == 2 and state.epoch == 2       # one update per short epoch
+    assert len(state.history) == 2

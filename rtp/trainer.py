@@ -227,6 +227,27 @@ class Trainer:
                      f"(epoch {self.state.epoch}, {self.state.micro_in_epoch} micro-batches in)")
         return self.state
 
+    def _step(self, loss, epoch: int) -> None:
+        """One optimizer step: clip, update, record, fire callbacks."""
+        lr = self.lr_at(self.state.step)
+        for group in self.opt.param_groups:
+            group["lr"] = lr
+        torch.nn.utils.clip_grad_norm_(
+            [p for p in self.model.parameters() if p.requires_grad], self.max_grad_norm)
+        self.opt.step()
+        self.opt.zero_grad(set_to_none=True)
+        value = float(loss.detach())
+        self.state.step += 1
+        self.state.best_loss = min(self.state.best_loss, value)
+        self.state.history.append({"step": self.state.step, "epoch": epoch,
+                                   "loss": round(value, 6), "lr": round(lr, 9)})
+        if self.on_step:
+            self.on_step(self.state, value)
+        if self.on_checkpoint:
+            self.on_checkpoint(self.state)
+        if self.log_every and self.state.step % self.log_every == 0:
+            self.say(f"step {self.state.step}/{self.total_steps()} epoch {epoch} loss {value:.4f}")
+
     def _run(self, done_steps: int) -> None:
         while self.state.step < done_steps:
             epoch = self.state.epoch
@@ -238,6 +259,7 @@ class Trainer:
             stop = False
             self.opt.zero_grad(set_to_none=True)
             accumulated = 0
+            loss = None
             for start in range(consumed, len(order), self.micro_batch):
                 if self.state.step >= done_steps:
                     stop = True
@@ -254,25 +276,13 @@ class Trainer:
                 self.state.samples_seen += len(rows)
                 self.state.tokens_seen += int(batch["attention_mask"].sum())
                 if accumulated == self.grad_accum:
-                    lr = self.lr_at(self.state.step)
-                    for group in self.opt.param_groups:
-                        group["lr"] = lr
-                    torch.nn.utils.clip_grad_norm_(
-                        [p for p in self.model.parameters() if p.requires_grad], self.max_grad_norm)
-                    self.opt.step()
-                    self.opt.zero_grad(set_to_none=True)
+                    self._step(loss, epoch)
                     accumulated = 0
-                    value = float(loss.detach())
-                    self.state.step += 1
-                    self.state.best_loss = min(self.state.best_loss, value)
-                    self.state.history.append({"step": self.state.step, "epoch": epoch,
-                                               "loss": round(value, 6), "lr": round(lr, 9)})
-                    if self.on_step:
-                        self.on_step(self.state, value)
-                    if self.on_checkpoint:
-                        self.on_checkpoint(self.state)
-                    if self.log_every and self.state.step % self.log_every == 0:
-                        self.say(f"step {self.state.step}/{done_steps} epoch {epoch} loss {value:.4f}")
+            # A short final window (fewer micro-batches than grad_accum) still gets its update;
+            # without this a tiny epoch would loop forever without ever stepping.
+            if not stop and accumulated and self.state.step < done_steps:
+                self._step(loss, epoch)
+                accumulated = 0
             if not stop:
                 self.state.epoch = epoch + 1
                 self.state.micro_in_epoch = 0

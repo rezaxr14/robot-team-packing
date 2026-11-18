@@ -196,3 +196,30 @@ def test_publish_uses_the_manifest_identity_not_a_guessed_source(tmp_path):
     out = store.publish(root, spec, to_hf=False)
     assert out["kaggle"].endswith(spec.slug)
     assert ac.read_manifest(root)["source"] == "Qwen/Qwen3.5-4B"
+
+
+def test_hf_traffic_is_excluded_from_the_kaggle_proxy(monkeypatch):
+    """Kaggle must be proxied; Hugging Face must not (the proxy breaks HF with TLS EOFs)."""
+    import os
+    monkeypatch.delenv("NO_PROXY", raising=False)
+    configure_kaggle_proxy("http://localhost:10808")
+    no_proxy = os.environ["NO_PROXY"]
+    assert "huggingface.co" in no_proxy and "localhost" in no_proxy
+    assert "kaggle.com" not in no_proxy
+    assert os.environ["HTTPS_PROXY"] == "http://localhost:10808"
+
+
+def test_hf_repo_id_uses_the_env_owner_without_a_network_call(monkeypatch):
+    monkeypatch.setenv("HF_USERNAME", "Reza-Nadimi")
+    assert hf_repo_id() == f"Reza-Nadimi/{HF_REPO_NAME}"
+
+
+def test_hf_repo_id_reports_a_failing_whoami_clearly():
+    from rtp.remotes import RemoteError
+
+    class Broken:
+        def whoami(self):
+            raise OSError("boom")
+
+    with pytest.raises(RemoteError, match="cannot read the HF account"):
+        hf_repo_id(client=Broken())
