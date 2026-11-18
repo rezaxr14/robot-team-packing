@@ -4,12 +4,14 @@ Research code for a two-arm, two-eye kitchen manipulation system. The Brain is o
 vision-language model; the Eyes are conventional CV (detector + OpenCV kernels, never an LLM);
 the simulator is **Isaac Lab 3.0 + Newton** and nothing else.
 
+* **Honest claim-by-claim status (start here):** [`docs/STATUS_HONEST.md`](docs/STATUS_HONEST.md)
 * Step-by-step plan (authoritative checklist): [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md)
 * Every user decision and constraint: [`DECISIONS.md`](DECISIONS.md)
 * V2 design (eye geometry/tools, schemas, profiles, retrieval, training): [`docs/ARCHITECTURE_V2.md`](docs/ARCHITECTURE_V2.md)
 * Paper sources and specs: `docs/{SIMULATION,HARDWARE,IMPEDANCE_SPEC,COMPATIBILITY,SCHEMAS,ASSETS,SOURCE_REGISTER}.md`
-* `paper/` is user-owned and frozen; nothing here modifies it. `paper/scripts/` holds the older v1
-  Track-A scripts that used to live in `scripts/`.
+* `paper/` is user-owned: its **text** is aligned with the implemented system (D-52), while figure
+  SVG/PDF are frozen and stale figures carry a red note (`docs/PAPER_FIGURE_STATUS.md`).
+  `paper/scripts/` holds the older v1 Track-A scripts that used to live in `scripts/`.
 
 `rtp` = **Robot Team Protocol** (typed bus + harness). The symbolic world is a **test fixture and
 reward source, not a physics result**.
@@ -32,9 +34,22 @@ reward source, not a physics result**.
 * **Storage is live** (D-40): every asset resolves **local cache -> attached Kaggle dataset ->
   our private Kaggle dataset -> our private HF repo** (`Reza-Nadimi/robot-team-packing`). Round-trips
   for publish/fetch/checkpoint are measured, not assumed.
-* **G-14 PASS on real 4B weights** (D-48): two SFT steps, checkpoint pushed to HF, fetched back,
+* **G-14 PASS on real 4B weights** (D-48): four SFT steps, checkpoint pushed to HF, fetched back,
   resumed inside the epoch and continued (losses 0.88 -> 0.60 -> 0.38 -> 0.24); 5.85 GB peak on
-  the 4050 at 256 tokens (`reports/sft_smoke.json`).
+  the 4050 at 256 tokens (`reports/sft_smoke.json`). It is a **smoke, not a reportable trained
+  model** (D-57).
+* **G-6 simulation-only impedance cross-check** (D-58): `reports/g6_impedance.json` — analytic step
+  response error **0.27 %** (limit 5 %), 10 N push and return measured. Not Phase 3 acceptance, not
+  hardware, **not a safety certification**; hardware/L0/L1 sign-off is Claude's (D-22).
+* **SimReady assets are in flight, not ingested** (D-54): `ops/fetch_simready.py` is in progress;
+  there is no catalogue, no validated import and no asset-based scene. An FR3 MJCF from Menagerie
+  was downloaded (`reports/robot_assets.json`), but G-5 has not run.
+* **Compute scope** (D-50, D-56): both T4s are visible in the Kaggle kernel, but the trainer and the
+  G-3 scene step **one device at a time**; no DDP training or two-GPU simulation exists.
+* **Explicitly pending** (D-53, `docs/STATUS_HONEST.md`): the asset-based kitchen scene,
+  frontier-model CoT (`RTP_SERVE_URL` unset; scripted teacher traces only), training on environment
+  episodes, a fixed test set, omni-model scores, and impedance control on hardware. None has a
+  report; do not present them as done.
 * **Training resumes mid-epoch** (D-41): checkpoints carry optimizer + RNG + batch cursor, batch order
   is a pure function of `(seed, epoch)`, and `rtp/checkpoints.py` pushes every N steps to HF and prunes
   older steps. Resumed-at-step-3-of-8 runs finish at step 8 with the same losses. A checkpoint also

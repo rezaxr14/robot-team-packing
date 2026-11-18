@@ -6,9 +6,13 @@ No notebook may invent a function: if something below does not exist, the notebo
 
 ## Hard rules
 
-1. **No fabricated results.** A cell that needs a GPU, a T4 session, Isaac Lab or a checkpoint that
-   is not there must *check first* and print `SKIPPED: <reason>`; it must never print a made-up
-   number. State what was measured vs what is unverified.
+1. **No fabricated results.** A cell that needs a GPU, a T4 session, Isaac Lab, an asset-based
+   scene, a served frontier endpoint or a checkpoint that is not there must *check first* and print
+   `SKIPPED: <reason>`; it must never print a made-up number or fill a pending bar with a plausible
+   value. State what was measured (which gate/report) vs what is unverified. In particular:
+   `RTP_SERVE_URL` unset means a `SKIPPED` for frontier CoT — notebook 60 uses **scripted teacher
+   traces**, not frontier-model output; a missing results bundle, fixed test set or omni-model
+   prediction means `SKIPPED`/`not run`, never a score.
 2. **One profile knob.** `ACTIVE = "local_4050"` then `profile = get_profile(ACTIVE)`. Never re-type
    dtype, batch sizes, paths, or `max_len`. `ACTIVE` must be one of `rtp.profiles.PROFILE_NAMES`.
 3. **Dependencies**: second cell is `nb.code(ops.nbbuild.install_cell([...]))` listing only what the
@@ -101,24 +105,50 @@ from rtp.tables import table_main, table_ablation, table_attribution
 from rtp.figures import fig_success, fig_gap, fig_credit, fig_tokens_vs_success
 from rtp.attribution_eval import episode_story, sample_for_labeling, write_label_csv, agreement
 from rtp.hindsight import relabel, ReplayBrain
-from rtp.vlm_eye import VLMEye, eye_messages
+from rtp.vlm_eye import VLMEye, eye_messages  # legacy VLM-Eye prototype; Eyes are detector + OpenCV now (D-05) — do not use in new notebooks
 ```
+
+## Additional modules a notebook may call
+
+* `rtp.vectordb` — hybrid retrieval: the harness's BM25 ranking fused with a persistent **Qdrant**
+  vector ranking by reciprocal-rank fusion (embedded local mode by default). `HashedEmbedder` is a
+  labelled deterministic stand-in, not a semantic-quality claim (D-45).
+* `rtp.frontier_cot` — the frontier-CoT harness exists, but **`RTP_SERVE_URL` is unset**: no frontier
+  model has run. Only scripted teacher traces exist; a notebook that needs frontier CoT must print
+  `SKIPPED` (D-53).
+* `rtp.control.impedance` — the L1 impedance law exercised by the **simulation-only** G-6 cross-check
+  (`reports/g6_impedance.json`: 0.27 % step error, push/return measured). Not a hardware controller
+  and not a safety sign-off; hardware/L0/L1 sign-off is Claude's (D-22, D-58).
+* `ops/fetch_simready.py` — SimReady ingestion is **in progress**; no asset catalogue and no
+  asset-based scene exist yet (D-54). A notebook needing that scene must print `SKIPPED`.
 
 ## Training stack that is already verified here
 
 * `transformers 5.23.0`, `peft 0.21.3`, `trl 1.18.0`, `datasets 5.2.0`, `accelerate 1.15.0`,
   `bitsandbytes 0.50.2`, `torch 2.15.0`. Qwen3.5-4B module names are in `reports/qwen35_modules.json`.
-* G-2 measured 329.5 tok/s at seq 256 on the 4050; the 4050 trains at **max_len 512** (D-38).
+* G-2 measured 329.5 tok/s at seq 256 on the 4050 (`reports/g2_fastpath.json`). The 4050 has **two
+  measured budgets**: `max_len=512` for a forward/backward pass (D-38) and `train_max_len=256` for
+  SFT with adapters and 8-bit optimizer state (D-47); use `profile.train_len` for training.
+* G-14 PASS (`reports/sft_smoke.json`): 4 real QLoRA steps on the 4B model with a mid-epoch resume
+  from the private HF checkpoint (loss 0.876 → 0.236). It is a smoke, **not a reportable trained
+  model**.
 * Isaac Lab 3.0 + Newton (no Isaac Sim, no PhysX) is installed at `~/rtp_work/IsaacLab`; the venv is
-  `$ISAAC_PY` from `ops/env.sh`. G-3 evidence: `reports/g3_sim.json`.
+  `$ISAAC_PY` from `ops/env.sh`. G-3 evidence: `reports/g3_sim.json` (4050) **and**
+  `reports/g3_sim_t4.json` (Kaggle T4, D-51). Both are falling-cube rgb/depth gates on **one device
+  at a time** (D-50); no asset-based manipulation scene exists.
 
 ## What is *not* true yet (say so, do not paper over it)
 
 * No Isaac Lab scene with two FR3 arms + PTZ eyes exists; `ops/g3_sim.py` is a cube-fall render test.
   Simulation episodes for the paper come from `rtp/simworld.py` + `rtp/fakesim.py` (symbolic/pose),
   and that must be labelled as such.
-* No Kaggle T4 result has been recorded (G-3 T4 half, and every "kaggle_t4x2" number, are unverified).
+* The Kaggle T4 half of G-3 **is** now recorded (`reports/g3_sim_t4.json`, D-51), but it steps one
+  of the two T4s at a time (D-50); no two-GPU training or simulation number exists.
 * GRPO has not been run on this box; TRL 1.18 + Qwen3.5 support must be verified at run time, and the
   notebook must print the resolved TRL config instead of promising results.
 * "Comparison with other omni models" can only be a *harness for* the comparison unless another model
-  is actually run; label unrun rows `not run`.
+  is actually run; label unrun rows `not run`. There is no fixed test set or model score.
+* There is no SimReady asset catalogue or asset-based kitchen scene, no frontier-model CoT
+  (`RTP_SERVE_URL` unset; scripted traces only), no training on environment episodes, and no
+  hardware/safety sign-off for impedance (G-6 is simulation-only). All must be `SKIPPED`/pending,
+  not filled in. See `docs/STATUS_HONEST.md` for the authoritative claim-by-claim status.

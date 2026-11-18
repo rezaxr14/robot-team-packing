@@ -2,6 +2,24 @@
 
 Labels as in `IMPLEMENTATION_PLAN.md`. Sources and licences verified in S-32…S-35.
 
+## 0. What exists now (2026-11-19)
+
+The sources in §1 are verified, but the asset pipeline is **not complete**. "SimReady-first" states
+the asset policy (D-34), not that a SimReady scene is running.
+
+* **IN PROGRESS:** SimReady assets from Hugging Face are being ingested; `ops/fetch_simready.py` is
+  in progress and `assets/` is being built. Before this pass there was **no SimReady asset and no
+  catalogue** (`assets/catalog.parquet`, `assets/ATTRIBUTION.md`, `assets/validation/` do not exist).
+  No asset has been imported into Newton yet.
+* **DONE (download only):** the FR3 MJCF from MuJoCo Menagerie was just downloaded
+  (`reports/robot_assets.json`). This is a downloaded model, **not** a validated Newton import:
+  gate G-5 has not been run.
+* **NOT DONE:** no environment built from SimReady assets exists (no 2×FR3 + PTZ-eye kitchen
+  scene), and gate G-13 has not been run. The only measured physics scene is the falling-cube
+  rgb/depth gate G-3 (`reports/g3_sim.json`, `reports/g3_sim_t4.json`), which uses no SimReady
+  asset and is not manipulation.
+* The ingestion pipeline in §3 and the kitchen composition in §5 are **planned**, not implemented.
+
 ## 1. Sources
 | use | source | licence / access | notes |
 |---|---|---|---|
@@ -35,3 +53,6 @@ Base room from measured dimensions (`configs/kitchen_default.yaml` until measure
 
 ## 6. Gate G-13 (acceptance)
 ≥ 20 objects spanning ≥ 6 taxonomy classes and 3 furniture pieces import into Newton; masses within 5 % of metadata; 10 s drop test stable (no explosion/penetration); scripted Franka Hand grasp succeeds ≥ 80 % on ≥ 10 objects; textures visible in the Newton Warp renderer. Failures are recorded per asset and the asset is excluded or its collision mode changed.
+
+**Status (2026-11-19): NOT RUN — no report.** §0 records what actually exists; do not report a
+SimReady asset or scene as validated until a G-13 report exists in `reports/`.

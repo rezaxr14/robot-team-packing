@@ -2,6 +2,25 @@
 
 Decision D-25: this is the only simulation stack. Labels as in `IMPLEMENTATION_PLAN.md`.
 
+## 0. What is measured vs planned (2026-11-19)
+
+* **Measured — G-3 PASS on both GPU classes:** `reports/g3_sim.json` (RTX 4050) and
+  `reports/g3_sim_t4.json` (Kaggle T4). Isaac Lab 3.0 + Newton with `physics=newton_mjwarp`,
+  30 steps, rgb `(1,120,160,3)` uint8 and depth `(1,120,160,1)` float32, no Isaac Sim and no
+  PhysX (D-39, D-51). Both T4s are visible in the kernel, but the trainer and the gate step **one
+  device at a time**; no two-GPU simulation or DDP training exists (D-50). This is a **falling
+  cube**, not a manipulation scene.
+* **Measured, simulation only — G-6:** `reports/g6_impedance.json`, an analytic step-response
+  cross-check (max relative step error **0.27 %**, pass limit 5 %) with push and return measured.
+  It is an engineering cross-check of the impedance law, **not** a safety certification and not
+  Phase 3 acceptance; hardware/L0/L1 sign-off remains Claude's (D-22, D-58).
+* **Not built:** the asset-based kitchen scene of §3 (`isaac/scenes/kitchen.py` does not exist).
+  SimReady ingestion is in flight (`ops/fetch_simready.py` in progress); an FR3 MJCF from
+  Menagerie has been downloaded (`reports/robot_assets.json`) but G-5 has not run. There is no
+  two-FR3 + PTZ-eye scene, no simulation episodes from such a scene, and no G-7/G-8/G-13 report.
+* Do not describe the cube-fall gate as "the simulator behind the paper's team results": it
+  validates the stack, not manipulation or model quality. See `docs/STATUS_HONEST.md`.
+
 ## 1. Roles
 | piece | role | evidence |
 |---|---|---|
@@ -44,4 +63,12 @@ Physics substeps and the controller run at a fixed rate equal to the hardware lo
 Per-asset checklist (mass/inertia, limits, zero-pose reach, interpenetration, step response, licence); per-scene determinism test (same seed → same trajectory hash); every figure in any report must carry run id + config hash + git SHA.
 
 ## 7. Performance gates
-G-3 (stack runs per profile), G-8 (≥ 10 fps/eye at 640×480 on 4090-class), env-count scaling curve per profile recorded in `reports/sim_scaling_<profile>.json` (steps/s vs number of envs, with and without cameras).
+* **G-3 (stack runs per profile): PASS** on the 4050 (`reports/g3_sim.json`) and on Kaggle T4
+  (`reports/g3_sim_t4.json`); the T4 figure is a JIT-warm-up-affected cube-fall gate, not a
+  throughput comparison (D-39, D-50, D-51).
+* **G-6 (simulation impedance cross-check): PASS as a cross-check only** (`reports/g6_impedance.json`,
+  0.27 % step error, push/return measured); not hardware, not a safety result (D-22, D-58).
+* **G-8** (≥ 10 fps/eye at 640×480 on 4090-class): **not run**, no report.
+* **G-5 / G-7 / G-13:** **not run**, no report; no asset-based scene exists (§0).
+* env-count scaling curve per profile in `reports/sim_scaling_<profile>.json` (steps/s vs number
+  of envs, with and without cameras): **not recorded**.

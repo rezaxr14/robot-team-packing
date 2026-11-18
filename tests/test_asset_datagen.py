@@ -44,3 +44,14 @@ def test_asset_sft_rows_carry_the_manifest(tmp_path):
     assert funnel["kept"] == 2 and funnel["evidence"] == "SIM-POSE"
     assert all(r["meta"]["asset_manifest"] == str(manifest) for r in rows)
     assert all(r["meta"]["n_assets"] == 5 for r in rows)
+
+
+def test_asset_hindsight_keeps_the_real_failure_funnel(tmp_path):
+    from rtp.asset_datagen import gen_asset_hindsight
+    d = fake_catalog(tmp_path)
+    recs = resolve_assets(d / "catalog.json", d / "selection.json")
+    rows, stats = gen_asset_hindsight(recs, 2, 200000, Harness(ROOT / "harness_files"),
+                                      noisy_eyes=True, max_tries=60, manifest="scene.json")
+    assert stats["episodes"] > 0
+    assert stats["failed"] >= stats["relabeled"] >= stats["validated"]
+    assert all(r["meta"]["kind"] == "hindsight" for r in rows)

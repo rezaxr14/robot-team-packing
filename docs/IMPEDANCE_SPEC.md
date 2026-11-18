@@ -4,6 +4,14 @@ Requirement (yours): a human can push an arm in any direction; the arm acts as a
 Labels: **[V:S-nn]** verified source · **[D]** default decision, changeable only by a logged decision · **[G]** gate-verified.
 All numeric values marked [D] are **starting values**; Phase 3 (sim) and Phase 10 (hardware) replace them with measured, validated ones. Contact-force/pressure limits come from ISO 10218-2:2025 (to be acquired in Phase 10); the force caps below are placeholders until then.
 
+> **Status (2026-11-19).** This document is a specification, not a deployed controller. A new
+> **simulation-only cross-check gate G-6** has been measured (`reports/g6_impedance.json`): analytic
+> step-response error **0.27 %** (pass limit 5 %), stable at the chosen 1 kHz dt, with a 10 N push
+> and return measured. G-6 does **not** run the full Phase 3 acceptance table below, does not touch
+> hardware, and is **not a safety certification**. Research, redesign and hardware/L0/L1 sign-off
+> for impedance control and robot safety remain Claude's (D-22); no such sign-off is claimed here
+> (D-58).
+
 ## 1. Verified basis
 * Franka's reference Cartesian impedance controller: `τ_task = Jᵀ(−K e − D J q̇)`, null-space PD `(I − Jᵀ J⁺ᵀ)(k_n qe − 2√k_n q̇e)`, `τ = τ_task + τ_null + coriolis`, `D = 2√K`; example gains 150 N/m, 10 Nm/rad; torque-rate saturation 1 Nm/ms; target low-pass 0.005; dual-arm example with null-space stiffness 20 Nm/rad [V:S-20, S-21].
 * Firmware Cartesian impedance range up to 3000 N/m, 300 Nm/rad [V:S-21]; collision thresholds set outside the control loop [V:S-21].
@@ -72,7 +80,7 @@ Learned policies may scale a profile within `[0.5×, 1.5×]` and never outside t
 
 | test | procedure | pass |
 |---|---|---|
-| analytic step | 1-DoF mass-spring-damper equivalent, step in `x_ref` | response error ≤ 5 % (G-6) |
+| analytic step | 1-DoF mass-spring-damper equivalent, step in `x_ref` | response error ≤ 5 % (G-6) — **measured in simulation: 0.27 %**, `reports/g6_impedance.json`; other rows still pending |
 | steady deflection | constant force F ∈ {5, 10, 20, 30} N on EE, ±x,±y,±z; torques ±0.5/1 Nm | `|δ| = F/K` within ±10 % |
 | release return | release after 1 s hold at δ ≈ 0.10 m | within 5 mm of plan in ≤ 2.5 s; overshoot ≤ 10 % of δ; peak speed ≤ 1.1·v_return |
 | no limit cycle | free hold 10 s after return | RMS error ≤ 2 mm |
@@ -90,4 +98,4 @@ Learned policies may scale a profile within `[0.5×, 1.5×]` and never outside t
 Same pushes with an instrumented force gauge/load cell at the end-effector and a force-pressure measuring device for contact tests; step responses compared with sim (differences feed identification in Phase 12); all runs with the user-stop at hand [V:S-21]; first tests at the lowest profile (`handover`) and lowest force cap; staged: cell empty → trained operator only → measuring device → people. Collision-behaviour thresholds are configured before motion and verified by a deliberate-contact test.
 
 ## 8. Not claimed
-This specification defines and tests a **compliance behaviour**. It is not, by itself, a safety certification and does not replace L0 (E-stop, firmware limits, protective stop) or the cell risk assessment; the limits that make it acceptable around people are those measured on the real arms and checked against the standard.
+This specification defines and tests a **compliance behaviour**. It is not, by itself, a safety certification and does not replace L0 (E-stop, firmware limits, protective stop) or the cell risk assessment; the limits that make it acceptable around people are those measured on the real arms and checked against the standard. The G-6 simulation cross-check (0.27 % step error, push/return measured) changes none of this: no hardware test, no standard-derived contact limits and no L0/L1 sign-off exist, and that sign-off is Claude's (D-22, D-58).
