@@ -18,7 +18,7 @@ Keep the sim environment separate from the VLM-training environment if their Tor
 ## 2. Profile capability matrix
 | profile | VLM training | VLM serving | Newton sim (physics + Warp renderer) | OVRTX | role |
 |---|---|---|---|---|---|
-| `local_4050` (Ada 6 GB) | QLoRA NF4; FA2 if present else SDPA; fast path needs `nvcc` build; training ceiling **512 tokens** at batch 1 (D-38) | 4-bit | ✓ small env counts [G: G-3] | **[G]** | dev |
+| `local_4050` (Ada 6 GB) | QLoRA NF4; FA2 if present else SDPA; fast path needs `nvcc` build; forward/backward ceiling **512 tokens**, but a real LoRA step with optimizer state fits only at **256** (D-38, D-47); 8-bit AdamW, LM-head chunk 64 | 4-bit | ✓ small env counts [G: G-3] | **[G]** | dev |
 | `local_4090` (Ada 24 GB) | BF16 LoRA + FA2 | bf16 | ✓ full | **[G]** | headline |
 | `kaggle_t4x2` (Turing 2×16 GB, no bf16) | fp16 LoRA, SDPA, DDP | fp16 eager | cc 7.5 meets floor; driver R580+ or Warp 1.17.0 **[G: G-3]**; no display → EGL/Rerun/recorded video | **[G]** | Kaggle headline |
 | `pro6000` | LoRA → full-FT candidate, bf16+FA2 | bf16 | ✓ | **[G]** | reserved |

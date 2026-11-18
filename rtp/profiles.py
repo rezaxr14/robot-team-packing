@@ -100,7 +100,7 @@ class Profile:
     micro_batch: int            # per device
     grad_accum: int
     grad_ckpt: bool
-    max_len: int
+    max_len: int                 # forward/backward ceiling measured by ops/seq_ceiling.py
     eval_seeds: tuple[int, ...]
     serve: dict = field(default_factory=dict)
     physics: str = "isaac_newton"   # D-25: Isaac Lab 3.0 + Newton is the only stack
@@ -108,6 +108,12 @@ class Profile:
     supported: bool = True
     notes: str = ""
     root: Path = field(default=Path("."), compare=False, repr=False)
+    train_max_len: int = 0       # SFT ceiling with adapters + optimizer (0 => max_len)
+
+    @property
+    def train_len(self) -> int:
+        """Longest sequence an actual training step can use on this profile (D-47)."""
+        return self.train_max_len or self.max_len
 
     # ---- derived geometry -------------------------------------------------------------------
     @property
@@ -183,13 +189,14 @@ def _profile_table(root: Path) -> dict[str, Profile]:
             name="local_4050", accel="cuda", gpu="RTX 4050 Laptop", n_gpu=1, vram_gb=6.0,
             tuning="qlora", dtype="bfloat16", attn="flash_attention_2",
             lora_r=32, lora_alpha=64, lora_dropout=0.05, lora_targets=text_vision,
-            micro_batch=1, grad_accum=16, grad_ckpt=True, max_len=512,
+            micro_batch=1, grad_accum=16, grad_ckpt=True, max_len=512, train_max_len=256,
             eval_seeds=(0, 1, 2), serve={"mode": "4bit", "backend": "hf"},
             physics="isaac_newton", paper_class="dev",
             notes=("dev/SMOKE: QLoRA is the only way the 4.66 B model fits; tiny Newton env counts "
                    "only [G->G-3]. max_len is measured, not assumed: 512 tokens fit at batch 1 "
                    "(5.42 GB peak), 768 OOM and 1024 OOM even at r=8 (reports/seq_ceiling_local_4050*.json); "
-                   "long-context SFT belongs on local_4090 or kaggle_t4x2."),
+                   "long-context SFT belongs on local_4090 or kaggle_t4x2. An actual LoRA step "
+                   "with optimizer state fits at 256, not 384 (D-47), so train_max_len=256."),
         ),
         # 24 GB: bf16 LoRA + FlashAttention-2, the local reference run.
         "local_4090": _p(

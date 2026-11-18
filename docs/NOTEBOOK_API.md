@@ -31,7 +31,15 @@ nb.code("ACTIVE = 'local_4050'")
 nb.save()
 ```
 
-Then check: `$V/bin/python -m pytest tests/test_notebooks.py -q`
+Then check:
+
+```bash
+$V/bin/python -m pytest tests/test_notebooks.py -q
+$V/bin/python ops/nbrun.py notebooks/<name>.ipynb --timeout 600
+```
+
+`jupyter nbconvert` has no working CLI in this venv (bad interpreter / missing entry point).
+`ops/nbrun.py` uses `NotebookClient.execute()` and exits non-zero on the first cell error.
 
 ## Exact APIs
 

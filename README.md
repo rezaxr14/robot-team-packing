@@ -16,7 +16,7 @@ reward source, not a physics result**.
 
 ## Current status (P2)
 
-* `pytest tests -q` -> **237 passed, 10 skipped, ~42 s** on the 4050 laptop (2026-11-18). The 10
+* `pytest tests -q` -> **323 passed, 10 skipped, ~45 s** on the 4050 laptop (2026-11-18). The 10
   skips are all "VIKI-R clone not available" (inert Track-A scorer).
 * The legacy 2.3-era Isaac launcher stack is purged (D-35): no `ops/12_env_isaac.sh`, no EULA export,
   no RT-core preflight branch, no `isaac/bringup/`, no VIKI/LLaMA-Factory launcher stages.
@@ -31,9 +31,23 @@ reward source, not a physics result**.
 * **Storage is live** (D-40): every asset resolves **local cache -> attached Kaggle dataset ->
   our private Kaggle dataset -> our private HF repo** (`Reza-Nadimi/robot-team-packing`). Round-trips
   for publish/fetch/checkpoint are measured, not assumed.
+* **G-14 PASS on real 4B weights** (D-48): two SFT steps, checkpoint pushed to HF, fetched back,
+  resumed inside the epoch and continued (losses 0.88 -> 0.60 -> 0.38 -> 0.24); 5.85 GB peak on
+  the 4050 at 256 tokens (`reports/sft_smoke.json`).
 * **Training resumes mid-epoch** (D-41): checkpoints carry optimizer + RNG + batch cursor, batch order
   is a pure function of `(seed, epoch)`, and `rtp/checkpoints.py` pushes every N steps to HF and prunes
-  older steps. Resumed-at-step-3-of-8 runs finish at step 8 with the same losses.
+  older steps. Resumed-at-step-3-of-8 runs finish at step 8 with the same losses. A checkpoint also
+  restores the **adapter weights** (a gap the toy test caught), and 8-bit AdamW is used on 4-bit
+  profiles so 65 M adapter parameters do not cost 0.52 GB of optimizer state.
+* **Notebooks cover the paper** (D-42): `00` setup, `10` SFT, `20` GRPO, `30` Eyes, `40` world/data,
+  `50` Isaac/Newton eval, `60` harness/zero-shot/CoT, `70` hindsight + success/failure RAG, `80`
+  evals + omni-model comparison harness, `90` attribution/tables. Each is generated from
+  `notebooks/src/*.py`, passes `tests/test_notebooks.py`, and is executed with `ops/nbrun.py`.
+* **Hybrid retrieval** (`rtp/vectordb.py`): BM25 from the harness fused by RRF with a persistent
+  Qdrant index (embedded local mode by default). `HashedEmbedder` is a labelled stand-in, not a
+  semantic model.
+* **The 9.4 GB model is published from Kaggle**, not from this laptop (`ops/kaggle_model.py`); the
+  private kernel needs a `KAGGLE_API_TOKEN` secret added once by the owner (`ops/kaggle/README.md`).
 
 ## Layout (current code)
 

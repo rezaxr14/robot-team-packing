@@ -1,0 +1,53 @@
+{
+  "profile": "local_4050",
+  "rows": 64,
+  "steps": 4,
+  "seed": 100000,
+  "max_len": 512,
+  "train_max_len": 256,
+  "stage": "sft_gate8",
+  "dataset": {
+    "path": "/home/reza/Projects/robot_team/data/local_4050/sft_smoke.jsonl",
+    "rows": 64
+  },
+  "model": "/home/reza/Projects/robot_team/models/local_4050/cache/model/rtp-model-qwen35-4b-851bf6e8",
+  "store": true,
+  "session1": {
+    "step": 2,
+    "epoch": 0,
+    "micro_in_epoch": 32,
+    "losses": [
+      0.876404,
+      0.598172
+    ],
+    "resumed_from": null
+  },
+  "checkpoint": {
+    "path": "/home/reza/Projects/robot_team/runs/local_4050/ckpt/sft_gate8/step-000000002",
+    "exists": true,
+    "state": 2
+  },
+  "session2": {
+    "step": 4,
+    "epoch": 0,
+    "micro_in_epoch": 64,
+    "resumed_from": 2,
+    "losses": [
+      0.876404,
+      0.598172,
+      0.379167,
+      0.23638
+    ]
+  },
+  "peak_vram_gb": 5.85,
+  "wall_s": 640.8,
+  "checks": {
+    "steps_taken": true,
+    "checkpoint_written": true,
+    "losses_finite": true,
+    "resumed_mid_epoch": true,
+    "continued_past_resume_point": true
+  },
+  "result": "PASS",
+  "error": null
+}

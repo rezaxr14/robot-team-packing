@@ -80,7 +80,7 @@ def test_plan_commands_reference_real_files_and_names_are_unique():
     for g, n, cmd in plan.all_stages():
         for m in re.findall(r"(?:ops|scripts|train)/[\w./-]+\.(?:sh|py)", cmd):
             assert (root / m).exists(), f"{n}: {m} does not exist"
-    assert {"p0", "p2", "bundle"} == set(plan.GROUPS)
+    assert {"p0", "p2", "p3", "bundle"} == set(plan.GROUPS)
     # G-3 belongs to the Newton-only venv, not the training interpreter
     assert plan.missing_vars("g3_sim", {}) == ["ISAAC_PY"]
     g3 = dict((n, c) for _, n, c in plan.all_stages())["g3_sim"]

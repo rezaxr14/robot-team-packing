@@ -30,6 +30,12 @@ GROUPS: "OrderedDict[str, list]" = OrderedDict([
     ("p2", [
         ("g3_sim", f"$ISAAC_PY ops/g3_sim.py --out reports/g3_sim.json --images reports/g3_sim"),
     ]),
+    # P8/P1 — storage + resumable training: identity, a real-weight SFT/resume gate, and the setup notebook.
+    ("p3", [
+        ("hub_status", f"{PY} ops/hub.py status"),
+        ("sft_smoke", f"{PY} ops/sft_smoke.py --out reports/sft_smoke.json"),
+        ("notebook_setup", f"{PY} ops/nbrun.py notebooks/00_setup_cache.ipynb --timeout 1800"),
+    ]),
     # package the small reports into one archive (contents: see ops/bundle.py)
     ("bundle", [
         ("bundle", f"{PY} ops/bundle.py"),
@@ -47,6 +53,7 @@ PRODUCES = {
     "g1_module_dump": ["reports/qwen35_modules.json"],
     "g2_fastpath": ["reports/g2_fastpath.json"],
     "g3_sim": ["reports/g3_sim.json"],
+    "sft_smoke": ["reports/sft_smoke.json"],
 }
 SHELL_VARS = {"HOME", "PATH"}
 

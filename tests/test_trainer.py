@@ -104,7 +104,7 @@ def test_optimizer_state_and_step_survive_a_round_trip(tmp_path):
     save_checkpoint(tmp_path, model=model, optimizer=opt, state=state)
     back = load_checkpoint(tmp_path, optimizer=opt)
     assert back["state"].step == 5 and back["state"].micro_in_epoch == 12
-    assert (tmp_path / "model" / "model.pt").exists()
+    assert (tmp_path / "model" / "trainable.pt").exists()
 
 
 def test_load_checkpoint_without_state_says_so(tmp_path):
@@ -135,7 +135,7 @@ def test_resume_mid_epoch_reproduces_the_uninterrupted_trajectory(tmp_path):
 
     # Rebuild the model from the checkpoint exactly as a resumed run would.
     model3, opt3 = build()
-    model3.load_state_dict(torch.load(tmp_path / "ckpt" / "model" / "model.pt"))
+    model3.load_state_dict(torch.load(tmp_path / "ckpt" / "model" / "trainable.pt"))
     t3 = Trainer(model3, optimizer=opt3, examples=ex, **kw)
     t3.fit(resume_from=tmp_path / "ckpt")
     assert t3.state.step == 8
@@ -155,3 +155,16 @@ def test_a_short_epoch_still_takes_its_update():
     state = t.fit()
     assert state.step == 2 and state.epoch == 2       # one update per short epoch
     assert len(state.history) == 2
+
+
+def test_resume_restores_the_weights_that_were_changed(tmp_path):
+    """A checkpoint without weights would resume with a fresh adapter and stale optimizer state."""
+    model, opt = build()
+    with torch.no_grad():
+        model.lm_head.weight.fill_(7.0)
+    save_checkpoint(tmp_path, model=model, optimizer=opt, state=TrainState(step=2))
+    fresh, fresh_opt = build()
+    assert not torch.allclose(fresh.lm_head.weight, torch.full_like(fresh.lm_head.weight, 7.0))
+    loaded = load_checkpoint(tmp_path, model=fresh, optimizer=fresh_opt)
+    assert loaded["state"].step == 2
+    assert torch.allclose(fresh.lm_head.weight, torch.full_like(fresh.lm_head.weight, 7.0))

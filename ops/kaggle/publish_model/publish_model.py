@@ -36,11 +36,23 @@ def creds() -> None:
         return
     try:
         from kaggle_secrets import UserSecretsClient
-    except Exception:
-        raise SystemExit("no Kaggle credentials: attach a secret named KAGGLE_API_TOKEN")
-    token = UserSecretsClient().get_secret("KAGGLE_API_TOKEN")
-    os.environ["KAGGLE_API_TOKEN"] = token
-    say("kaggle credentials: read from Kaggle Secrets (KAGGLE_API_TOKEN)")
+    except Exception as exc:
+        raise SystemExit(f"no Kaggle credentials and no secrets client ({type(exc).__name__})")
+    client = UserSecretsClient()
+    # A 400 here usually means the secret was added to the account but not attached to THIS
+    # notebook (Settings -> Secrets -> toggle this notebook), or the label differs in case.
+    for label in ("KAGGLE_API_TOKEN", "KAGGLE_TOKEN", "kaggle_api_token", "KAGGLE_KEY"):
+        try:
+            value = client.get_secret(label)
+        except Exception as exc:                              # noqa: BLE001
+            say(f"secret {label}: unavailable ({type(exc).__name__})")
+            continue
+        if value:
+            os.environ["KAGGLE_API_TOKEN"] = value
+            say(f"kaggle credentials: read from Kaggle Secrets ({label})")
+            return
+    raise SystemExit("no Kaggle credentials: attach a secret named KAGGLE_API_TOKEN to THIS notebook "
+                     "in the Kaggle editor (Secrets -> Add a secret -> toggle this notebook)")
 
 
 def download() -> None:

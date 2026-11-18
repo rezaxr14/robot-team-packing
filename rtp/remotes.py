@@ -335,6 +335,15 @@ class RemoteStore:
             inner.rmdir()
         return dest
 
+    def drop_checkpoint_stage(self, profile_name: str, stage: str) -> int:
+        """Delete every remote step of one stage (used to clean up superseded smoke gates)."""
+        steps = self.list_checkpoints(profile_name, stage)
+        for step in steps:
+            self.hf.delete_folder(repo_id=self.hf_repo,
+                                  path_in_repo=self.checkpoint_prefix(profile_name, stage, step),
+                                  repo_type="model")
+        return len(steps)
+
     def prune_checkpoints(self, profile_name: str, stage: str, keep: int = 2) -> list[int]:
         """Keep the ``keep`` newest steps and delete older remote folders; returns deleted steps.
 
@@ -347,6 +356,6 @@ class RemoteStore:
         doomed = steps[:-keep] if len(steps) > keep else []
         for step in doomed:
             self.hf.delete_folder(repo_id=self.hf_repo,
-                                  folder_path=self.checkpoint_prefix(profile_name, stage, step),
+                                  path_in_repo=self.checkpoint_prefix(profile_name, stage, step),
                                   repo_type="model")
         return doomed

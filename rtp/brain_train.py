@@ -85,6 +85,11 @@ def load_for_training(profile: Profile, model_dir: Path | str, *, log: Callable[
     from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
+    try:
+        from transformers import AutoModelForImageTextToText
+    except Exception:                                      # noqa: BLE001 - older transformers
+        AutoModelForImageTextToText = None
+
     say = log or (lambda _m: None)
     attn, dtype_name, notes = resolve_runtime(profile)
     for note in notes:
@@ -96,7 +101,7 @@ def load_for_training(profile: Profile, model_dir: Path | str, *, log: Callable[
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    kwargs = {"torch_dtype": dtype, "attn_implementation": attn}
+    kwargs = {"dtype": dtype, "attn_implementation": attn}
     if attn == "flash_attention_2":
         kwargs["attn_implementation"] = "flash_attention_2"
     quantized = False
@@ -111,16 +116,32 @@ def load_for_training(profile: Profile, model_dir: Path | str, *, log: Callable[
         except Exception as exc:                          # noqa: BLE001
             say(f"4-bit unavailable ({type(exc).__name__}); falling back to {dtype_name} LoRA")
 
-    model = AutoModelForCausalLM.from_pretrained(model_dir, **kwargs)
+    # G-1 measured Qwen3.5-4B as Qwen3_5ForConditionalGeneration (model_type qwen3_5). Loading it as
+    # a plain CausalLM silently drops the vision tower, so the merger names in lora_targets are
+    # absent and the run is not the multi-modal Brain the plan specifies. Use the conditional
+    # class first; CausalLM is only a fallback for a text-only checkpoint.
+    cls = AutoModelForImageTextToText or AutoModelForCausalLM
+    if cls is AutoModelForImageTextToText:
+        try:
+            model = cls.from_pretrained(model_dir, **kwargs)
+        except Exception as exc:                           # noqa: BLE001
+            say(f"conditional loader failed ({type(exc).__name__}); falling back to AutoModelForCausalLM")
+            model = AutoModelForCausalLM.from_pretrained(model_dir, **kwargs)
+    else:
+        model = cls.from_pretrained(model_dir, **kwargs)
     device = "cuda" if (torch.cuda.is_available() and not quantized) else "cpu"
     if not quantized:
         model = model.to(device)
     if quantized:
+        # prepare_model_for_kbit_training already enables checkpointing with non-reentrant hooks and
+        # input grads. Calling gradient_checkpointing_enable a second time is not free: on a 6 GB
+        # card it leaves extra saved activations and was measured to turn a fitting 512-token step
+        # into an OOM. Only do the explicit enable for the non-quantized path.
         model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=profile.grad_ckpt)
-    if profile.grad_ckpt and hasattr(model, "gradient_checkpointing_enable"):
+    elif profile.grad_ckpt and hasattr(model, "gradient_checkpointing_enable"):
         model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
         if hasattr(model, "enable_input_require_grads"):
-            model.enable_input_require_grads()            # 4-bit + checkpointing needs this
+            model.enable_input_require_grads()
 
     info = {"attn": attn, "dtype": dtype_name, "quantized": quantized, "tuning": profile.tuning,
             "device": "cuda" if quantized else device}
@@ -148,11 +169,29 @@ def load_for_training(profile: Profile, model_dir: Path | str, *, log: Callable[
     return model, tokenizer, info
 
 
-def build_optimizer(model, lr: float, weight_decay: float = 0.0):
+def build_optimizer(model, lr: float, weight_decay: float = 0.0, *, eight_bit: bool | None = None):
+    """AdamW over the trainable parameters; 8-bit by default when bitsandbytes is present.
+
+    On a 6 GB card the difference is what decides whether training runs at all: AdamW keeps two
+    float32 moments per trainable parameter, so a 65 M-parameter adapter costs 0.52 GB of optimizer
+    state on the device, which is exactly the margin between fitting at 512 tokens and OOM.
+    """
     import torch
     params = [p for p in model.parameters() if p.requires_grad]
     if not params:
         raise RuntimeError("no trainable parameters: check the tuning mode and LoRA targets")
+    if eight_bit is None:
+        try:
+            import bitsandbytes  # noqa: F401
+            eight_bit = True
+        except Exception:                                  # noqa: BLE001
+            eight_bit = False
+    if eight_bit:
+        try:
+            import bitsandbytes as bnb
+            return bnb.optim.AdamW8bit(params, lr=lr, weight_decay=weight_decay)
+        except Exception as exc:                           # noqa: BLE001
+            print(f"8-bit AdamW unavailable ({type(exc).__name__}); using torch AdamW")
     return torch.optim.AdamW(params, lr=lr, weight_decay=weight_decay)
 
 
@@ -198,13 +237,13 @@ def run_sft(profile: Profile, *, model_dir: Path | str, data: Path | str | Seque
     model, tokenizer, info = loader(profile, model_dir, log=say)
     say(f"loaded: {info}")
 
-    examples = tokenize_pairs(rows, tokenizer, max_len=profile.max_len)
+    examples = tokenize_pairs(rows, tokenizer, max_len=profile.train_len)
     if not examples:
         raise ValueError("no usable rows after tokenisation (all completions empty?)")
-    say(f"sft: {len(examples)} rows, max_len {profile.max_len}, "
+    say(f"sft: {len(examples)} rows, train_len {profile.train_len} (max_len {profile.max_len}), "
         f"micro {profile.micro_batch} x accum {profile.grad_accum} on {profile.n_gpu} device(s)")
 
-    optimizer = build_optimizer(model, lr)
+    optimizer = build_optimizer(model, lr, eight_bit=profile.uses_4bit)
     policy = CheckpointPolicy(root=out_dir, profile=profile.name, stage=stage, store=store,
                               every=every, keep=keep, tokenizer=tokenizer,
                               extra={"stage": stage, "profile": profile.name}, log=say)
@@ -219,7 +258,7 @@ def run_sft(profile: Profile, *, model_dir: Path | str, data: Path | str | Seque
                       pad_id=tokenizer.pad_token_id, micro_batch=profile.micro_batch,
                       grad_accum=profile.grad_accum, epochs=epochs, lr=lr,
                       warmup_steps=warmup_steps, seed=seed,
-                      chunk_tokens=chunk_tokens or (1024 if profile.vram_gb >= 20 else 128),
+                      chunk_tokens=chunk_tokens or (1024 if profile.vram_gb >= 20 else 64),
                       on_checkpoint=on_checkpoint, device=info.get("device", "cpu"), log=say)
     state = trainer.fit(resume_from=resume_path)
 

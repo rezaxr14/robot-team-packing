@@ -58,6 +58,9 @@ def main(argv=None) -> int:
     p.add_argument("--profile", required=True)
     p.add_argument("--stage", required=True)
     p.add_argument("--step", type=int, required=True)
+    p = sub.add_parser("checkpoint-drop")
+    p.add_argument("--profile", required=True)
+    p.add_argument("--stage", required=True)
     p = sub.add_parser("checkpoint-latest")
     p.add_argument("--profile", required=True)
     p.add_argument("--stage", required=True)
@@ -123,6 +126,11 @@ def main(argv=None) -> int:
         store = remotes.from_env(with_kaggle=False)
     if a.cmd == "checkpoint-push":
         print(store.push_checkpoint(Path(a.dir).expanduser(), a.profile, a.stage, a.step))
+        return 0
+    if a.cmd == "checkpoint-drop":
+        store = remotes.from_env(with_kaggle=False)
+        print(json.dumps({"profile": a.profile, "stage": a.stage,
+                          "deleted_steps": store.drop_checkpoint_stage(a.profile, a.stage)}))
         return 0
     if a.cmd == "checkpoint-latest":
         step = store.latest_checkpoint(a.profile, a.stage)

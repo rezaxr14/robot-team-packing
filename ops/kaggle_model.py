@@ -80,9 +80,14 @@ def main(argv=None) -> int:
     meta_path = Path("/tmp/opencode/kaggle_meta/dataset-metadata.json")
     if meta_path.exists():
         meta = json.loads(meta_path.read_text())
-        print(json.dumps({"id": meta.get("id"), "isPrivate": meta.get("isPrivate"),
-                          "title": meta.get("title")}, indent=2))
-        return 0 if meta.get("isPrivate") else 1
+        # `kaggle datasets metadata` wraps the fields under "info"; a local dataset-metadata.json
+        # written by publish_model.py has them at the top level.
+        info = meta.get("info", meta)
+        private = bool(info.get("isPrivate"))
+        print(json.dumps({"id": info.get("datasetSlug") or info.get("id"),
+                          "owner": info.get("ownerUser"), "isPrivate": private,
+                          "title": info.get("title")}, indent=2))
+        return 0 if private else 1
     print((r.stdout or r.stderr).strip())
     return 1
 

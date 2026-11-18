@@ -149,3 +149,21 @@ def test_a_run_stops_on_request_and_the_next_one_resumes(tmp_path):
     assert second.resumed_from == 2
     assert second.state.step == 8                  # ceil(8/2) steps per epoch x 2 epochs
     assert (prof.paths.adapters / "sft" / "model.pt").exists()
+
+
+def test_optimizer_covers_exactly_the_trainable_parameters():
+    model = Toy()
+    for p in model.parameters():
+        p.requires_grad = False
+    model.q_proj.weight.requires_grad = True
+    opt = brain_train.build_optimizer(model, 1e-4, eight_bit=False)
+    assert type(opt).__name__ == "AdamW"
+    assert len(opt.param_groups[0]["params"]) == 1
+
+
+def test_a_model_with_nothing_trainable_says_so():
+    model = Toy()
+    for p in model.parameters():
+        p.requires_grad = False
+    with pytest.raises(RuntimeError, match="no trainable"):
+        brain_train.build_optimizer(model, 1e-4, eight_bit=False)

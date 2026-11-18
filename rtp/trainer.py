@@ -39,6 +39,7 @@ STATE_FILE = "trainer_state.json"
 OPTIMIZER_FILE = "optimizer.pt"
 RNG_FILE = "rng.pt"
 MODEL_DIR = "model"
+TRAINABLE_FILE = "trainable.pt"
 
 
 # --------------------------------------------------------------------------------------------------
@@ -129,20 +130,61 @@ def save_checkpoint(root: Path | str, *, model, optimizer=None, state: TrainStat
     """Write a resume-able checkpoint. ``state`` is written last, so a half-written dir is detectable."""
     root = Path(root)
     (root / MODEL_DIR).mkdir(parents=True, exist_ok=True)
-    if hasattr(model, "save_pretrained"):
+    # A PeftModel's save_pretrained writes only adapter weights (~0.1 GB). Never call it on a full
+    # HF model here: that would write the entire 9 GB base into every checkpoint pushed to HF.
+    is_peft = hasattr(model, "peft_config")
+    if is_peft and hasattr(model, "save_pretrained"):
         model.save_pretrained(root / MODEL_DIR)
+        model_format = "peft"
     else:
-        torch.save(model.state_dict(), root / MODEL_DIR / "model.pt")
+        trainable = {n for n, p in model.named_parameters() if p.requires_grad}
+        torch.save({n: v.detach() for n, v in model.state_dict().items() if n in trainable},
+                   root / MODEL_DIR / TRAINABLE_FILE)
+        model_format = "trainable"
     if tokenizer is not None and hasattr(tokenizer, "save_pretrained"):
         tokenizer.save_pretrained(root / MODEL_DIR)
     if optimizer is not None:
         torch.save(optimizer.state_dict(), root / OPTIMIZER_FILE)
     torch.save(torch.get_rng_state(), root / RNG_FILE)
-    payload = {"trainer": state.as_dict(), "extra": extra or {}}
+    payload = {"trainer": state.as_dict(), "extra": extra or {}, "model_format": model_format}
     tmp = root / (STATE_FILE + ".tmp")
     tmp.write_text(json.dumps(payload, indent=2))
     tmp.replace(root / STATE_FILE)                        # atomic: last writer wins
     return root
+
+
+def _restore_model(model, root: Path, model_format: str | None) -> None:
+    """Load the weights the checkpoint actually changed — adapters, or trainable tensors."""
+    directory = root / MODEL_DIR
+    if model_format == "peft" and (directory / "adapter_config.json").exists():
+        try:
+            from safetensors.torch import load_file
+            weights = load_file(directory / "adapter_model.safetensors")
+        except (ImportError, FileNotFoundError):
+            weights = torch.load(directory / "adapter_model.bin", map_location="cpu")
+    elif (directory / TRAINABLE_FILE).exists():
+        weights = torch.load(directory / TRAINABLE_FILE, map_location="cpu")
+    else:
+        raise FileNotFoundError(f"no trainable weights under {directory}")
+    try:
+        from peft import PeftModel
+        is_peft = isinstance(model, PeftModel)
+    except Exception:                                        # noqa: BLE001
+        is_peft = False
+    if is_peft:
+        # PEFT's on-disk format writes adapter keys WITHOUT the adapter name
+        # ("...lora_A.weight"), while a live PeftModel expects "...lora_A.default.weight".
+        # A raw load_state_dict therefore reports every adapter key as missing. Use the official
+        # loader, which performs that rename and respects the target-module mapping.
+        from peft import set_peft_model_state_dict
+        result = set_peft_model_state_dict(model, weights, adapter_name="default")
+        # The frozen base layers are legitimately absent from an adapter-only checkpoint.
+        missing = [k for k in (getattr(result, "missing_keys", None) or []) if "lora_" in k]
+    else:
+        info = model.load_state_dict(weights, strict=False)
+        missing = list(info.missing_keys)
+    if missing:
+        raise RuntimeError(f"checkpoint is missing weights for {missing[:5]}")
 
 
 def load_checkpoint(root: Path | str, *, model=None, optimizer=None) -> dict:
@@ -152,6 +194,8 @@ def load_checkpoint(root: Path | str, *, model=None, optimizer=None) -> dict:
     if not state_path.exists():
         raise FileNotFoundError(f"no {STATE_FILE} under {root}")
     payload = json.loads(state_path.read_text())
+    if model is not None:
+        _restore_model(model, root, payload.get("model_format"))
     if optimizer is not None and (root / OPTIMIZER_FILE).exists():
         try:
             optimizer.load_state_dict(torch.load(root / OPTIMIZER_FILE, map_location="cpu"))
@@ -214,7 +258,7 @@ class Trainer:
     # ---- run ----------------------------------------------------------------------------------
     def fit(self, resume_from: Path | str | None = None) -> TrainState:
         if resume_from is not None:
-            loaded = load_checkpoint(resume_from, optimizer=self.opt)
+            loaded = load_checkpoint(resume_from, model=self.model, optimizer=self.opt)
             self.state = loaded["state"]
             self.say(f"resumed at step {self.state.step}, epoch {self.state.epoch}, "
                      f"{self.state.micro_in_epoch} micro-batches into it")
@@ -267,8 +311,13 @@ class Trainer:
                 rows = [self.examples[i] for i in order[start:start + self.micro_batch]]
                 batch = collate(rows, self.pad_id)
                 batch = {k: v.to(self.device) for k, v in batch.items()}
+                # An all-ones attention mask carries no information but makes flash-attn take a
+                # different, measurably more expensive path on the 6 GB card. With micro_batch=1
+                # every batch is unpadded; pass None instead and keep the same semantics.
+                mask = batch["attention_mask"]
+                attention_mask = None if bool(mask.all()) else mask
                 loss = chunked_lm_loss(self.model, batch["input_ids"],
-                                       attention_mask=batch["attention_mask"],
+                                       attention_mask=attention_mask,
                                        labels=batch["labels"], chunk_tokens=self.chunk_tokens)
                 (loss / self.grad_accum).backward()
                 accumulated += 1

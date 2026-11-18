@@ -12,7 +12,7 @@ torch = pytest.importorskip("torch")
 
 from rtp import remotes as rtp_remotes                         # noqa: E402
 from rtp.checkpoints import CheckpointPolicy, fetch_latest     # noqa: E402
-from rtp.trainer import TrainState, load_checkpoint            # noqa: E402
+from rtp.trainer import TrainState, load_checkpoint, save_checkpoint  # noqa: E402
 
 
 class FakeHF:
@@ -39,9 +39,9 @@ class FakeHF:
     def list_repo_files(self, **kw):
         return sorted(self.files)
 
-    def delete_folder(self, *, folder_path, **kw):
-        self.files = {f for f in self.files if not f.startswith(folder_path + "/")}
-        self.deleted.append(folder_path)
+    def delete_folder(self, *, path_in_repo, **kw):
+        self.files = {f for f in self.files if not f.startswith(path_in_repo + "/")}
+        self.deleted.append(path_in_repo)
 
     def snapshot_download(self, *, repo_id, allow_patterns, local_dir, **kw):
         prefix = allow_patterns[0].split("**")[0].rstrip("/")
@@ -70,10 +70,13 @@ class Weights(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.w = torch.nn.Parameter(torch.zeros(4))
+        self.peft_config = {}                      # look like a PeftModel to save_checkpoint
 
     def save_pretrained(self, path):
+        from safetensors.torch import save_file
         Path(path).mkdir(parents=True, exist_ok=True)
-        torch.save({"w": self.w.detach()}, Path(path) / "adapter.pt")
+        (Path(path) / "adapter_config.json").write_text("{}")
+        save_file({"w": self.w.detach()}, Path(path) / "adapter_model.safetensors")
 
 
 def policy(tmp_path, store, **kw):
@@ -87,7 +90,7 @@ def test_saves_only_on_the_cadence(tmp_path):
     assert p(TrainState(step=1)) is None
     path = p(TrainState(step=2))
     assert path and (path / "trainer_state.json").exists()
-    assert (path / "model" / "adapter.pt").exists()
+    assert (path / "model" / "adapter_model.safetensors").exists()
     assert (path / "optimizer.pt").exists()
 
 
@@ -136,3 +139,47 @@ def test_profiles_do_not_see_each_others_checkpoints(tmp_path):
     st = Store(hf)
     assert st.latest_checkpoint("local_4050", "sft") is None
     assert st.latest_checkpoint("local_4090", "sft") == 500
+
+
+def test_adapter_weights_are_restored_from_the_pushed_checkpoint(tmp_path):
+    model = Weights()
+    with torch.no_grad():
+        model.w.fill_(3.0)
+    save_checkpoint(tmp_path, model=model, state=TrainState(step=9))
+    fresh = Weights()
+    assert float(fresh.w.sum()) == 0.0
+    load_checkpoint(tmp_path, model=fresh)
+    assert torch.allclose(fresh.w, torch.full_like(fresh.w, 3.0))
+
+
+def test_real_peft_adapter_round_trip_uses_the_official_loader(tmp_path):
+    """PEFT writes keys without '.default.'; a raw load_state_dict silently misses every adapter."""
+    peft = pytest.importorskip("peft")
+    nn = torch.nn
+
+    class Tiny(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.q_proj = nn.Linear(8, 8)
+            self.head = nn.Linear(8, 4)
+
+        def forward(self, x):
+            return self.head(self.q_proj(x))
+
+    def make():
+        return peft.get_peft_model(Tiny(), peft.LoraConfig(
+            r=4, lora_alpha=8, target_modules=["q_proj"], task_type="FEATURE_EXTRACTION"))
+
+    first = make()
+    with torch.no_grad():
+        for name, p in first.named_parameters():
+            if "lora_A" in name:
+                p.fill_(0.25)
+    before = {n: p.detach().clone() for n, p in first.named_parameters() if "lora_" in n}
+    save_checkpoint(tmp_path, model=first, state=TrainState(step=3))
+
+    second = make()
+    load_checkpoint(tmp_path, model=second)
+    after = {n: p for n, p in second.named_parameters() if "lora_" in n}
+    assert set(after) == set(before)
+    assert all(torch.allclose(after[n], before[n]) for n in before)

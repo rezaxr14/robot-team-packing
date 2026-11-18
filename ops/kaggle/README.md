@@ -29,10 +29,12 @@ ConnectionError: Connection error trying to communicate with service.
 
 To let the kernel create the dataset, add a secret to the notebook:
 
-1. open <https://www.kaggle.com/code/rezanadimikj/rtp-publish-qwen35-4b/edit>
+1. open <https://www.kaggle.com/code/rezanadimikj/rtp-publish-qwen35-4b-nb/edit>  (the **notebook**
+   kernel — a `script` kernel returns HTTP 400 for every secret label, so `publish_model_nb/` is the
+   one to use; `publish_model/` is kept as the script form)
 2. **Add-ons → Secrets → Add a secret** named `KAGGLE_API_TOKEN`
 3. paste the same token that is in `.env` (`KAGGLE_API_TOKEN`), save
-4. `ops/kaggle_model.py push` again (a new version of the kernel re-runs the script)
+4. `python ops/kaggle_kernel.py push ops/kaggle/publish_model_nb` (a new kernel version re-runs it)
 
 `HF_TOKEN` is *not* needed: the base model is public. If the download ever needs auth, add it as a
 second secret with the same name.
