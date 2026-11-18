@@ -1,0 +1,76 @@
+{
+  "gate": "G-6",
+  "scope": "SIMULATION CROSS-CHECK ONLY -- NOT a safety certification; hardware/L0/L1 sign-off is Claude's (D-22)",
+  "model": "1-DoF mass-spring-damper equivalent + batched torch Cartesian law (docs/IMPEDANCE_SPEC.md)",
+  "versions": {
+    "python": "3.12.16",
+    "platform": "Linux-7.3.0-10-generic-x86_64-with-glibc2.44",
+    "torch": "2.15.0+cu132",
+    "numpy": "2.5.4"
+  },
+  "gains": {
+    "k_lin_N_per_m": 150.0,
+    "k_rot_Nm_per_rad": 10.0,
+    "k_null_Nm_per_rad": 5.0,
+    "zeta": 1.0,
+    "mass_kg_toy": 2.0,
+    "torque_rate_nm_per_ms": 1.0,
+    "lowpass_alpha": 0.005,
+    "dt_s": 0.001
+  },
+  "step_response": {
+    "x_step_m": 0.05,
+    "duration_s": 2.0,
+    "dt_s": 0.001,
+    "samples": 2001,
+    "max_abs_error_m": 0.00013494044523617785,
+    "rms_abs_error_m": 4.112915241786481e-05,
+    "max_relative_error_pct": 0.2698808904723557,
+    "rms_relative_error_pct": 0.08225830483572961,
+    "error_limit_pct": 5.0,
+    "all_finite": true,
+    "bounded": true,
+    "stable": true,
+    "pass": true,
+    "x_sim_final": 0.049999962814270556,
+    "x_analytic_final": 0.049999972476324
+  },
+  "dt_stability": {
+    "dt_s": 0.001,
+    "omega_n_radps": 8.660254037844387,
+    "hard_stability_limit_s": 0.23094010767585027,
+    "chosen_dt_accepted": true,
+    "unstable_dt_rejected": true,
+    "pass": true
+  },
+  "torque_rate": {
+    "torque_rate_nm_per_ms": 1.0,
+    "max_delta_per_step_nm": 1.0,
+    "max_delta_observed_nm": 1.0,
+    "pass": true
+  },
+  "push_return": {
+    "force_N": 10.0,
+    "push_duration_s": 1.0,
+    "release_duration_s": 2.5,
+    "peak_displacement_m": 0.06654840060044474,
+    "steady_deflection_measured_m": 0.06654840060044474,
+    "steady_deflection_expected_m": 0.06666666666666667,
+    "deflection_error_pct": 0.1773990993328839,
+    "return_error_m": 9.611096374921756e-10,
+    "return_tolerance_m": 0.005,
+    "settle_time_s": 0.491,
+    "overshoot_fraction": 0.0,
+    "peak_return_speed_mps": 0.21232772007187833,
+    "within_tolerance": true,
+    "pass": true
+  },
+  "checks": {
+    "step_response_error_le_5pct": true,
+    "stable_at_dt": true,
+    "dt_validated": true,
+    "torque_rate_limited": true,
+    "push_and_return": true
+  },
+  "result": "PASS"
+}

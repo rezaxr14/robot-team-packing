@@ -1,0 +1,137 @@
+{
+  "created_utc": "2026-11-18T20:53:35.955468+00:00",
+  "git_sha": "8dd2520d9e6ebeb9cbdb32305523914b166705ec",
+  "profile": "local_4050",
+  "config_hash": "86187b4e72a73769",
+  "config": "full",
+  "n": 30,
+  "split": "held-out test (seeds < 100000)",
+  "direction": "ours - competitor (positive = ours higher success)",
+  "seed_namespace": "0..n-1 (training seeds >= 100000)",
+  "prediction_files": [],
+  "ignored_prediction_rows_outside_test": 0,
+  "trained_brain_scored": false,
+  "ours_are_fixture": true,
+  "models": [
+    {
+      "model": "Ours - ScriptedBrain (fixture)",
+      "status": "scored",
+      "n": 30,
+      "success": {
+        "k": 26,
+        "n": 30,
+        "rate": 0.8666666666666667,
+        "lo": 0.7031831605558306,
+        "hi": 0.9469043057578189
+      },
+      "plan_pass": {
+        "k": 29,
+        "n": 30,
+        "rate": 0.9666666666666667,
+        "lo": 0.8332924860304112,
+        "hi": 0.9940915620051425
+      },
+      "mean_msg_tokens": 10834.766666666666,
+      "kind": "fixture",
+      "paired_vs_ours": null,
+      "how_run": "rtp.loop.run_episode on the symbolic fixture",
+      "note": "fixture / reference planner, NOT a trained model"
+    },
+    {
+      "model": "Our Brain - Qwen3.5-4B (trained adapter)",
+      "status": "not run",
+      "n": null,
+      "success": null,
+      "plan_pass": null,
+      "mean_msg_tokens": null,
+      "kind": null,
+      "paired_vs_ours": null,
+      "how_run": "rtp.brain.LLMBrain via rtp.llm_client with identical prompt/decoding; needs a served checkpoint",
+      "note": "not run in this session: no adapter was loaded"
+    },
+    {
+      "model": "Qwen3.5-4B base (identical tools)",
+      "status": "not run",
+      "n": null,
+      "success": null,
+      "plan_pass": null,
+      "mean_msg_tokens": null,
+      "kind": null,
+      "paired_vs_ours": null,
+      "how_run": "same prompt/tools with harness off; fine-tune not performed",
+      "note": ""
+    },
+    {
+      "model": "pi0",
+      "status": "not run",
+      "n": null,
+      "success": null,
+      "plan_pass": null,
+      "mean_msg_tokens": null,
+      "kind": null,
+      "paired_vs_ours": null,
+      "how_run": "fine-tune on our own sim demos (adapter not set up)",
+      "note": ""
+    },
+    {
+      "model": "RDT",
+      "status": "not run",
+      "n": null,
+      "success": null,
+      "plan_pass": null,
+      "mean_msg_tokens": null,
+      "kind": null,
+      "paired_vs_ours": null,
+      "how_run": "fine-tune on our own sim demos (adapter not set up)",
+      "note": ""
+    },
+    {
+      "model": "ACT",
+      "status": "not run",
+      "n": null,
+      "success": null,
+      "plan_pass": null,
+      "mean_msg_tokens": null,
+      "kind": null,
+      "paired_vs_ours": null,
+      "how_run": "fine-tune on our own sim demos (adapter not set up)",
+      "note": ""
+    },
+    {
+      "model": "DP (diffusion policy)",
+      "status": "not run",
+      "n": null,
+      "success": null,
+      "plan_pass": null,
+      "mean_msg_tokens": null,
+      "kind": null,
+      "paired_vs_ours": null,
+      "how_run": "fine-tune on our own sim demos (adapter not set up)",
+      "note": ""
+    },
+    {
+      "model": "DP3",
+      "status": "not run",
+      "n": null,
+      "success": null,
+      "plan_pass": null,
+      "mean_msg_tokens": null,
+      "kind": null,
+      "paired_vs_ours": null,
+      "how_run": "symbolic-skill / RoboTwin adapter (not set up)",
+      "note": ""
+    },
+    {
+      "model": "Frontier model as zero-shot Brain",
+      "status": "not run",
+      "n": null,
+      "success": null,
+      "plan_pass": null,
+      "mean_msg_tokens": null,
+      "kind": null,
+      "paired_vs_ours": null,
+      "how_run": "Kaggle-hosted teacher as Brain via rtp.llm_client (needs skill + CLI auth)",
+      "note": ""
+    }
+  ]
+}

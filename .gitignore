@@ -34,3 +34,6 @@ paper/*.pdf.bak
 .DS_Store
 
 .env
+
+# downloaded asset binaries (kept locally / on Kaggle, never in git)
+assets/cache/

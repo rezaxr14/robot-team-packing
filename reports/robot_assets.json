@@ -1,0 +1,16 @@
+{
+  "source": "google-deepmind/mujoco_menagerie",
+  "license": "Apache-2.0",
+  "models": {
+    "franka_fr3_v2": {
+      "files": 66,
+      "xml_files": 2,
+      "bytes": 61659131
+    },
+    "franka_fr3_duo": {
+      "files": 71,
+      "xml_files": 4,
+      "bytes": 142484029
+    }
+  }
+}

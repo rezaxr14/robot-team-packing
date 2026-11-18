@@ -1,0 +1,26 @@
+{
+  "generated_at": "2026-11-18T20:51:44.992664+00:00",
+  "profile": "local_4050",
+  "n_requested": 6,
+  "counts": {
+    "total": 6,
+    "by_source": {
+      "scripted-teacher": 6
+    }
+  },
+  "sources": [
+    "scripted-teacher"
+  ],
+  "frontier_status": "unavailable: RTP_SERVE_URL is unset",
+  "frontier_model": null,
+  "frontier_attempts": 0,
+  "frontier_errors": 0,
+  "frontier_traces": 0,
+  "trace_path": "/home/reza/Projects/robot_team/data/local_4050/cot_traces.jsonl",
+  "style": "brief",
+  "seed_range": [
+    0,
+    5
+  ],
+  "note": "No frontier model was run. All traces come from ScriptedBrain, a deterministic teacher/fixture on real harness retrieval and datagen scenes; they are not LLM evidence."
+}
