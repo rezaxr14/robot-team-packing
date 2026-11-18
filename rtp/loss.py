@@ -84,12 +84,18 @@ def chunked_cross_entropy(head, hidden, targets, *, chunk_tokens: int = DEFAULT_
 
 def chunked_lm_loss(model, input_ids: torch.Tensor, *, chunk_tokens: int = DEFAULT_CHUNK_TOKENS,
                     attention_mask: torch.Tensor | None = None, ignore_index: int = -100,
-                    backbone_kwargs: dict | None = None) -> torch.Tensor:
-    """Causal-LM loss with logits produced chunk by chunk (one full-size tensor is never built)."""
+                    backbone_kwargs: dict | None = None,
+                    labels: torch.Tensor | None = None) -> torch.Tensor:
+    """Causal-LM loss with logits produced chunk by chunk (one full-size tensor is never built).
+
+    ``labels`` (same shape as ``input_ids``) lets prompt positions be masked with ``ignore_index``,
+    which is what SFT on prompt/completion pairs needs; without it every token is a target.
+    """
     backbone = find_backbone(model)
     head = find_head(model)
     out = backbone(input_ids=input_ids, attention_mask=attention_mask, use_cache=False,
                    **(backbone_kwargs or {}))
     hidden = out.last_hidden_state if hasattr(out, "last_hidden_state") else out[0]
-    return chunked_cross_entropy(head, hidden[:, :-1], input_ids[:, 1:],
+    targets = input_ids[:, 1:] if labels is None else labels[:, 1:]
+    return chunked_cross_entropy(head, hidden[:, :-1], targets,
                                  chunk_tokens=chunk_tokens, ignore_index=ignore_index)

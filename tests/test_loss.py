@@ -111,3 +111,19 @@ def test_a_model_without_a_head_or_backbone_says_so():
         find_backbone(nn.Linear(4, 4))
     with pytest.raises(ValueError):
         chunked_cross_entropy(nn.Linear(4, 4), torch.zeros(1, 3, 4), torch.full((1, 3), -100))
+
+
+def test_prompt_masking_only_counts_completion_targets():
+    """SFT labels mask the prompt; the loss must average over the completion tokens only."""
+    torch.manual_seed(0)
+    model = TinyLM()
+    x = ids(t=12)
+    labels = x.clone()
+    labels[:, :7] = -100                                   # mask the prompt
+    got = chunked_lm_loss(model, x, labels=labels, chunk_tokens=3)
+    logits = model(x).logits[:, :-1]
+    ref = F.cross_entropy(logits.reshape(-1, 53), labels[:, 1:].reshape(-1), ignore_index=-100)
+    assert torch.allclose(got, ref, atol=1e-6)
+    # unmasked labels reproduce the plain causal loss exactly
+    plain = chunked_lm_loss(model, x, labels=x, chunk_tokens=5)
+    assert torch.allclose(plain, reference(model, x), atol=1e-6)

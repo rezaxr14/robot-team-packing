@@ -14,18 +14,26 @@ the simulator is **Isaac Lab 3.0 + Newton** and nothing else.
 `rtp` = **Robot Team Protocol** (typed bus + harness). The symbolic world is a **test fixture and
 reward source, not a physics result**.
 
-## Current status (P0)
+## Current status (P2)
 
-* `pytest tests -q` → **192 passed, 10 skipped, 40 s** on the 4050 laptop (2026-11-18; D-36).
+* `pytest tests -q` -> **237 passed, 10 skipped, ~42 s** on the 4050 laptop (2026-11-18). The 10
+  skips are all "VIKI-R clone not available" (inert Track-A scorer).
 * The legacy 2.3-era Isaac launcher stack is purged (D-35): no `ops/12_env_isaac.sh`, no EULA export,
   no RT-core preflight branch, no `isaac/bringup/`, no VIKI/LLaMA-Factory launcher stages.
 * Qwen3.5-4B is downloaded and sha256-verified; `reports/qwen35_modules.json` (gate G-1) and
-  `reports/g2_fastpath.json` (gate G-2) are produced by the scripts under `ops/`.
+  `reports/g2_fastpath.json` (gate G-2: 100 steps, 329.5 tok/s) are produced by `ops/`.
 * The 4050's context ceiling is **measured, not assumed** (D-38): 512 tokens fit at batch 1
-  (5.42 GB peak), 768 OOM — `reports/seq_ceiling_local_4050*.json`. `local_4050.max_len` is 512;
+  (5.42 GB peak), 768 OOM - `reports/seq_ceiling_local_4050*.json`. `local_4050.max_len` is 512;
   long-context SFT runs on `local_4090` or `kaggle_t4x2`.
-* Gate G-3 (Isaac Lab 3.0 + Newton run on each profile GPU) is **not run yet** — it needs the large
-  Isaac/Newton install and a T4 session; see `IMPLEMENTATION_PLAN.md` §12.
+* **G-3 PASS on the 4050** (D-39): Isaac Lab v3.0.0 from its own `uv.lock` with Newton +
+  `mujoco-warp` and **no Isaac Sim / no PhysX**; 30 steps at 21 steps/s with rgb+depth contracts
+  (`ops/g3_sim.py`, `reports/g3_sim.json`). Kaggle T4 is still unverified.
+* **Storage is live** (D-40): every asset resolves **local cache -> attached Kaggle dataset ->
+  our private Kaggle dataset -> our private HF repo** (`Reza-Nadimi/robot-team-packing`). Round-trips
+  for publish/fetch/checkpoint are measured, not assumed.
+* **Training resumes mid-epoch** (D-41): checkpoints carry optimizer + RNG + batch cursor, batch order
+  is a pure function of `(seed, epoch)`, and `rtp/checkpoints.py` pushes every N steps to HF and prunes
+  older steps. Resumed-at-step-3-of-8 runs finish at step 8 with the same losses.
 
 ## Layout (current code)
 
@@ -48,7 +56,11 @@ reward source, not a physics result**.
 | `rtp/toolbrain.py` | multi-turn LLM Brain with tools (check_rule, query_scene, look, dry_run, submit_plan) |
 | `rtp/profiles.py` | hardware profiles, isolated per-profile paths, runtime fallbacks (P1) |
 | `rtp/assetcache.py` | per-profile asset cache: attach → local → fetch, manifest-checked, path-escape guarded (P1) |
-| `rtp/loss.py` | chunked causal-LM loss: never builds `[tokens x 248k vocab]` logits (D-37) |
+| `rtp/loss.py` | chunked causal-LM loss: never builds `[tokens x 248k vocab]` logits; `labels=` masks prompts (D-37) |
+| `rtp/trainer.py` | SFT loop with gradient accumulation, cosine LR and **exact mid-epoch resume** (D-41) |
+| `rtp/checkpoints.py` | `on_checkpoint` policy: save every N steps, push to HF, prune old steps, fetch latest to resume |
+| `rtp/remotes.py` | local -> Kaggle dataset -> HF resolution, private publish, resumable checkpoint transfer (D-40) |
+| `ops/hub.py` | CLI: `status`, `publish`, `fetch`, `checkpoint-push`, `checkpoint-latest` |
 | `isaac/` | 2.3-era modules (`packing_sim.py`, `team_env.py`, `cameras.py`, ...) awaiting the P2 port to Isaac Lab 3.0 + Newton |
 | `ops/preflight.py` | GPU/arch/system report and install-branch recommendation (Newton floor, Warp pin) |
 | `ops/seq_ceiling.py` | measures how many tokens a profile can train at, instead of trusting `max_len` |

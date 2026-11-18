@@ -119,6 +119,13 @@ def wheelhouse_spec(*, python: str, torch: str, cuda: str, sm: str,
     )
 
 
+def data_spec_kind(kind: str, name: str, revision: str = "", source: str = "") -> AssetSpec:
+    """A data spec without a profile (for a global dataset published from ops/hub.py)."""
+    return AssetSpec(kind="data",
+                     slug=f"rtp-data-{slugify(kind)}-{slugify(name)}-{slugify(revision or 'local')}",
+                     source=source, revision=revision, tags={"kind": kind, "name": name})
+
+
 def adapters_spec(profile: Profile, stage: str, config_hash: str) -> AssetSpec:
     """``rtp-adapters-<profile>-<stage>-<hash8>`` (plan §11)."""
     return AssetSpec(kind="adapters", slug=f"rtp-adapters-{slugify(profile.name)}-{slugify(stage)}-{config_hash[:8]}",
