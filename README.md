@@ -57,7 +57,8 @@ reward source, not a physics result**.
 | `ops/download_model.sh` | resumable, sha256-verified HF download |
 | `ops/g1_module_dump.py` | gate G-1: real module tree of the checkpoint (meta device, no weights) |
 | `ops/g2_fastpath.py` | gate G-2: DeltaNet kernel binding + optional QLoRA training smoke |
-| `ops/plan.py` | stage registry for the phases that exist (`p0`, `bundle`) with logging/resume |
+| `ops/plan.py` | stage registry for the phases that exist (`p0`, `p2`, `bundle`) with logging/resume |
+| `ops/g3_sim.py` | gate G-3: Newton-only Isaac Lab scene stepping with rgb+depth on this GPU |
 | `ops/stage.py`, `ops/bundle.py` | stage runner (timing, logs, skip-if-done) and report bundler |
 | `harness_files/brain/{rules,skills}.md` | the Brain's own rules and skills (prompt material + format fixture) |
 
@@ -70,6 +71,8 @@ ops/build_wheelhouse.py --profile kaggle_t4x2 --out ~/wheelhouses  # once, on a 
 ops/install.sh --profile kaggle_t4x2 --wheelhouse /kaggle/input/rtp-wheels-...   # offline, no index
 ops/download_model.sh Qwen/Qwen3.5-4B ~/models/Qwen3.5-4B
 source ops/env.sh && python ops/plan.py list      # p0: preflight, model integrity, G-1, G-2
+ops/install.sh --isaac                            # Newton-only Isaac Lab 3.0 venv (uv sync at the tag)
+source ops/env.sh && python ops/plan.py run p2    # G-3: rgb+depth from the Newton Warp renderer
 python -m pytest tests -q
 ```
 

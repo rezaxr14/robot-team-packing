@@ -70,7 +70,7 @@ def build_scene(width: int, height: int, envs: int, device: str):
         prim_path="{ENV_REGEX_NS}/Camera",
         width=width, height=height,
         data_types=["rgb", "depth"],
-        offset=CameraCfg.OffsetCfg(pos=(0.0, -2.0, 1.2), rot=(-0.3536, 0.3536, -0.1464, 0.8536),
+        offset=CameraCfg.OffsetCfg(pos=(0.0, 0.0, 1.8), rot=(0.0, 0.0, 0.0, 1.0),
                                    convention="opengl"),
         spawn=sim_utils.PinholeCameraCfg(clipping_range=(0.05, 50.0)),
         renderer_cfg=NewtonWarpRendererCfg(),
