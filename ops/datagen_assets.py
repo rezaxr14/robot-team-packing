@@ -21,6 +21,8 @@ sys.path.insert(0, str(ROOT))
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--profile", default="local_4050")
+    ap.add_argument("--catalog", default="assets/catalog.json")
+    ap.add_argument("--selection", default="assets/selection_downloaded.json")
     ap.add_argument("--n", type=int, default=64)
     ap.add_argument("--seed0", type=int, default=200000)
     ap.add_argument("--out", default="")
@@ -34,7 +36,7 @@ def main(argv=None) -> int:
     from rtp.scene_assets import resolve_assets, to_world_objects, write_manifest
 
     try:
-        records = resolve_assets()
+        records = resolve_assets(ROOT / a.catalog, ROOT / a.selection)
     except (FileNotFoundError, ValueError) as exc:
         print(f"assets not ready: {exc}")
         return 2

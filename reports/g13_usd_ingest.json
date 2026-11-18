@@ -39,10 +39,18 @@
       "masses_finite": true
     },
     "dishware_mug_a01": {
-      "error": "no root USD found"
+      "file": "assets/cache/nvidia__simready-assets/dishware_mug_a01/simready_usd/sm_dishware_mug_a01_01.usda",
+      "bodies": 1,
+      "shapes": 182,
+      "mass_kg": 0.1,
+      "masses_finite": true
     },
     "dishware_plate_a01": {
-      "error": "no root USD found"
+      "file": "assets/cache/nvidia__simready-assets/dishware_plate_a01/simready_usd/sm_dishware_plate_a01_01.usda",
+      "bodies": 1,
+      "shapes": 17,
+      "mass_kg": 0.90448,
+      "masses_finite": true
     },
     "chair_office_amf_black_a01": {
       "file": "assets/cache/nvidia__simready-assets/chair_office_amf_black_a01/simready_usd/sm_chair_office_amf_black_a01_01.usd",
@@ -55,7 +63,7 @@
       "error": "ValueError: Found 12 joint(s) not belonging to any articulation. Call add_articulation() for all joints. Orphan joints: ['/RootNode/Joints/joint_glass_01_joint_00', '/RootNode/Joints/joint_gla"
     },
     "paperbag_a01": {
-      "error": "no root USD found"
+      "error": "ErrorException: \n\tError in 'pxrInternal_v0_26_8__pxrReserved__::SdfLayer::_OpenLayerAndUnlockRegistry' at line 3517 in file .conan2/data/b/openu6ff0a704ef94d/b/pxr/usd/sdf/layer.cpp : 'Cannot dete"
     },
     "food_produce_dragonFruit_a01": {
       "file": "assets/cache/nvidia__simready-assets/food_produce_dragonFruit_a01/simready_usd/sm_food_produce_dragonFruit_a01_01.usd",
@@ -75,7 +83,7 @@
       "error": "ValueError: Found 2 joint(s) not belonging to any articulation. Call add_articulation() for all joints. Orphan joints: ['/RootNode/Joints/joint_door_01_joint_00', '/RootNode/Joints/joint_door_"
     },
     "furniture_counter_coffeeStation_a01": {
-      "error": "RuntimeError: Failed to allocate 2575056 bytes on device 'cuda:0'"
+      "error": "ValueError: Found 13 joint(s) not belonging to any articulation. Call add_articulation() for all joints. Orphan joints: ['/RootNode/Joints/joint_glass_01_joint_00', '/RootNode/Joints/joint_hin"
     }
   },
   "pending": [
@@ -85,7 +93,7 @@
     "Textures visible in the Newton Warp renderer (textures were deliberately not downloaded).",
     "Build the full two-FR3 kitchen scene from these packages."
   ],
-  "imported": 7,
+  "imported": 9,
   "attempted": 14,
   "result": "PARTIAL"
 }

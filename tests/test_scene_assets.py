@@ -51,11 +51,12 @@ def test_world_objects_and_manifest_keep_provenance(tmp_path):
     d = make_catalog(tmp_path)
     recs = resolve_assets(d / "catalog.json", d / "selection.json")
     objs = to_world_objects(recs, seed=0)
-    assert len(objs) == 3 and len({o.name for o in objs}) == 3
-    assert objs[1].cls == "lunchbox"                    # nearest-match class preserved
+    assert len(objs) == 2 and len({o.name for o in objs}) == 2   # chair is scene furniture
+    assert any(o.cls == "lunchbox" for o in objs)       # nearest-match class preserved
     assert objs[0].mass == 1.5                           # measured asset mass wins
     p = write_manifest(recs, objs, d / "scene.json")
     data = json.loads(p.read_text())
     assert "NOT a Newton physics result" in data["evidence_class"]
     assert data["assets"][1]["nearest_match"] is True
     assert data["objects"][0]["mass_kg"] == 1.5
+    assert all(o["class"] in ("book", "lunchbox") for o in data["objects"])
