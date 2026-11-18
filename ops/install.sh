@@ -7,6 +7,7 @@
 #   ops/install.sh --profile local_4050 --dry-run      # print the plan, change nothing
 #   ops/install.sh --profile local_4090 --check        # verify an existing env, install nothing
 #   ops/install.sh --profile kaggle_t4x2 --wheelhouse /kaggle/input/rtp-wheels-...  # offline
+#   ops/install.sh --profile kaggle_t4x2 --print-packages  # machine-readable plan (build_wheelhouse)
 #   ops/install.sh --isaac                             # SEPARATE Isaac Sim / Newton venv
 #   ops/install.sh --tex                               # TinyTeX, user-level, no sudo
 #
@@ -24,10 +25,12 @@ RTP_HOME="${RTP_HOME:-$HOME/rtp_work}"
 VENVS_ROOT="${RTP_VENVS:-$RTP_HOME/venvs}"
 PY="${RTP_PYTHON:-3.12}"
 TORCH_INDEX="${RTP_TORCH_INDEX:-https://download.pytorch.org/whl/cu128}"
-DRY=0; FORCE=0; CHECK=0; ISAAC=0; TEX=0; FLASH=auto; PROFILE=""; VENV=""; DRIVER_MAJOR=""; WHEELHOUSE=""
+DRY=0; FORCE=0; CHECK=0; ISAAC=0; TEX=0; FLASH=auto; PROFILE=""; VENV=""; DRIVER_MAJOR=""; WHEELHOUSE=""; PRINT_PKGS=0
 ISAACLAB_REF="${ISAACLAB_REF:-v3.0.0}"   # D-25: Isaac Lab 3.0 (GA) + Newton only
 
-usage() { sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
+# Print the leading comment block (after the shebang) as the help text: editing the header never
+# needs a matching line range to be updated.
+usage() { awk 'NR > 1 { if (!/^#/) exit; sub(/^# ?/, ""); print }' "$0"; exit "${1:-0}"; }
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -46,6 +49,7 @@ while [ $# -gt 0 ]; do
     --torch-index) TORCH_INDEX="${2:?}"; shift 2 ;;
     --wheelhouse) WHEELHOUSE="${2:?--wheelhouse needs a directory}"; shift 2 ;;
     --wheelhouse=*) WHEELHOUSE="${1#*=}"; shift ;;
+    --print-packages) PRINT_PKGS=1; shift ;;
     -h|--help) usage 0 ;;
     *) echo "unknown argument: $1" >&2; usage 2 ;;
   esac
@@ -93,6 +97,21 @@ DEV=(pytest pyflakes)
 PKGS=("${CORE[@]}" "${ML[@]}" "${RETRIEVAL[@]}" "${AGENTS[@]}" "${EYES[@]}" "${SCIENCE[@]}" "${DEV[@]}")
 EXTRA=()
 [ "$QLORA" = 1 ] && EXTRA+=(bitsandbytes)
+
+if [ "$PRINT_PKGS" = 1 ]; then
+  # The package set lives here and nowhere else: ops/build_wheelhouse.py reads this instead of
+  # keeping a second copy that drifts. `core` comes from the torch index, `pkgs`/`extra` from PyPI.
+  [ -n "$PROFILE" ] || { echo "--print-packages needs --profile" >&2; exit 2; }
+  printf 'profile=%s\n'   "$PROFILE"
+  printf 'venv=%s\n'      "$VENV"
+  printf 'python=%s\n'    "$PY"
+  printf 'torch_index=%s\n' "$TORCH_INDEX"
+  printf 'flash=%s\n'     "$([ "$WANT_FLASH" = 1 ] && [ "$FLASH" != off ] && echo 1 || echo 0)"
+  printf 'core=%s\n'      "${CORE[*]}"
+  printf 'pkgs=%s\n'      "${ML[*]} ${RETRIEVAL[*]} ${AGENTS[*]} ${EYES[*]} ${SCIENCE[*]} ${DEV[*]}"
+  printf 'extra=%s\n'     "${EXTRA[*]:-}"
+  exit 0
+fi
 
 # driver -> warp pin for Newton (README: Warp >=1.18 needs driver R580+; older: warp-lang==1.17.0)
 if [ -z "$DRIVER_MAJOR" ] && command -v nvidia-smi >/dev/null 2>&1; then

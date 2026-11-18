@@ -52,6 +52,7 @@ reward source, not a physics result**.
 | `isaac/` | 2.3-era modules (`packing_sim.py`, `team_env.py`, `cameras.py`, ...) awaiting the P2 port to Isaac Lab 3.0 + Newton |
 | `ops/preflight.py` | GPU/arch/system report and install-branch recommendation (Newton floor, Warp pin) |
 | `ops/seq_ceiling.py` | measures how many tokens a profile can train at, instead of trusting `max_len` |
+| `ops/build_wheelhouse.py` | resolves the profile's package set into an offline, tag-named wheelhouse |
 | `ops/install.sh` | one installer per profile (`--profile`), optional Isaac Lab 3.0 + Newton venv |
 | `ops/download_model.sh` | resumable, sha256-verified HF download |
 | `ops/g1_module_dump.py` | gate G-1: real module tree of the checkpoint (meta device, no weights) |
@@ -65,6 +66,7 @@ reward source, not a physics result**.
 ```bash
 ops/install.sh --profile local_4050 --dry-run     # what would be installed, per profile
 ops/install.sh --profile local_4050               # torch + training/retrieval/agents/eyes venv
+ops/build_wheelhouse.py --profile kaggle_t4x2 --out ~/wheelhouses  # once, on a networked box
 ops/install.sh --profile kaggle_t4x2 --wheelhouse /kaggle/input/rtp-wheels-...   # offline, no index
 ops/download_model.sh Qwen/Qwen3.5-4B ~/models/Qwen3.5-4B
 source ops/env.sh && python ops/plan.py list      # p0: preflight, model integrity, G-1, G-2
