@@ -9,6 +9,7 @@ __pycache__/
 reports/*
 !reports/qwen35_modules.json
 !reports/g2_fastpath.json
+!reports/seq_ceiling_*.json
 data/
 runs/
 results/

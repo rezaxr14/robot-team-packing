@@ -21,6 +21,9 @@ reward source, not a physics result**.
   no RT-core preflight branch, no `isaac/bringup/`, no VIKI/LLaMA-Factory launcher stages.
 * Qwen3.5-4B is downloaded and sha256-verified; `reports/qwen35_modules.json` (gate G-1) and
   `reports/g2_fastpath.json` (gate G-2) are produced by the scripts under `ops/`.
+* The 4050's context ceiling is **measured, not assumed** (D-38): 512 tokens fit at batch 1
+  (5.42 GB peak), 768 OOM — `reports/seq_ceiling_local_4050*.json`. `local_4050.max_len` is 512;
+  long-context SFT runs on `local_4090` or `kaggle_t4x2`.
 * Gate G-3 (Isaac Lab 3.0 + Newton run on each profile GPU) is **not run yet** — it needs the large
   Isaac/Newton install and a T4 session; see `IMPLEMENTATION_PLAN.md` §12.
 
@@ -48,6 +51,7 @@ reward source, not a physics result**.
 | `rtp/loss.py` | chunked causal-LM loss: never builds `[tokens x 248k vocab]` logits (D-37) |
 | `isaac/` | 2.3-era modules (`packing_sim.py`, `team_env.py`, `cameras.py`, ...) awaiting the P2 port to Isaac Lab 3.0 + Newton |
 | `ops/preflight.py` | GPU/arch/system report and install-branch recommendation (Newton floor, Warp pin) |
+| `ops/seq_ceiling.py` | measures how many tokens a profile can train at, instead of trusting `max_len` |
 | `ops/install.sh` | one installer per profile (`--profile`), optional Isaac Lab 3.0 + Newton venv |
 | `ops/download_model.sh` | resumable, sha256-verified HF download |
 | `ops/g1_module_dump.py` | gate G-1: real module tree of the checkpoint (meta device, no weights) |

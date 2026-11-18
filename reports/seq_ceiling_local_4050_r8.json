@@ -1,0 +1,24 @@
+{
+  "profile": "local_4050",
+  "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "vram_total_gb": 5.64,
+  "batch": 1,
+  "lora_r": 8,
+  "loss_chunk_tokens": 128,
+  "attn": "flash_attention_2",
+  "torch": "2.15.0+cu132",
+  "lengths": {
+    "512": {
+      "loss": 0.5500847101211548,
+      "peak_vram_gb": 5.2,
+      "seconds": 2.26,
+      "fits": true
+    },
+    "1024": {
+      "fits": false,
+      "error": "CUDA out of memory. Tried to allocate 122.00 MiB. GPU 0 has a total capacity of 5.64 GiB of which 47.31 MiB is free. Process 2479 has 7.17 MiB memory in use. Including non-PyTorch memory, this process"
+    }
+  },
+  "longest_fitting": 512,
+  "headroom_gb": 0.44
+}

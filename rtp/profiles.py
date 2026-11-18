@@ -183,10 +183,13 @@ def _profile_table(root: Path) -> dict[str, Profile]:
             name="local_4050", accel="cuda", gpu="RTX 4050 Laptop", n_gpu=1, vram_gb=6.0,
             tuning="qlora", dtype="bfloat16", attn="flash_attention_2",
             lora_r=32, lora_alpha=64, lora_dropout=0.05, lora_targets=text_vision,
-            micro_batch=1, grad_accum=16, grad_ckpt=True, max_len=8192,
+            micro_batch=1, grad_accum=16, grad_ckpt=True, max_len=512,
             eval_seeds=(0, 1, 2), serve={"mode": "4bit", "backend": "hf"},
             physics="isaac_newton", paper_class="dev",
-            notes="dev/SMOKE: QLoRA is the only way the 4.66 B model fits; tiny Newton env counts only [G->G-3].",
+            notes=("dev/SMOKE: QLoRA is the only way the 4.66 B model fits; tiny Newton env counts "
+                   "only [G->G-3]. max_len is measured, not assumed: 512 tokens fit at batch 1 "
+                   "(5.42 GB peak), 768 OOM and 1024 OOM even at r=8 (reports/seq_ceiling_local_4050*.json); "
+                   "long-context SFT belongs on local_4090 or kaggle_t4x2."),
         ),
         # 24 GB: bf16 LoRA + FlashAttention-2, the local reference run.
         "local_4090": _p(
