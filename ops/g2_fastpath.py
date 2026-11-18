@@ -15,9 +15,14 @@ from __future__ import annotations
 import argparse
 import importlib
 import json
+import os
 import sys
 import time
 from pathlib import Path
+
+# 6 GB laptops fragment; must be set before torch initialises CUDA.
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # so `rtp` imports when run as a script
 
 
 def kernel_versions() -> dict:
@@ -94,31 +99,55 @@ def functional_check() -> dict:
     return out
 
 
-def training_smoke(model_dir: str, steps: int, seq_len: int) -> dict:
+def training_smoke(model_dir: str, steps: int, seq_len: int, attn: str = "auto", batch: int = 1,
+                   loss_chunk: int = 128) -> dict:
     """4-bit QLoRA on the adapter targets, a synthetic batch, `steps` optimizer steps."""
     import torch
     from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
     from transformers import AutoModelForImageTextToText, AutoTokenizer, BitsAndBytesConfig
 
+    from rtp.loss import chunked_lm_loss
+
     tok = AutoTokenizer.from_pretrained(model_dir)
     bnb = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
                              bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_use_double_quant=True)
+    kwargs = {} if attn == "auto" else {"attn_implementation": attn}
     model = AutoModelForImageTextToText.from_pretrained(model_dir, quantization_config=bnb,
-                                                        device_map={"": 0}, dtype=torch.bfloat16)
+                                                        device_map={"": 0}, dtype=torch.bfloat16, **kwargs)
     model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
     lora = LoraConfig(r=8, lora_alpha=16, lora_dropout=0.05, bias="none", task_type="CAUSAL_LM",
                       target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "in_proj_qkv", "in_proj_z",
                                       "in_proj_b", "in_proj_a", "out_proj", "gate_proj", "up_proj", "down_proj"])
     model = get_peft_model(model, lora)
     model.train()
-    text = "The robot looks at the table, moves its left arm to the cup and places it in the tray."
-    ids = tok(text, return_tensors="pt", truncation=True, max_length=seq_len).input_ids.to(0)
-    ids = ids.repeat(2, 1)
+    # Fill the requested sequence length from real text: a 21-token sentence would measure the
+    # optimiser overhead, not the kernel. Cycling several scenes keeps the loss from collapsing to 0.
+    scenes = [
+        "The left arm reaches for the red cup on the table and places it in the tray.",
+        "The right arm picks up the blue bottle and sets it upright in the front compartment.",
+        "Look at the counter: the bowl is behind the kettle, so move the kettle aside first.",
+        "Grasp the apple with force five newtons, lift it, and place it in the main compartment.",
+        "The two arms hand the box from left to right above the laptop, then retreat together.",
+        "Check the shelf with the eye, zoom on the mug, and report its position before moving.",
+        "Weigh the packet on the scale, then place it flat in the front compartment of the bag.",
+        "The right arm is blocked by the cabinet door; open it, then continue with the plate.",
+    ]
+    batch_ids = []
+    for text in scenes[: max(batch, 1)]:
+        row = tok(text, return_tensors="pt", add_special_tokens=False).input_ids[0]
+        if row.numel() < seq_len:
+            row = row.repeat(seq_len // row.numel() + 1)
+        row = row[:seq_len].unsqueeze(0)
+        if tok.bos_token_id is not None:
+            row[0, 0] = tok.bos_token_id
+        batch_ids.append(row.to(0))
     opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=1e-4)
     torch.cuda.reset_peak_memory_stats()
     losses, t0 = [], time.time()
-    for _ in range(steps):
-        loss = model(input_ids=ids, labels=ids).loss
+    for step in range(steps):
+        ids = batch_ids[step % len(batch_ids)]
+        # [tokens x 248k vocab] logits would be the memory wall; the loss is computed in chunks.
+        loss = chunked_lm_loss(model, ids, chunk_tokens=loss_chunk)
         loss.backward()
         opt.step()
         opt.zero_grad(set_to_none=True)
@@ -127,11 +156,14 @@ def training_smoke(model_dir: str, steps: int, seq_len: int) -> dict:
     dt = time.time() - t0
     return {
         "steps": steps,
-        "seq_len": int(ids.shape[1]),
+        "seq_len": int(batch_ids[0].shape[1]),
+        "batch": batch,
+        "attn_implementation": attn,
+        "loss_chunk_tokens": loss_chunk,
         "loss_first": losses[0],
         "loss_last": losses[-1],
         "all_finite": all(l == l and abs(l) != float("inf") for l in losses),
-        "tokens_per_s": round(steps * ids.numel() / dt, 1),
+        "tokens_per_s": round(steps * batch * int(batch_ids[0].shape[1]) / dt, 1),
         "seconds": round(dt, 2),
         "peak_vram_gb": round(torch.cuda.max_memory_allocated() / 1024 ** 3, 2),
         "trainable_params": sum(p.numel() for p in model.parameters() if p.requires_grad),
@@ -144,6 +176,9 @@ def main(argv=None) -> int:
     ap.add_argument("--out", default="reports/g2_fastpath.json")
     ap.add_argument("--steps", type=int, default=0, help="0 = binding check only; 100 = the gate's smoke")
     ap.add_argument("--seq-len", type=int, default=256)
+    ap.add_argument("--attn", default="auto", choices=["auto", "sdpa", "flash_attention_2"])
+    ap.add_argument("--batch", type=int, default=1, help="micro-batch; the 4050 profile uses 1")
+    ap.add_argument("--loss-chunk", type=int, default=128, help="tokens per LM-head chunk")
     a = ap.parse_args(argv)
 
     import torch
@@ -164,7 +199,7 @@ def main(argv=None) -> int:
         "result": "PASS" if fast and all(v["finite"] for k, v in func.items() if isinstance(v, dict)) else "FAIL",
     }
     if a.steps:
-        smoke = training_smoke(a.model, a.steps, a.seq_len)
+        smoke = training_smoke(a.model, a.steps, a.seq_len, a.attn, a.batch, a.loss_chunk)
         report["training_smoke"] = smoke
         if not smoke["all_finite"]:
             report["result"] = "FAIL"
@@ -183,8 +218,10 @@ def main(argv=None) -> int:
             print(f"  {k:26s} shape={v.get('shape')} finite={v.get('finite')}")
     if a.steps:
         s = report["training_smoke"]
-        print(f"  smoke: steps={s['steps']} loss {s['loss_first']:.4f} -> {s['loss_last']:.4f} "
-              f"tokens/s={s['tokens_per_s']} peak={s['peak_vram_gb']} GB")
+        print(f"  smoke: steps={s['steps']} seq={s['seq_len']} batch={s['batch']} attn={s['attn_implementation']}"
+              f" loss-chunk={s['loss_chunk_tokens']} loss {s['loss_first']:.4f} -> {s['loss_last']:.4f}"
+              f" tokens/s={s['tokens_per_s']}"
+              f" peak={s['peak_vram_gb']} GB")
     print(f"  -> {report['result']}  ({out})")
     return 0 if report["result"] == "PASS" else 1
 

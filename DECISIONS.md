@@ -94,7 +94,8 @@ quoted as fact, **[!]** blocked on the user.
 | D-31 | Layers: L0 hardware safety / L1 1 kHz impedance with plan-clock gate, leash, clamps / L2 planner, skills, bounded learned deltas / L3 Brain. |
 | D-32 | Brain adapters, profiles, isolation, Qdrant+BM25, LangGraph unchanged from the V2 architecture. |
 | D-35 | **P0 legacy purge.** Deleted with the old stack: `ops/12_env_isaac.sh`, the `OMNI_KIT_ACCEPT_EULA` export, the RT-core preflight branch, `isaac/bringup/`, the VIKI/LLaMA-Factory launcher pieces (`ops/13_models.sh`, `ops/14_env_lf.sh`, `ops/make_lf_config.py`, `ops/list_viki_collection.py`, `ops/config.example.sh`, `tests/test_cli_integration.py`), and the script-level tests of the deleted Track-A CLIs. `ops/plan.py` is now a thin registry of stages that exist (`p0`, `bundle`), not a store of paths to deleted files. `rtp/trackA*.py` stay as an inert scoring library with its (VIKI-skipped) tests; nothing in the new pipeline calls them. |
-| D-36 | **Measured test baseline.** `pytest tests -q` = **165 passed, 10 skipped, 46 s** in the training venv (Python 3.12.16, torch 2.15.0+cu132, transformers 5.23.0) on this 4050 laptop. The plan's earlier 137/13/15 s figure was the CPU-only sandbox before the training stack was installed; this row supersedes it as the current baseline. |
+| D-36 | **Measured test baseline.** `pytest tests -q` = **192 passed, 10 skipped, 40 s** in the training venv (Python 3.12.16, torch 2.15.0+cu132, transformers 5.23.0, flash-attn 2.8.3.post2) on this 4050 laptop; the 10 skips are all "VIKI-R clone not available" (inert Track-A scorer). The plan's 137/13/15 s figure was the CPU-only sandbox before the training stack existed; this row supersedes it. |
+| D-37 | **Chunked LM loss.** The causal-LM loss is computed in token chunks over the LM head (`rtp/loss.py`), so the `[tokens x 248,320 x 4 B]` float32 logits of a long sequence are never materialised (8.1 GB at 8 k tokens, 16.3 GB at 16 k). Default 128 tokens/chunk ≈ 127 MB of logits, sized for the 6 GB 4050; SFT/GRPO may raise it on 24/96 GB cards. GRPO's own log-prob memory knobs are a P8 concern; the shared helper is what the training paths call. |
 
 ## E. Gates (open items closed by measurement): G-1…G-12 in `IMPLEMENTATION_PLAN.md` §12.
 
@@ -108,10 +109,21 @@ quoted as fact, **[!]** blocked on the user.
   Checkpoint tensors, read from the safetensors headers: **738 tensors, 4,659,865,088 parameters**
   (language 4.206 B, vision 333.5 M, MTP 120.6 M); `lm_head` is tied (absent from the index); the model
   graph instantiates 5,174,964,736 parameters because it materialises an untied `lm_head` and no MTP.
-* **G-2 PASS (binding)** — `ops/g2_fastpath.py` resolves the four Qwen3.5 DeltaNet kernels to
-  `causal_conv1d.causal_conv1d_interface.{causal_conv1d_fn,causal_conv1d_update}` and
-  `fla.ops.gated_delta_rule.{chunk,fused_recurrent}.…` (versions 1.7.0 / 0.6.0), and both tiny GPU
-  calls are finite on the 4050 (cc 8.9). The 100-step finite-loss smoke is still to run; `flash-attn`
-  is not in this venv yet (PyPI sdist 2.8.3.post2 is built locally for sm_89 only).
+* **G-2 PASS** — `ops/g2_fastpath.py` on the 4050 (cc 8.9, driver 550.54, torch 2.15.0+cu132):
+  * binding: the four Qwen3.5 DeltaNet kernels resolve to
+    `causal_conv1d.causal_conv1d_interface.{causal_conv1d_fn,causal_conv1d_update}` (1.7.0) and
+    `fla.ops.gated_delta_rule.{chunk,fused_recurrent}.…` (0.6.0); both tiny GPU calls are finite.
+  * smoke: **100 steps, seq 256, batch 1, loss chunk 128, flash_attention_2, 329.5 tokens/s,
+    peak 4.99 GB VRAM, 16,232,448 trainable params, all losses finite** (0.7804 -> 5.0e-06). The
+    collapse is memorisation of a fixed 8-scene cycle, not a quality result: the gate checks the
+    kernel path, finiteness and the memory envelope, not generalisation.
+  * `flash-attn 2.8.3.post2` is built locally from the PyPI sdist for sm_89 only (fwd+bwd verified);
+    `flash_linear_attention` is absent by design (FLA is the DeltaNet provider). Building the two
+    extensions needs `nvidia-*` pinned to 13.2.86 (13.5 nvvm vs 13.2 ptxas breaks), a
+    `libcudart.so -> libcudart.so.13` symlink, `--no-build-isolation`, and native-arch only
+    (`CAUSAL_CONV1D_ARCHS=8.9`, `FLASH_ATTN_CUDA_ARCHS=89`); flash-attn needed `-std=c++20`.
+  * measured ceiling: at 6 GB, batch 2 x 256 tokens OOMs during LoRA injection (4.28 GB allocated
+    before the first forward), so `local_4050` keeps `micro_batch=1`; batch 1 x 256 fits at 4.99 GB
+    with the chunked loss (D-37).
 * **G-3 not run** — needs the Isaac Lab 3.0 + Newton install; blocked on time/space, not on a decision.
 

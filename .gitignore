@@ -12,6 +12,7 @@ reports/*
 data/
 runs/
 results/
+models/
 
 # paper build products
 paper/*.aux
@@ -29,3 +30,5 @@ paper/*.pdf.bak
 .vscode/
 .idea/
 .DS_Store
+
+.env

@@ -11,7 +11,7 @@
     "torch": "2.15.0+cu132",
     "causal_conv1d": "1.7.0",
     "fla": "0.6.0",
-    "flash_attn": "MISSING (ModuleNotFoundError)",
+    "flash_attn": "2.8.3.post2",
     "flash_linear_attention": "MISSING (ModuleNotFoundError)"
   },
   "binding": {
@@ -54,5 +54,19 @@
     "device": "cuda",
     "dtype": "torch.bfloat16"
   },
-  "result": "PASS"
+  "result": "PASS",
+  "training_smoke": {
+    "steps": 100,
+    "seq_len": 256,
+    "batch": 1,
+    "attn_implementation": "flash_attention_2",
+    "loss_chunk_tokens": 128,
+    "loss_first": 0.7803927063941956,
+    "loss_last": 4.9955592658079695e-06,
+    "all_finite": true,
+    "tokens_per_s": 329.5,
+    "seconds": 77.69,
+    "peak_vram_gb": 4.99,
+    "trainable_params": 16232448
+  }
 }

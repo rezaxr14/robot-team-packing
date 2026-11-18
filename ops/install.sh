@@ -6,6 +6,7 @@
 #   ops/install.sh --profile kaggle_t4x2               # fp16 + SDPA env (no bf16, no FA2)
 #   ops/install.sh --profile local_4050 --dry-run      # print the plan, change nothing
 #   ops/install.sh --profile local_4090 --check        # verify an existing env, install nothing
+#   ops/install.sh --profile kaggle_t4x2 --wheelhouse /kaggle/input/rtp-wheels-...  # offline
 #   ops/install.sh --isaac                             # SEPARATE Isaac Sim / Newton venv
 #   ops/install.sh --tex                               # TinyTeX, user-level, no sudo
 #
@@ -23,7 +24,7 @@ RTP_HOME="${RTP_HOME:-$HOME/rtp_work}"
 VENVS_ROOT="${RTP_VENVS:-$RTP_HOME/venvs}"
 PY="${RTP_PYTHON:-3.12}"
 TORCH_INDEX="${RTP_TORCH_INDEX:-https://download.pytorch.org/whl/cu128}"
-DRY=0; FORCE=0; CHECK=0; ISAAC=0; TEX=0; FLASH=auto; PROFILE=""; VENV=""; DRIVER_MAJOR=""
+DRY=0; FORCE=0; CHECK=0; ISAAC=0; TEX=0; FLASH=auto; PROFILE=""; VENV=""; DRIVER_MAJOR=""; WHEELHOUSE=""
 ISAACLAB_REF="${ISAACLAB_REF:-v3.0.0}"   # D-25: Isaac Lab 3.0 (GA) + Newton only
 
 usage() { sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
@@ -43,6 +44,8 @@ while [ $# -gt 0 ]; do
     --flash-attn) FLASH=on; shift ;;
     --driver-major) DRIVER_MAJOR="${2:?}"; shift 2 ;;
     --torch-index) TORCH_INDEX="${2:?}"; shift 2 ;;
+    --wheelhouse) WHEELHOUSE="${2:?--wheelhouse needs a directory}"; shift 2 ;;
+    --wheelhouse=*) WHEELHOUSE="${1#*=}"; shift ;;
     -h|--help) usage 0 ;;
     *) echo "unknown argument: $1" >&2; usage 2 ;;
   esac
@@ -74,6 +77,11 @@ fi
 VENV="${VENV:-${PROFILE:+$VENVS_ROOT/$PROFILE}}"
 PYBIN="${VENV:+$VENV/bin/python}"
 
+if [ -n "$WHEELHOUSE" ] && [ ! -d "$WHEELHOUSE" ]; then
+  echo "--wheelhouse $WHEELHOUSE: not a directory (mount the Kaggle dataset or build the wheels first)" >&2
+  exit 2
+fi
+
 CORE=(torch torchvision)
 ML=(transformers trl peft datasets accelerate "huggingface_hub[cli]" safetensors sentencepiece
     protobuf einops)
@@ -92,7 +100,7 @@ if [ -z "$DRIVER_MAJOR" ] && command -v nvidia-smi >/dev/null 2>&1; then
 fi
 DRIVER_MAJOR="${DRIVER_MAJOR:-0}"
 
-RECIPE="profile=$PROFILE;py=$PY;torch=$TORCH_INDEX;pkgs=$(IFS=,; echo "${PKGS[*]}");extra=$(IFS=,; echo "${EXTRA[*]:-}");flash=$FLASH;isaac=$ISAAC;tex=$TEX"
+RECIPE="profile=$PROFILE;py=$PY;torch=$TORCH_INDEX;pkgs=$(IFS=,; echo "${PKGS[*]}");extra=$(IFS=,; echo "${EXTRA[*]:-}");flash=$FLASH;isaac=$ISAAC;tex=$TEX;offline=${WHEELHOUSE:+1}"
 STAMP="$VENV/.rtp_install.json"
 RECIPE_HASH="$(printf '%s' "$RECIPE" | sha256sum | cut -c1-16)"
 FROZEN_HASH=""
@@ -109,6 +117,7 @@ cat <<EOF
   torch index : $TORCH_INDEX
   recipe hash : $RECIPE_HASH${FROZEN_HASH:+   (installed: $FROZEN_HASH)}
   mode        : dry-run=$DRY check=$CHECK force=$FORCE isaac=$ISAAC tex=$TEX flash=${FLASH}
+  wheelhouse  : ${WHEELHOUSE:-none (online: PyPI + the torch index)}
 EOF
 
 if [ -n "$PROFILE" ] && [ "$CHECK" = 0 ] && [ "$DRY" = 0 ] && [ -n "$FROZEN_HASH" ] && [ "$FROZEN_HASH" = "$RECIPE_HASH" ] && [ "$FORCE" = 0 ]; then
@@ -123,9 +132,15 @@ else
     fi
     PIP=(uv pip install --python "$PYBIN")           # uv talks to the venv's interpreter directly
     command -v uv >/dev/null 2>&1 || PIP=("$PYBIN" -m pip install)
+    TORCH_FLAGS=(--index-url "$TORCH_INDEX")
+    if [ -n "$WHEELHOUSE" ]; then
+      # offline mode: resolve only from the mounted wheelhouse (Kaggle dataset or a local build)
+      PIP+=(--no-index --find-links "$WHEELHOUSE")
+      TORCH_FLAGS=()
+    fi
 
     say "torch ($DTYPE build for this profile)"
-    run "${PIP[@]}" "${CORE[@]}" --index-url "$TORCH_INDEX"
+    run "${PIP[@]}" "${CORE[@]}" "${TORCH_FLAGS[@]}"
 
     say "training + retrieval + agents + eyes"
     run "${PIP[@]}" "${ML[@]}" "${RETRIEVAL[@]}" "${AGENTS[@]}" "${EYES[@]}" "${SCIENCE[@]}" "${DEV[@]}"
@@ -140,6 +155,12 @@ else
       say "flash-attn (cc >= 8.0 only; a failed build falls back to SDPA)"
       if [ "$DRY" = 1 ]; then
         run "${PIP[@]}" --no-build-isolation flash-attn
+      elif [ -n "$WHEELHOUSE" ]; then
+        # a wheelhouse run must not reach PyPI: install the prebuilt wheel or fall back to SDPA
+        "${PIP[@]}" flash-attn || {
+          echo "  WARNING: no flash-attn wheel in $WHEELHOUSE (sm tag?); training will use sdpa" >&2
+          echo "  build it once with: MAX_JOBS=2 FLASH_ATTN_CUDA_ARCHS=<cc> uv pip wheel flash-attn --no-build-isolation" >&2
+        }
       elif "${PIP[@]}" --no-build-isolation flash-attn; then
         echo "  flash-attn installed"
       else

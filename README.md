@@ -16,8 +16,7 @@ reward source, not a physics result**.
 
 ## Current status (P0)
 
-* `pytest tests -q` → **165 passed, 10 skipped** on the 4050 laptop (2026-11-17; CPU-only sandbox
-  baseline recorded in `DECISIONS.md` D-36).
+* `pytest tests -q` → **192 passed, 10 skipped, 40 s** on the 4050 laptop (2026-11-18; D-36).
 * The legacy 2.3-era Isaac launcher stack is purged (D-35): no `ops/12_env_isaac.sh`, no EULA export,
   no RT-core preflight branch, no `isaac/bringup/`, no VIKI/LLaMA-Factory launcher stages.
 * Qwen3.5-4B is downloaded and sha256-verified; `reports/qwen35_modules.json` (gate G-1) and
@@ -45,6 +44,8 @@ reward source, not a physics result**.
 | `rtp/skills.py`, `rtp/simbridge.py`, `rtp/simworld.py`, `rtp/fakesim.py` | skill spec, sim→symbolic bridge, `SimBackend`, pose-level `FakeSim` |
 | `rtp/toolbrain.py` | multi-turn LLM Brain with tools (check_rule, query_scene, look, dry_run, submit_plan) |
 | `rtp/profiles.py` | hardware profiles, isolated per-profile paths, runtime fallbacks (P1) |
+| `rtp/assetcache.py` | per-profile asset cache: attach → local → fetch, manifest-checked, path-escape guarded (P1) |
+| `rtp/loss.py` | chunked causal-LM loss: never builds `[tokens x 248k vocab]` logits (D-37) |
 | `isaac/` | 2.3-era modules (`packing_sim.py`, `team_env.py`, `cameras.py`, ...) awaiting the P2 port to Isaac Lab 3.0 + Newton |
 | `ops/preflight.py` | GPU/arch/system report and install-branch recommendation (Newton floor, Warp pin) |
 | `ops/install.sh` | one installer per profile (`--profile`), optional Isaac Lab 3.0 + Newton venv |
@@ -60,6 +61,7 @@ reward source, not a physics result**.
 ```bash
 ops/install.sh --profile local_4050 --dry-run     # what would be installed, per profile
 ops/install.sh --profile local_4050               # torch + training/retrieval/agents/eyes venv
+ops/install.sh --profile kaggle_t4x2 --wheelhouse /kaggle/input/rtp-wheels-...   # offline, no index
 ops/download_model.sh Qwen/Qwen3.5-4B ~/models/Qwen3.5-4B
 source ops/env.sh && python ops/plan.py list      # p0: preflight, model integrity, G-1, G-2
 python -m pytest tests -q
