@@ -9,6 +9,7 @@ export RUNS="$RTP_HOME/runs"
 export HF_HOME="${HF_HOME:-$RTP_HOME/hf_cache}"
 export ISAACLAB_DIR="$RTP_HOME/IsaacLab"
 export ISAACLAB_REF="${ISAACLAB_REF:-v3.0.0}"   # Isaac Lab 3.0 GA (D-25); Python 3.12, Newton backend
+export ISAAC_PY="${ISAAC_PY:-$VENVS/isaac_newton/bin/python}"   # the Newton-only venv (ops/install.sh --isaac)
 export PATH="$HOME/.local/bin:$PATH"
 mkdir -p "$VENVS" "$MODELS" "$DATA" "$RUNS" "$HF_HOME"
 activate() { # shellcheck disable=SC1090

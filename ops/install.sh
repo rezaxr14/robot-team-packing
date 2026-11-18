@@ -216,26 +216,26 @@ if [ "$ISAAC" = 1 ] && [ "$CHECK" = 0 ]; then
   echo "  NOTE: Python 3.12 is required by Isaac Lab 3.0 [V:S-15]; Isaac Lab's own requirement files"
   echo "        at the tag pin the rest (docs/SIMULATION.md §2). There is no isaacsim[all] pip step here"
   echo "        any more: that was the removed 2.3-era stack."
-  echo "  NOTE: cc 7.5+ (Turing or newer). Warp >= 1.18 needs driver R580+, else warp-lang 1.17.0 [V:S-17/S-19]."
+  echo "  NOTE: cc 7.5+ (Turing or newer). The tag pins warp-lang 1.17.0 and newton[sim]==1.6.1;"
+  echo "        the pinned torch is CUDA 13, which needs driver >= 580.65.06 [V:S-19, tag pyproject/uv.lock]."
   if command -v uv >/dev/null 2>&1; then
     [ -d "$IVENV" ] || run uv venv "$IVENV" --python "$PY" --seed
-    IPIP=(uv pip install --python "$IVENV/bin/python")
   else
     [ -d "$IVENV" ] || run python3 -m venv "$IVENV"
-    IPIP=("$IVENV/bin/python" -m pip install)
-  fi
-  if [ "$DRIVER_MAJOR" -gt 0 ] && [ "$DRIVER_MAJOR" -lt 580 ]; then
-    say "Newton (driver ${DRIVER_MAJOR} < 580 -> Warp 1.17 pin, per Newton README)"
-    run "${IPIP[@]}" newton "warp-lang==1.17.0"
-  else
-    say "Newton"
-    run "${IPIP[@]}" newton
   fi
   if [ ! -d "$RTP_HOME/IsaacLab/.git" ]; then
     run git clone https://github.com/isaac-sim/IsaacLab.git "$RTP_HOME/IsaacLab"
   fi
-  echo "  next: cd $RTP_HOME/IsaacLab && git fetch --tags && git checkout ${ISAACLAB_REF} && ./isaaclab.sh --install"
-  echo "  next: source $IVENV/bin/activate; python -c 'import newton, warp'   # then run gate G-3"
+  run git -C "$RTP_HOME/IsaacLab" fetch --tags
+  run git -C "$RTP_HOME/IsaacLab" checkout "$ISAACLAB_REF"
+  # The tag's own uv.lock is the pin (newton 1.6.1, warp 1.17.0, torch+cu130). Installing
+  # `pip install newton` by hand picks a newer Newton and silently diverges from the tag;
+  # `./isaaclab.sh --install` is deprecated at v3.0.0 in favour of `uv run isaaclab`.
+  say "uv sync at $ISAACLAB_REF into $IVENV (the tag's lock; no Isaac Sim, Newton only)"
+  UV_PROJECT_ENVIRONMENT="$IVENV" run uv sync --project "$RTP_HOME/IsaacLab" --no-dev
+  echo "  next: UV_PROJECT_ENVIRONMENT=$IVENV uv run --project $RTP_HOME/IsaacLab isaaclab --help"
+  echo "  next: $IVENV/bin/python -c 'import newton, warp, isaaclab; print(newton.__version__, warp.__version__)'"
+  echo "  next: source ops/env.sh && python ops/plan.py run p2   # gate G-3 (rgb+depth on this GPU)"
   echo "  UNVERIFIED until G-3: the exact install flag that selects Newton inside Isaac Lab at this tag."
 fi
 

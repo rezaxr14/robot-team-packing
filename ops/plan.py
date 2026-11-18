@@ -25,6 +25,11 @@ GROUPS: "OrderedDict[str, list]" = OrderedDict([
         ("g1_module_dump", f"{PY} ops/g1_module_dump.py --model {MODEL} --out reports/qwen35_modules.json"),
         ("g2_fastpath", f"{PY} ops/g2_fastpath.py --model {MODEL} --out reports/g2_fastpath.json"),
     ]),
+    # P2 — simulation stack: the Newton-only Isaac Lab gate (plan §12, G-3). Runs in the separate
+    # --isaac venv, so it uses $ISAAC_PY, not the training interpreter.
+    ("p2", [
+        ("g3_sim", f"$ISAAC_PY ops/g3_sim.py --out reports/g3_sim.json --images reports/g3_sim"),
+    ]),
     # package the small reports into one archive (contents: see ops/bundle.py)
     ("bundle", [
         ("bundle", f"{PY} ops/bundle.py"),
@@ -33,12 +38,15 @@ GROUPS: "OrderedDict[str, list]" = OrderedDict([
 
 # variables a stage cannot run without (checked BEFORE the stage starts). $MODELS/$DATA/$RUNS
 # are exported by ops/env.sh, so only machine-specific inputs belong here.
-REQUIRES: dict = {}
+REQUIRES: dict = {
+    "g3_sim": ["ISAAC_PY"],   # the Newton-only venv; ops/env.sh exports it, --isaac creates it
+}
 
 # paths a stage reads that earlier stages must have written, by stage name
 PRODUCES = {
     "g1_module_dump": ["reports/qwen35_modules.json"],
     "g2_fastpath": ["reports/g2_fastpath.json"],
+    "g3_sim": ["reports/g3_sim.json"],
 }
 SHELL_VARS = {"HOME", "PATH"}
 

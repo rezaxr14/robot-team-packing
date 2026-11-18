@@ -10,6 +10,7 @@ reports/*
 !reports/qwen35_modules.json
 !reports/g2_fastpath.json
 !reports/seq_ceiling_*.json
+!reports/g3_sim.json
 data/
 runs/
 results/

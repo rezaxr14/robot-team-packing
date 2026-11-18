@@ -59,6 +59,19 @@ def test_a_wheelhouse_that_is_not_a_directory_is_refused(tmp_path):
     assert r.returncode == 2 and "not a directory" in r.stderr
 
 
+def test_the_isaac_path_uses_the_tag_lock_not_a_hand_picked_newton(tmp_path, monkeypatch):
+    """v3.0.0 pins newton[sim]==1.6.1 / warp-lang==1.17.0 and deprecates isaaclab.sh."""
+    monkeypatch.setenv("RTP_HOME", str(tmp_path))
+    monkeypatch.setenv("RTP_VENVS", str(tmp_path / "venvs"))
+    r = run("--isaac", "--dry-run")
+    assert r.returncode == 0, r.stderr
+    assert "uv sync --project" in r.stdout and "--no-dev" in r.stdout
+    assert "checkout v3.0.0" in r.stdout
+    assert "pip install --python" not in r.stdout, "a hand-picked newton diverges from the tag's lock"
+    assert "newton==1.8" not in r.stdout and "warp-lang==1.19" not in r.stdout
+    assert str(tmp_path / "venvs" / "isaac_newton") in r.stdout
+
+
 def test_profiles_get_separate_plans_and_venvs(tmp_path):
     a = run("--profile", "local_4050", "--dry-run")
     b = run("--profile", "kaggle_t4x2", "--dry-run")

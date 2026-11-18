@@ -15,8 +15,11 @@ Decision D-25: this is the only simulation stack. Labels as in `IMPLEMENTATION_P
 Select physics/renderer/visualizer with the task's config (`physics=newton_mjwarp`, renderer cfg, `--viz newton_gl`) so the same task runs on every profile [V:S-10, S-14].
 
 ## 2. Install policy
-* One environment, **Newton-only Isaac Lab install**, Python 3.12, pinned by Isaac Lab's own requirement files at the chosen tag; versions logged in every run (`reports/env_<profile>.json`).
-* Newton GPU floor: Turing (cc 7.5+); Warp 1.18 needs driver R580+, otherwise pin `warp-lang==1.17.0` [V:S-17, S-19] (gate G-3 decides per machine/Kaggle image).
+* One environment, **Newton-only Isaac Lab install**, Python 3.12, pinned by Isaac Lab's own lock at the chosen tag; versions logged in every run (`reports/env_<profile>.json`).
+* The pin is the tag's `uv.lock`, not a package list we type: `cd $ISAACLAB_DIR && git checkout $ISAACLAB_REF && UV_PROJECT_ENVIRONMENT=$ISAAC_PY/.. uv sync --no-dev` (`ops/install.sh --isaac`). At v3.0.0 the lock holds `newton[sim]==1.6.1` and `warp-lang==1.17.0`; installing `pip install newton` by hand gets a newer Newton and silently diverges from the tag. `./isaaclab.sh --install` is **deprecated** at v3.0.0 (it prints so); `uv run isaaclab …` / `uv sync` is the documented path.
+* Isaac Sim is **not** part of this install: it is an optional extra (`--extra isaacsim`, `isaacsim[all]==6.2.0.0`). The Newton backends, the Warp renderer and the `newton_gl` visualizer work without it, and a downloaded Isaac Sim binary cannot be combined with a Python venv (the tag's `isaaclab.sh` refuses that combination).
+* Version pins at v3.0.0 ([V:S-15], tag `pyproject.toml`/`uv.lock`): python 3.12, torch CUDA 13, `warp-lang==1.17.0`, `newton[sim]==1.6.1`, `mujoco-warp~=3.12.0`.
+* Newton GPU floor: Turing (cc 7.5+). The pinned CUDA 13 torch needs driver **580.65.06+** on Linux; with an older driver only Warp's CUDA 12 wheels run, which is not the default training stack [V:S-17, S-19]. Gate G-3 decides per machine/Kaggle image.
 * Prebuilt wheels and the Isaac Lab checkout go into the wheelhouse/cache datasets (`docs/COMPATIBILITY.md`).
 
 ## 3. Scene specification (`isaac/scenes/kitchen.py`)
