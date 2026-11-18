@@ -312,7 +312,7 @@ class Fig:
 def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     strict = "--strict" in sys.argv
-    files = sorted(SVG_DIR.glob("fig_*.svg"))
+    files = sorted(f for f in SVG_DIR.glob("fig_*.svg") if "engine:cairo" not in f.read_text(encoding="utf-8")[:200])
     if args:
         files = [p for p in files if any(a in p.stem for a in args)]
     n_err = n_warn = 0

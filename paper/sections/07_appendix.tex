@@ -19,9 +19,10 @@ The scorer facts in \cref{sec:scorer} were read from the upstream VIKI-R reposit
 \todo{Pin the repository commit; re-run the toy case (18 of 40 unseeded draws, exhaustive average 0.5, position-agnostic plan 40 of 40) against the upstream scorer. The toy numbers are from an earlier run by the authors and could not be re-run in this build because the upstream code was not available to it, which also left the scorer tests skipped.}
 
 \section{Environment and tests}\label{app:env}
-The code base is a Python package with a symbolic world, a pose-level simulator, the loop, the harness and training scripts; the planned pairing for physics is Isaac Sim 5.x with Isaac Lab 2.3.
-On CPU without torch the test suite gives 137 passed and 13 skipped (the skips need torch or the upstream clone); this proves that the code runs and that the wiring is consistent, and is not evidence about model quality.
-\todo{Report the full-environment test count from the authors' machine; the planning notes record a larger count than the one measured here.}
+The code base is a Python package with a symbolic world, a pose-level simulator, the loop, the harness and training scripts; the physics stack is Isaac Lab 3.0 with Newton (\texttt{mujoco-warp}), with no Isaac Sim and no PhysX, and that configuration was measured on the RTX 4050 and on a Kaggle T4 (gate G-3: 30 steps, rgb and depth contracts, D-39 and D-51), stepping one device at a time (D-50).
+In the training environment (Python 3.12, torch 2.15, transformers 5.23) the test suite passes with the unavailable upstream VIKI-R clone tests skipped, so the scorer tests do not run in a clean build.
+This proves that the code runs and that the wiring is consistent, and is not evidence about model quality.
+\todo{Quote the current passed/skipped count from the gate record at submission time; earlier figures here, including the CPU-only 137/13 baseline, are superseded by the measured training-venv count.}
 
 \section{Fixture mechanics checks}\label{app:fixture}
 All runs here are class FIXTURE: a symbolic world, a scripted Brain, parametric Eyes and a flaky-planner wrapper, seeds 0 to \fxN{} minus one.

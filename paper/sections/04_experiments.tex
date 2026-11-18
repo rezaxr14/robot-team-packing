@@ -3,11 +3,16 @@
 This section fixes the protocol before any trained result exists, so that the results cannot shape the questions.
 \Cref{fig:design} is the planned design and \cref{tab:evidence} the status of each evidence class; every cell that no run has produced is a red flag.
 
+\paragraph{Status of the evidence.}
+The engineering gates G-1, G-2, G-3 and G-14 are measured and recorded in the repository; G-3 is a falling-cube rgb/depth gate on one device at a time and G-14 is a four-step resume smoke, not a task or model result. G-6 is a \emph{simulation-only} impedance cross-check (step error 0.27\,\%), not a hardware or safety result.
+\todo{No fixed test set, model score, omni-model comparison, environment-trained Brain, SimReady scene or frontier CoT data exists yet; every row below stays pending until a report exists.}
+
 \begin{figure*}[tbp]
 \centering
 \includegraphics[width=0.95\textwidth]{fig_design}
 \caption{\textbf{Planned evaluation design.} Five questions, the experiment that answers each, its evidence class and where it is reported. Track A uses real benchmark data and released models; Track B tests the packing team. Every outcome is pending, and fixture runs are kept out of the design (appendix~F).}
 \label{fig:design}
+\stalefig{the evidence-class column no longer matches what has actually been measured: the ISAAC class is drawn as if Isaac Lab manipulation episodes exist, whereas the only measured Newton evidence is the falling-cube rgb/depth gates G-3 (\texttt{reports/g3\_sim.json}, \texttt{reports/g3\_sim\_t4.json}) plus the simulation-only impedance cross-check G-6. Split ISAAC into a GATE class (G-1/G-2/G-3/G-6/G-14, with what each does and does not show) and a SIM/MODEL class (planned, not run), mark the asset-based scene as not built, and keep ``every outcome is pending'' and the rule that classes are never pooled.}
 \end{figure*}
 
 \begin{table}[tbp]
@@ -19,14 +24,14 @@ This section fixes the protocol before any trained result exists, so that the re
 
 \subsection{Protocol}\label{sec:protocol}
 \paragraph{Evidence classes.}
-TRACK~A is real VIKI-Bench data with real released models; ISAAC is physics episodes in Isaac Lab; LLM-SYMBOLIC is a served language-model Brain on the symbolic task; FIXTURE is a scripted Brain with a flaky-planner wrapper and parametric Eyes, used only to check mechanisms; engineering tests prove that code runs.
+TRACK~A is real VIKI-Bench data with real released models; ISAAC is physics episodes in Isaac Lab 3.0 with Newton (no Isaac Sim, no PhysX); LLM-SYMBOLIC is a served language-model Brain on the symbolic task; FIXTURE is a scripted Brain with a flaky-planner wrapper and parametric Eyes, used only to check mechanisms; engineering tests prove that code runs.
 Each reported number carries its class.
 \paragraph{Seeds and statistics.}
 Training and data seeds are at least 100000 and evaluation seeds are below 100000, so no evaluation episode is in the training set.
 Success rates are reported with Wilson 95\% intervals, and comparisons between conditions with paired bootstrap intervals over seeds; the claim a comparison supports is stated with its interval, never a bare rate.
 Random draws are keyed so that conditions see the same episodes.
 \paragraph{Compute.}
-\todo{Compute is dual T4 GPUs on Kaggle (two 16\,GB cards). Confirm the memory plan for fine-tuning with LoRA in fp16 without bf16, the model sizes that fit, the run times, and whether Isaac Sim can run in that environment at all; if it cannot, the ISAAC class is limited to the pose-level simulator and this must be stated.}
+\todo{Compute is dual T4 GPUs on Kaggle (two 16\,GB cards), but the trainer and the G-3 scene step \emph{one device at a time}; no DDP training or two-GPU simulation exists (D-50, D-56). Confirm the memory plan for fine-tuning with fp16 LoRA without bf16, the model sizes that fit and the run times. Measured: the 4050 budget is 512 tokens for a forward/backward pass and 256 for SFT with adapters and optimizer state (D-38, D-47); the Newton-only stack passes G-3 on both the 4050 and a Kaggle T4 (D-39, D-51), where the rate is a JIT-warm-up artefact, not a throughput comparison.}
 
 \subsection{Track A: real benchmark data and released models}\label{sec:track-a}
 Track A re-evaluates the released VIKI-R checkpoints on VIKI-Bench with our own runner, and decomposes a level-1 error into perception and reasoning by giving a text-only Brain oracle descriptions, no description, or a real Eye description of the same image (\cref{tab:trackA}).

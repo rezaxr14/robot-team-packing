@@ -64,8 +64,9 @@ def fig_mechanism():
     s, p2 = card(640, p1[1] + p1[3] + 12, 340, "Charged to the Eye", "The loop's attribution rules blame the Eye: the mass it reported was far from the truth. A heuristic label, not yet checked against hand labels.", color=TEAL)
     b += s
     ch = m["challenge_msgs"]
-    lines = "; ".join(f"{c['content']['obj']} {c['content']['evidence']['measured_weight']:.2f} vs {c['content']['evidence']['reported']:.2f}" for c in ch[:2])
-    s, p3 = card(640, p2[1] + p2[3] + 12, 340, "Fix 1: CHALLENGE", f"The Arm weighs what it grasps and disputes the Eye ({len(ch)} challenges here; measured vs reported kg: {lines}). The scene is corrected and the rest replanned.", color=ORANGE)
+    nbm = next(c for c in ch if c["content"]["obj"] == "notebook1")["content"]["evidence"]
+    s, p3 = card(640, p2[1] + p2[3] + 12, 340, "Fix 1: CHALLENGE",
+                 f"The Arm weighs what it grasps and disputes the Eye's report at that moment ({len(ch)} challenges in this run; e.g. notebook1 measured {nbm['measured_weight']:.2f} kg, reported {nbm['reported']:.2f} kg). The scene is corrected and the rest replanned.", color=ORANGE)
     b += s
     s, p4 = card(640, p3[1] + p3[3] + 12, 340, "Fix 2: probe", "Both Arms weigh every item before planning; measurements override the Eye's mass guesses.", color=BLUE)
     b += s
@@ -79,7 +80,7 @@ def fig_mechanism():
         b += T(x + 12, ys + 48, f"score {r['score']:.2f}, {'success' if r['success'] else 'failure'}, {r['rounds']} rounds", size=14.5, anchor="start")
         b += R(x + 196, ys + 14, 100, 14, rx=3, fill="#FFFFFF", stroke=c, sw=1.0) + R(x + 196, ys + 14, 100 * r["score"], 14, rx=3, fill=tint(c, 0.4), stroke="none", sw=0)
     b += T(20, ys + 90, f"Recorded symbolic episode (seed {m['seed']}, Eye mass noise sigma {m['mass_sigma']}, scripted Brain): FIXTURE, a mechanism illustration, not a result.", size=14, anchor="start", fill=C_SUB)
-    b += T(20, ys + 110, "Panels a and b show the scene the planner actually used; the challenge values are the Arms' own touch measurements.", size=14, anchor="start", fill=C_SUB)
+    b += T(20, ys + 110, "Panels a and b show the scene the planner actually used. Eye noise is redrawn at every observation, so a later report (as in c) can differ from the one in a.", size=14, anchor="start", fill=C_SUB)
     save_svg("fig_mechanism", W_, int(ys + 124), b)
 
 
@@ -454,3 +455,505 @@ def fig_results(root=None):
     b += T(20, yend + 30, "With no bundle every bar is empty and marked pending; nothing here is simulated.", size=14, anchor="start", fill=C_SUB)
     save_svg("fig_results", W_, int(yend + 46), b)
     return have, bool(cred)
+
+
+def fig_mechanism():
+    """Figure 1: the teaser. Problem, design, what it gives, what is new. Numbers from the recorded seed-24 episode."""
+    import icons as I
+    m, cr = FD["mechanism"], FD["credit"]
+    it = {i["name"]: i for i in m["items"]}
+    pc, nb = it["pencilcase1"], it["notebook1"]
+    pce = (pc["eye_mass"] - pc["true_mass"]) / pc["true_mass"] * 100
+    nbe = (nb["eye_mass"] - nb["true_mass"]) / nb["true_mass"] * 100
+    nbm = next(c for c in m["challenge_msgs"] if c["content"]["obj"] == "notebook1")["content"]["evidence"]
+    W_ = 1000
+    b = ""
+    # ============ column 1: the problem
+    b += T(20, 30, "1", size=18, anchor="start", weight="bold", fill=RED) + T(42, 30, "Problem: a team fails. Who failed?", size=16.5, anchor="start", weight="bold", fill=RED)
+    b += R(20, 46, 320, 82, rx=10, fill="#F6F7F9", stroke=C_MUT, sw=1.3)
+    names = [("laptop", I.laptop, "laptop"), ("book", I.book, "book"), ("bottle", I.bottle, "bottle"), ("notebook", I.notebook, "notebook"), ("pencil case", I.pencilcase, "pencil case")]
+    for k, (lab, fn, _) in enumerate(names):
+        cx = 48 + k * 64
+        hot = lab in ("notebook", "pencil case")
+        b += fn(cx, 80, 40, RED if hot else GREY_D)
+        b += T(cx, 118, lab, size=13, fill=RED if hot else C_SUB)
+    b += T(180, 144, "the table the Eyes photograph", size=13, fill=C_SUB)
+    tiles = [("Eye", I.eye, TEAL), ("Brain", I.plan, PURPLE), ("Arm", I.arm, ORANGE)]
+    b += arrow([(78, 132), (78, 157)], color=GREY_D, sw=2.0, free="vector")
+    tb = []
+    for k, (lab, fn, col) in enumerate(tiles):
+        x = 36 + k * 112
+        b += R(x, 160, 84, 88, rx=10, fill=tint(col), stroke=col, sw=1.8)
+        b += fn(x + 42, 192, 52, col)
+        b += T(x + 42, 238, lab, size=15, fill=col, weight="bold")
+        tb.append((x, 160, 84, 88))
+    for k in range(2):
+        b += connect(tb[k], "r", tb[k + 1], "l", color=GREY_D, sw=1.8)
+    # bag with wrong order
+    b += I.bag(36, 292, 96, 112, NAVY)
+    b += I.notebook(84, 328, 44, RED) + I.pencilcase(84, 376, 44, RED)
+    b += I.mark(128, 292, False, 13)
+    b += T(36, 428, "bag", size=13, anchor="start", fill=C_SUB)
+    b += T(150, 306, f"Eye: pencil case {pc['eye_mass']:.2f} kg", size=14, anchor="start", fill=TEAL, weight="bold")
+    b += T(150, 324, f"(true {pc['true_mass']:.2f}, {pce:+.0f}%)", size=14, anchor="start", fill=TEAL)
+    b += T(150, 348, f"Eye: notebook {nb['eye_mass']:.2f} kg", size=14, anchor="start", fill=TEAL, weight="bold")
+    b += T(150, 366, f"(true {nb['true_mass']:.2f}, {nbe:+.0f}%)", size=14, anchor="start", fill=TEAL)
+    b += T(150, 392, "Brain stacks heavy on light:", size=14, anchor="start", fill=PURPLE)
+    b += T(150, 410, "heavy_bottom broken", size=14, anchor="start", fill=RED, weight="bold")
+    b += tag(36, 446, f"one team score: {m['no_fix']['score']:.2f}, failure", RED)
+    for k, col in enumerate((TEAL, PURPLE, ORANGE)):
+        b += I.qmark(44 + k * 36, 498, col, 14)
+    b += T(160, 503, "Eye, Brain or Arm?", size=15, anchor="start", weight="bold", fill=C_TXT)
+    # ============ column 2: the design
+    b += T(365, 30, "2", size=18, anchor="start", weight="bold", fill=NAVY) + T(387, 30, "Our team: split by interface", size=16.5, anchor="start", weight="bold", fill=NAVY)
+    steps = [
+        (TEAL, I.eye, "Eyes: typed reports", f"Only agents with pixels. Claims are typed messages, e.g. SCENE: pencil case {pc['eye_mass']:.2f} kg."),
+        (PURPLE, I.plan, "Brain: plan, then dry run", "Text-only, guided by rules. A dry run replays the plan before any arm moves."),
+        (ORANGE, I.arm, "Arms: touch can challenge", f"Blind. Weighing the notebook: {nbm['measured_weight']:.2f} kg vs the Eye's {nbm['reported']:.2f}, so CHALLENGE and replan."),
+    ]
+    y = 46
+    sb = []
+    for col, fn, t, body in steps:
+        s, bb = card(365, y, 300, t, body, h=112, color=col, pad=12, rpad=58)
+        b += s + fn(365 + 300 - 38, y + 40, 46, col)
+        sb.append(bb)
+        y += bb[3] + 30
+    for k in range(2):
+        b += connect(sb[k], "b", sb[k + 1], "t", color=GREY_D, sw=1.8)
+    s, bb = card(365, y, 300, "Failure charged to: Eye", "Each failure gets an owner by rule (heuristic, to be checked against hand labels).", h=96, color=TEAL, fill=tint(TEAL, 0.82), pad=12)
+    b += s
+    # ============ column 3: what it gives
+    b += T(690, 30, "3", size=18, anchor="start", weight="bold", fill=GREEN) + T(712, 30, "What the split gives", size=16.5, anchor="start", weight="bold", fill=GREEN)
+    s, c1 = card(690, 46, 290, "Repair", "Challenge or probe repairs the plan.", h=150, color=GREEN, pad=12)
+    b += s
+    for k, (lab, v, col) in enumerate((("no fix", m["no_fix"]["score"], RED), ("CHALLENGE", m["challenge"]["score"], GREEN), ("probe", m["probe"]["score"], GREEN))):
+        yy = 46 + 76 + k * 26
+        b += T(702, yy + 14, lab, size=13.5, anchor="start", fill=C_SUB)
+        b += R(800, yy + 2, 120, 15, rx=3, fill="#FFFFFF", stroke=col, sw=1.0) + R(800, yy + 2, 120 * v, 15, rx=3, fill=tint(col, 0.4), stroke="none", sw=0)
+        b += T(926, yy + 14, f"{v:.2f}", size=13.5, anchor="start", weight="bold", fill=col)
+    s, c2 = card(690, 208, 290, "Credit", f"Replace Eye A's report by the truth and replay: a perfect Eye would add {cr['oracle_gain']:+.2f}, all of it in the mass field.", h=118, color=ORANGE, pad=12)
+    b += s
+    s, c3 = card(690, 338, 290, "Training data", f"The failed episode is relabeled to what it achieved and admitted only after a replay check ({FD['hindsight']['n_tasks']} tasks).", h=118, color=PURPLE, pad=12)
+    b += s
+    s, c4 = card(690, 468, 290, "One checker", "The same success function scores the symbolic world, a pose-level simulator and Isaac Lab.", h=96, color=NAVY, pad=12)
+    b += s
+    for x1, x2 in ((340, 365), (665, 690)):
+        b += arrow([(x1 + 3, 300), (x2 - 3, 300)], color=GREY_D, sw=2.4, free="vector")
+    # ============ bottom: what is new
+    yb = 590
+    b += L(20, yb - 14, 980, yb - 14, color=C_MUT, sw=1.2)
+    b += T(20, yb + 8, "What is new", size=16.5, anchor="start", weight="bold", fill=NAVY)
+    news = [("Roles split by interface", "Only Eyes see pixels, only the Brain plans, Arms are blind: every failure has an owner.", TEAL),
+            ("Evidence as typed messages", "13 budgeted types; dry run, CHALLENGE and probe repair errors before they cost the team.", PURPLE),
+            ("Signals from the team itself", "Counterfactual Eye credit under common random numbers; hindsight relabeling with a replay check.", ORANGE),
+            ("One checker, three worlds", "Symbolic, pose-level and Isaac Lab share a success function; plus an audit of a benchmark scorer.", NAVY)]
+    xs = 20
+    bots = []
+    for k, (t, d, col) in enumerate(news):
+        s, bb = card(20 + k * 245, yb + 22, 235, t, d, h=150, color=col, pad=11, tsize=15.5, bsize=14, rpad=22)
+        b += s + I_num(20 + k * 245 + 235 - 16, yb + 38, k + 1, col)
+        bots.append(bb)
+    yend = yb + 22 + 150 + 22
+    b += T(20, yend, "Icons are schematic pictograms, not rendered images. Numbers come from one recorded symbolic fixture episode (seed 24, Eye mass noise sigma 0.45).", size=13.5, anchor="start", fill=C_SUB)
+    b += T(20, yend + 18, "No trained model and no physics result is shown or claimed in this paper yet.", size=13.5, anchor="start", fill=C_SUB)
+    save_svg("fig_mechanism", W_, yend + 34, b)
+
+
+def I_num(x, y, n, col):
+    return num(x, y, n, color=col, r=11)
+
+
+def fig_mechanism():
+    """Figure 1 (teaser), v3: boxed problem on the left; message-sequence centre, open mini-graphics right, open footer."""
+    import icons as I
+    m, cr, hd = FD["mechanism"], FD["credit"], FD["hindsight"]
+    it = {i["name"]: i for i in m["items"]}
+    pc, nb = it["pencilcase1"], it["notebook1"]
+    pce = (pc["eye_mass"] - pc["true_mass"]) / pc["true_mass"] * 100
+    nbe = (nb["eye_mass"] - nb["true_mass"]) / nb["true_mass"] * 100
+    nbm = next(c for c in m["challenge_msgs"] if c["content"]["obj"] == "notebook1")["content"]["evidence"]
+    W_ = 1000
+    b = ""
+    # ================================================================ left: the problem (kept)
+    b += T(20, 30, "1", size=18, anchor="start", weight="bold", fill=RED) + T(42, 30, "The problem: one score, no owner", size=16.5, anchor="start", weight="bold", fill=RED)
+    b += R(20, 46, 320, 82, rx=10, fill="#F6F7F9", stroke=C_MUT, sw=1.3)
+    for k, (lab, fn) in enumerate((("laptop", I.laptop), ("book", I.book), ("bottle", I.bottle), ("notebook", I.notebook), ("pencil case", I.pencilcase))):
+        cx, hot = 48 + k * 64, lab in ("notebook", "pencil case")
+        b += fn(cx, 80, 40, RED if hot else GREY_D) + T(cx, 118, lab, size=13, fill=RED if hot else C_SUB)
+    b += T(180, 144, "the table the Eyes photograph", size=13, fill=C_SUB)
+    b += arrow([(78, 132), (78, 157)], color=GREY_D, sw=2.0, free="vector")
+    tb = []
+    for k, (lab, fn, col) in enumerate((("Eye", I.eye, TEAL), ("Brain", I.plan, PURPLE), ("Arm", I.arm, ORANGE))):
+        x = 36 + k * 112
+        b += R(x, 160, 84, 88, rx=10, fill=tint(col), stroke=col, sw=1.8) + fn(x + 42, 192, 52, col) + T(x + 42, 238, lab, size=15, fill=col, weight="bold")
+        tb.append((x, 160, 84, 88))
+    for k in range(2):
+        b += connect(tb[k], "r", tb[k + 1], "l", color=GREY_D, sw=1.8)
+    b += I.bag(36, 292, 96, 112, NAVY) + I.notebook(84, 328, 44, RED) + I.pencilcase(84, 376, 44, RED) + I.mark(128, 292, False, 13)
+    b += T(36, 428, "bag", size=13, anchor="start", fill=C_SUB)
+    for y_, t_, w_ in ((306, f"Eye: pencil case {pc['eye_mass']:.2f} kg", "bold"), (324, f"(true {pc['true_mass']:.2f}, {pce:+.0f}%)", None),
+                       (348, f"Eye: notebook {nb['eye_mass']:.2f} kg", "bold"), (366, f"(true {nb['true_mass']:.2f}, {nbe:+.0f}%)", None)):
+        b += T(150, y_, t_, size=14, anchor="start", fill=TEAL, weight=w_)
+    b += T(150, 392, "Brain stacks heavy on light:", size=14, anchor="start", fill=PURPLE) + T(150, 410, "heavy_bottom broken", size=14, anchor="start", fill=RED, weight="bold")
+    b += tag(36, 446, f"one team score: {m['no_fix']['score']:.2f}, failure", RED)
+    for k, col in enumerate((TEAL, PURPLE, ORANGE)):
+        b += I.qmark(44 + k * 36, 498, col, 14)
+    b += T(160, 503, "Eye, Brain or Arm?", size=15, anchor="start", weight="bold", fill=C_TXT)
+    # ================================================================ centre: a message trace, no cards
+    b += T(370, 30, "2", size=18, anchor="start", weight="bold", fill=NAVY) + T(392, 30, "Our team: split by interface", size=16.5, anchor="start", weight="bold", fill=NAVY)
+    lx = {"Eye": 410, "Brain": 540, "Arm": 670}
+    cols = {"Eye": TEAL, "Brain": PURPLE, "Arm": ORANGE}
+    fns = {"Eye": I.eye, "Brain": I.plan, "Arm": I.arm}
+    for n, x in lx.items():
+        b += L(x, 150, x, 540, color=tint(cols[n], 0.55), sw=1.8, dash="5 5")
+    for n, x in lx.items():
+        b += f'<circle cx="{x}" cy="92" r="34" fill="{tint(cols[n], 0.85)}" stroke="{cols[n]}" stroke-width="2"/>' + fns[n](x, 92, 44, cols[n])
+        b += T(x, 150, n, size=15.5, fill=cols[n], weight="bold") if False else T(x, 146, n, size=15.5, fill=cols[n], weight="bold")
+
+    def msg(y, a, c, head, detail, col, below=True):
+        x1, x2 = lx[a], lx[c]
+        d = 1 if x2 > x1 else -1
+        xm = (x1 + x2) / 2
+        w1, w2 = tw(head, 14.5, True), tw(detail, 13.5)
+        wmax = max(w1, w2) + 8
+        s = R(xm - wmax / 2, y - 38, wmax, 34, rx=2, fill="#FFFFFF", stroke="none", sw=0)
+        s += arrow([(x1 + 4 * d, y), (x2 - 4 * d, y)], color=col, sw=2.4, free="both")
+        s += T(xm, y - 22, head, size=14.5, fill=col, weight="bold") + T(xm, y - 6, detail, size=13.5, fill=C_TXT)
+        return s
+
+    b += msg(206, "Eye", "Brain", "SCENE", f"pencil case {pc['eye_mass']:.2f} kg", TEAL)
+    b += R(lx["Brain"] - 6, 226, 12, 62, rx=3, fill=PURPLE, stroke="none", sw=0)
+    b += T(lx["Brain"] + 14, 246, "plans, then a dry run", size=13.5, anchor="start", fill=PURPLE, weight="bold") if False else ""
+    b += T(lx["Brain"] + 16, 244, "dry run passes:", size=13.5, anchor="start", fill=PURPLE, weight="bold")
+    b += T(lx["Brain"] + 16, 262, "plan follows the", size=13.5, anchor="start", fill=C_SUB) + T(lx["Brain"] + 16, 278, "Eye's reports", size=13.5, anchor="start", fill=C_SUB)
+    b += msg(334, "Brain", "Arm", "TASKS", "pencil case, notebook", PURPLE)
+    b += msg(396, "Arm", "Brain", "TOUCH", f"notebook {nbm['measured_weight']:.2f} kg", ORANGE)
+    b += msg(458, "Arm", "Eye", "CHALLENGE", f"{nbm['measured_weight']:.2f} kg vs Eye's {nbm['reported']:.2f}", ORANGE)
+    b += R(lx["Brain"] - 6, 476, 12, 34, rx=3, fill=PURPLE, stroke="none", sw=0) + T(lx["Brain"] + 16, 498, "replans", size=13.5, anchor="start", fill=PURPLE, weight="bold")
+    b += f'<circle cx="{lx["Eye"]}" cy="536" r="12" fill="{TEAL}"/>' + T(lx["Eye"], 542, "!", size=17, fill="#FFFFFF", weight="bold")
+    b += T(lx["Eye"] + 20, 541, "failure charged to the Eye", size=14.5, anchor="start", fill=TEAL, weight="bold")
+    b += T(370, 566, "A dry run checks the plan against the reports, so only touch exposes the Eye's error.", size=13.5, anchor="start", fill=C_SUB)
+    # ================================================================ right: open mini-graphics
+    b += T(722, 30, "3", size=18, anchor="start", weight="bold", fill=GREEN) + T(744, 30, "What the split gives", size=16.5, anchor="start", weight="bold", fill=GREEN)
+    # repair
+    b += T(722, 62, "Repair", size=15.5, anchor="start", weight="bold", fill=GREEN) + T(790, 62, "challenge or probe fixes the plan", size=13.5, anchor="start", fill=C_SUB)
+    for k, (lab, v, col) in enumerate((("no fix", m["no_fix"]["score"], RED), ("CHALLENGE", m["challenge"]["score"], GREEN), ("probe", m["probe"]["score"], GREEN))):
+        yy = 76 + k * 30
+        b += T(722, yy + 15, lab, size=13.5, anchor="start", fill=C_SUB)
+        b += R(812, yy + 2, 120 * v, 18, rx=4, fill=tint(col, 0.35), stroke=col, sw=1.2) + T(812 + 120 * v + 6, yy + 16, f"{v:.2f}", size=14.5, anchor="start", weight="bold", fill=col)
+    b += L(722, 176, 980, 176, color=C_MUT, sw=1.0)
+    # credit
+    b += T(722, 204, "Credit", size=15.5, anchor="start", weight="bold", fill=ORANGE) + T(782, 204, "what a perfect Eye adds", size=13.5, anchor="start", fill=C_SUB)
+    gains = cr["field_gain"]
+    top = max(max(gains.values()), 1e-9)
+    for k, (f_, lab) in enumerate((("mass_guess", "mass"), ("cls", "class"), ("fragility_guess", "fragility"), ("region", "region"))):
+        x = 730 + k * 62
+        h = 40 * gains[f_] / top
+        b += R(x, 282 - max(h, 2), 40, max(h, 2), rx=3, fill=ORANGE if h > 1 else GREY, stroke="none", sw=0)
+        b += T(x + 20, 300, lab, size=13, fill=C_SUB) + T(x + 20, 282 - max(h, 2) - 6, f"{gains[f_]:+.2f}" if gains[f_] else "0", size=13.5, weight="bold", fill=ORANGE if h > 1 else C_SUB)
+    b += L(722, 316, 980, 316, color=C_MUT, sw=1.0)
+    # training data
+    b += T(722, 340, "Training data", size=15.5, anchor="start", weight="bold", fill=PURPLE) + T(836, 340, "failures made useful", size=13.5, anchor="start", fill=C_SUB)
+    b += I.mark(744, 384, False, 14) + T(744, 418, "failed", size=13, fill=C_SUB)
+    b += arrow([(764, 384), (808, 384)], color=GREY_D, sw=2.0, free="vector") + T(786, 372, "relabel", size=13, fill=C_SUB)
+    b += I.plan(836, 384, 40, PURPLE) + T(836, 418, f"{hd['n_tasks']} tasks", size=13, fill=C_SUB)
+    b += arrow([(862, 384), (906, 384)], color=GREY_D, sw=2.0, free="vector") + T(884, 372, "replay", size=13, fill=C_SUB)
+    b += I.mark(932, 384, True, 14) + T(932, 418, "kept", size=13, fill=C_SUB)
+    b += L(722, 436, 980, 436, color=C_MUT, sw=1.0)
+    # one checker
+    b += T(722, 464, "One checker", size=15.5, anchor="start", weight="bold", fill=NAVY) + T(826, 464, "three worlds, one score", size=13.5, anchor="start", fill=C_SUB)
+    gx = [750, 826, 902]
+    for k in range(3):
+        for i in range(3):
+            for j in range(3):
+                b += f'<circle cx="{gx[0] - 10 + i * 10}" cy="{498 - 10 + j * 10}" r="2.8" fill="{GREEN}"/>' if k == 0 else ""
+    b += L(gx[1] - 14, 508, gx[1] + 14, 508, color=BLUE, sw=2.4) + L(gx[1] - 14, 508, gx[1] - 14, 482, color=BLUE, sw=2.4) + f'<circle cx="{gx[1] + 2}" cy="494" r="4" fill="{BLUE}"/>'
+    b += R(gx[2] - 11, 486, 22, 22, rx=2, fill="none", stroke=ORANGE, sw=2.0) + R(gx[2] - 4, 479, 22, 22, rx=2, fill="none", stroke=ORANGE, sw=2.0)
+    for x_, lab in zip(gx, ("symbolic", "pose-level", "Isaac Lab")):
+        b += T(x_, 530, lab, size=13, fill=C_SUB)
+    b += I.mark(954, 498, True, 12) if False else ""
+    # ================================================================ footer: what is new (open columns)
+    yb = 592
+    b += L(20, yb, 980, yb, color=C_MUT, sw=1.4)
+    b += T(20, yb + 30, "What is new", size=17, anchor="start", weight="bold", fill=NAVY)
+    news = [("Roles split by interface", "Only Eyes see pixels, only the Brain plans, Arms are blind, so every failure has an owner.", TEAL),
+            ("Evidence as typed messages", "13 budgeted message types: the dry run checks the plan, challenge and probe check the Eyes.", PURPLE),
+            ("Signals from the team itself", "Counterfactual Eye credit under common random numbers; hindsight relabeling with a replay check.", ORANGE),
+            ("One checker, three worlds", "Symbolic, pose-level and Isaac Lab share one success function; plus an audit of a benchmark scorer.", NAVY)]
+    colw = 240
+    for k, (t, d, col) in enumerate(news):
+        x = 20 + k * colw
+        if k:
+            b += L(x - 10, yb + 46, x - 10, yb + 196, color=C_MUT, sw=1.0)
+        b += T(x, yb + 92, str(k + 1), size=44, anchor="start", weight="bold", fill=tint(col, 0.35))
+        y_ = yb + 62
+        for ln in wrap(t, colw - 70, 15.5, True):
+            b += T(x + 36, y_, ln, size=15.5, anchor="start", weight="bold", fill=col)
+            y_ += 19
+        y_ = yb + 124
+        for ln in wrap(d, colw - 24, 14):
+            b += T(x, y_, ln, size=14, anchor="start", fill=C_TXT)
+            y_ += 18
+    yend = yb + 224
+    b += T(20, yend, "Icons are schematic pictograms, not rendered images. Numbers come from one recorded symbolic fixture episode (seed 24, Eye mass noise sigma 0.45).", size=13.5, anchor="start", fill=C_SUB)
+    b += T(20, yend + 18, "No trained model and no physics result is shown or claimed in this paper yet.", size=13.5, anchor="start", fill=C_SUB)
+    save_svg("fig_mechanism", W_, yend + 34, b)
+
+
+GOLD = "#A87900"
+
+
+def _stack(I, cx, cy, s, ok):
+    """Two items in the bag column: ok = heavy notebook below, light pencil case on top; else reversed (rule broken)."""
+    nb, pcs = s * 0.62, s * 0.78
+    if ok:
+        return I.notebook(cx, cy + s * 0.30, nb, GREY_D) + I.pencilcase(cx, cy - s * 0.30, pcs, GREY_D)
+    return I.pencilcase(cx, cy + s * 0.34, pcs, RED) + I.notebook(cx, cy - s * 0.24, nb, RED)
+
+
+def _node(I, x, y, r, kind, oracle=False, name=True):
+    col = {"Eye": TEAL, "Brain": PURPLE, "Arm": ORANGE}[kind]
+    fn = {"Eye": I.eye, "Brain": I.plan, "Arm": I.arm}[kind]
+    o = ""
+    if oracle:
+        o += f'<circle cx="{x}" cy="{y}" r="{r + 7}" fill="none" stroke="{GOLD}" stroke-width="2.6" stroke-dasharray="5 4"/>'
+    o += f'<circle cx="{x}" cy="{y}" r="{r}" fill="{tint(col, 0.85)}" stroke="{col}" stroke-width="2"/>' + fn(x, y, r * 1.25, col)
+    return o
+
+
+def fig_mechanism():
+    """Figure 1 (teaser), v4: problem -> measurable responsibility -> responsibility-routed learning. Schematic, no footer."""
+    import icons as I
+    W_, H_ = 1000, 546
+    b = ""
+    # ------------------------------------------------------------------ titles
+    heads = [(20, "1", RED, "A team fails. Who was responsible?", "Typed messages make every claim checkable"),
+             (352, "2", GOLD, "Replay it, one agent at a time", "Oracle swapped in; same random draws"),
+             (702, "3", GREEN, "Turn responsibility into learning", "Only the responsible agent is updated")]
+    for x, n, col, t, sub in heads:
+        b += f'<circle cx="{x + 11}" cy="24" r="12" fill="{col}"/>' + T(x + 11, 30, n, size=15, fill="#FFFFFF", weight="bold")
+        b += T(x + 30, 30, t, size=16.5, anchor="start", weight="bold", fill=col) + T(x + 30, 50, sub, size=13.5, anchor="start", fill=C_SUB)
+    # ------------------------------------------------------------------ stage 1: the failure
+    b += R(20, 70, 316, 70, rx=12, fill="#F6F7F9", stroke=C_MUT, sw=1.3)
+    for k, (lab, fn) in enumerate((("laptop", I.laptop), ("book", I.book), ("bottle", I.bottle), ("notebook", I.notebook), ("pencil case", I.pencilcase))):
+        cx = 52 + k * 62
+        b += fn(cx, 96, 36, GREY_D) + T(cx, 132, lab, size=13, fill=C_SUB)
+    xs = {"Eye": 62, "Brain": 178, "Arm": 294}
+    ny = 216
+    b += arrow([(62, 144), (62, 178)], color=GREY_D, sw=2.0, free="vector")
+    for k, (nm, x) in enumerate(xs.items()):
+        b += _node(I, x, ny, 32, nm)
+        b += T(x, ny + 52, nm, size=15, fill={"Eye": TEAL, "Brain": PURPLE, "Arm": ORANGE}[nm], weight="bold")
+        b += f'<circle cx="{x + 26}" cy="{ny - 26}" r="12" fill="{RED}"/>' + T(x + 26, ny - 20, "?", size=17, fill="#FFFFFF", weight="bold")
+    for (a, c, lab) in (("Eye", "Brain", "SCENE"), ("Brain", "Arm", "PLAN")):
+        x1, x2 = xs[a] + 36, xs[c] - 36
+        b += arrow([(x1, ny), (x2, ny)], color=GREY_D, sw=2.0, free="both") + T((x1 + x2) / 2, ny - 10, lab, size=13, fill=C_SUB, weight="bold")
+    b += _stack(I, 84, 354, 92, False) + I.mark(126, 306, False, 13)
+    b += T(150, 330, "A heavier item ends", size=14.5, anchor="start") + T(150, 349, "up on a lighter one:", size=14.5, anchor="start") + T(150, 368, "a rule is broken.", size=14.5, anchor="start", fill=RED, weight="bold")
+    b += tag(36, 410, "one team reward: low", RED)
+    b += T(36, 454, "Which agent should learn", size=15, anchor="start", weight="bold") + T(36, 474, "from this failure?", size=15, anchor="start", weight="bold")
+    # ------------------------------------------------------------------ stage 2: replays
+    rows = [("Eye", 150, True), ("Brain", 262, False), ("Arm", 374, False)]
+    b += T(452, 90, "swap in an oracle", size=13.5, fill=C_SUB, weight="bold") + T(604, 90, "fixed?", size=13.5, fill=C_SUB, weight="bold") + T(664, 90, "gain", size=13.5, fill=C_SUB, weight="bold")
+    b += L(360, 100, 680, 100, color=C_MUT, sw=1.0)
+    nx = {"Eye": 392, "Brain": 452, "Arm": 512}
+    for kind, y, fixed in rows:
+        b += L(nx["Eye"] + 21, y, nx["Brain"] - 21, y, color=GREY, sw=2.0) + L(nx["Brain"] + 21, y, nx["Arm"] - 21, y, color=GREY, sw=2.0)
+        for nm, x in nx.items():
+            b += _node(I, x, y, 21, nm, oracle=(nm == kind))
+        b += T(nx[kind], y - 38, "oracle", size=13, fill=GOLD, weight="bold")
+        b += T(nx[kind], y + 44, kind, size=13.5, fill={"Eye": TEAL, "Brain": PURPLE, "Arm": ORANGE}[kind], weight="bold")
+        b += arrow([(548, y), (576, y)], color=GREY, sw=1.8, free="both")
+        b += _stack(I, 604, y + 2, 54, fixed) + I.mark(630, y - 30, fixed, 9)
+        b += R(646, y - 9, 32 if fixed else 3, 18, rx=3, fill=GREEN if fixed else GREY, stroke="none", sw=0)
+    b += L(644, 124, 644, 396, color=C_MUT, sw=1.0)
+    b += T(350, 452, "responsibility of agent i:", size=14.5, anchor="start", weight="bold", fill=GOLD)
+    b += T(350, 472, "R(replay with oracle i) - R(real)", size=14.5, anchor="start", fill=C_TXT)
+    # ------------------------------------------------------------------ stage 3: routed learning
+    ups = [(150, "Eye", TEAL, "Learns: keeps the reports that helped the team.", False),
+           (262, "Brain", PURPLE, "Gets the failure back as a valid example: relabeled and replay-checked.", False),
+           (374, "Arm", ORANGE, "No update: a perfect Arm would not have prevented this failure.", True)]
+    for y, nm, col, txt, muted in ups:
+        c = GREY if muted else col
+        b += arrow([(686, y), (716, y)], color=c, sw=2.6 if not muted else 1.6, dash="5 4" if muted else None, free="both")
+        b += _node(I, 746, y, 21, nm)
+        for k, ln in enumerate(wrap(txt, 190, 14.5)):
+            b += T(780, y - 12 + k * 19, ln, size=14.5, anchor="start", fill=C_SUB if muted else C_TXT, weight="bold" if (nm == "Eye") else None)
+    # ------------------------------------------------------------------ loop back
+    b += arrow([(840, 420), (840, 506), (170, 506), (170, 484)], color=GREEN, sw=2.6, free="both")
+    b += T(505, 528, "a better team meets the next episode", size=14.5, fill=GREEN, weight="bold")
+    save_svg("fig_mechanism", W_, H_, b)
+
+
+def fig_overview():
+    """Figure 2: the team architecture. Typed message bus as the spine; plan path, perception loop, and the responsibility chain."""
+    import icons as I
+    W_, H_ = 1000, 640
+    b = ""
+
+    def circ(x, y, r, col, fn, s=None, fill=None):
+        return f'<circle cx="{x}" cy="{y}" r="{r}" fill="{fill or tint(col, 0.85)}" stroke="{col}" stroke-width="2.2"/>' + fn(x, y, s or r * 1.25, col)
+
+    # ---- the bus band (drawn first, everything attaches to it)
+    b += R(250, 300, 700, 40, rx=20, fill=tint(NAVY, 0.88), stroke=NAVY, sw=2.2)
+    b += T(268, 326, "typed message bus: 13 types, budgeted", size=14.5, anchor="start", fill=NAVY, weight="bold")
+    # ---- perception loop (left)
+    b += I.world(100, 300, 150, 74, GREY_D) + T(100, 356, "World", size=15, fill=GREY_D, weight="bold")
+    b += T(100, 84, "Eye A, Eye B", size=15, fill=TEAL, weight="bold") + circ(100, 130, 34, TEAL, I.eye)
+    b += arrow([(100, 262), (100, 172)], color=GREY_D, sw=2.2, free="both") + T(112, 222, "images", size=14, anchor="start", fill=GREY_D)
+    b += arrow([(138, 118), (292, 118), (292, 298)], color=TEAL, sw=2.4, free="both") + T(215, 108, "SCENE", size=14, fill=TEAL, weight="bold")
+    b += arrow([(318, 298), (318, 150), (140, 150)], color=PURPLE, sw=2.4, free="both") + T(230, 170, "LOOK", size=14, fill=PURPLE, weight="bold")
+    # ---- decision core (top)
+    b += circ(500, 52, 24, GREY_D, I.person, 40, "#F1F3F5") + T(430, 58, "Human", size=15, anchor="end", fill=GREY_D, weight="bold")
+    b += arrow([(500, 80), (500, 118)], color=GREY_D, sw=2.2, free="both") + T(512, 104, "instruction", size=14, anchor="start", fill=GREY_D)
+    b += arrow([(526, 52), (860, 52), (860, 298)], color=GREY_D, sw=2.2, free="both") + T(700, 42, "AMEND", size=14, fill=GREY_D, weight="bold")
+    b += I.docs(380, 160, 56, BLUE) + T(380, 206, "Harness", size=15, fill=BLUE, weight="bold") + T(380, 224, "rules, skills", size=13.5, fill=C_SUB)
+    b += arrow([(412, 160), (456, 160)], color=BLUE, sw=2.2, free="both")
+    b += circ(500, 160, 40, PURPLE, I.plan) + T(552, 188, "Brain", size=15, anchor="start", fill=PURPLE, weight="bold")
+    b += arrow([(542, 160), (620, 160)], color=PURPLE, sw=2.4, free="both") + T(581, 148, "plan", size=14, fill=PURPLE, weight="bold")
+    b += I.gate(650, 160, 64, GREEN) + T(650, 120, "Verifier: dry run", size=14, fill=GREEN, weight="bold")
+    b += arrow([(650, 196), (650, 288)], color=GREEN, sw=2.4, free="both") + T(662, 246, "verified plan", size=14, anchor="start", fill=GREEN)
+    b += arrow([(476, 298), (476, 196)], color=NAVY, sw=2.2, free="both") + T(466, 270, "SCENE, TOUCH,", size=14, anchor="end", fill=NAVY) + T(466, 288, "CHALLENGE", size=14, anchor="end", fill=NAVY)
+    b += arrow([(524, 198), (524, 298)], color=NAVY, sw=2.2, free="both") + T(534, 252, "LOOK", size=14, anchor="start", fill=NAVY)
+    # ---- scheduler on the bus
+    b += circ(650, 320, 30, GREEN, I.ladder, 40, "#FFFFFF") + T(692, 326, "Scheduler, ladder", size=14.5, anchor="start", fill=GREEN, weight="bold")
+    # ---- arms (below)
+    for x, nm in ((380, "Arm L"), (520, "Arm R")):
+        b += circ(x, 450, 34, ORANGE, I.arm) + T(x, 506, nm, size=15, fill=ORANGE, weight="bold")
+        b += arrow([(x - 10, 342), (x - 10, 414)], color=NAVY, sw=2.2, free="both") + arrow([(x + 14, 414), (x + 14, 342)], color=ORANGE, sw=2.2, free="both")
+    b += T(360, 384, "CLAIM, LOCK", size=14, anchor="end", fill=NAVY)
+    b += T(550, 372, "TOUCH,", size=14, anchor="start", fill=ORANGE) + T(550, 390, "CHALLENGE,", size=14, anchor="start", fill=ORANGE) + T(550, 408, "STATUS", size=14, anchor="start", fill=ORANGE)
+    b += arrow([(338, 450), (130, 450), (130, 338)], color=ORANGE, sw=2.4, free="both") + T(240, 440, "skills", size=14, fill=ORANGE, weight="bold")
+    # ---- responsibility chain (bottom), gold
+    b += arrow([(70, 338), (70, 512)], color=GREY_D, sw=2.2, free="both")
+    b += I.mark(70, 545, False, 15) + T(70, 584, "rules.check_final", size=14, fill=GREY_D, weight="bold")
+    b += arrow([(100, 545), (326, 545)], color=GOLD, sw=2.6, free="both") + T(213, 533, "replay, oracle i swapped in", size=14, fill=GOLD, weight="bold")
+    b += f'<circle cx="356" cy="545" r="28" fill="{tint(GOLD, 0.85)}" stroke="{GOLD}" stroke-width="2.2" stroke-dasharray="5 4"/>' + f'<polygon points="356,532 372,558 340,558" fill="none" stroke="{GOLD}" stroke-width="3"/>' 
+    b += T(356, 592, "responsibility", size=14, fill=GOLD, weight="bold")
+    b += arrow([(388, 545), (606, 545)], color=GOLD, sw=2.6, free="both") + T(497, 533, "routes learning", size=14, fill=GOLD, weight="bold")
+    b += circ(650, 545, 24, TEAL, I.eye) + circ(704, 545, 24, PURPLE, I.plan)
+    b += T(677, 592, "Eye and Brain learn", size=14, fill=C_TXT, weight="bold")
+    # ---- legend
+    for k, (lab, col) in enumerate((("perception", TEAL), ("planning", PURPLE), ("action", ORANGE), ("checking", GREEN), ("responsibility", GOLD))):
+        y = 392 + k * 24
+        b += R(790, y, 16, 12, rx=3, fill=tint(col, 0.5), stroke=col, sw=1.4) + T(814, y + 11, lab, size=14, anchor="start", fill=C_TXT)
+    save_svg("fig_overview", W_, H_, b)
+
+
+def fig_overview():
+    """Figure 2 (v5): layered system figure. Knowledge -> agents -> typed interfaces -> bus -> worlds and checker -> responsibility and learning."""
+    import icons as I
+    W_, H_ = 1000, 944
+    b = ""
+
+    def circ(x, y, r, col, fn, s=None, fill=None):
+        return f'<circle cx="{x}" cy="{y}" r="{r}" fill="{fill or tint(col, 0.85)}" stroke="{col}" stroke-width="2.2"/>' + fn(x, y, s or r * 1.25, col)
+
+    bands = [(8, 170, GREY, 0.95, "KNOWLEDGE AND TASK", 36, GREY_D), (178, 334, GREY, 1.0, "AGENTS", 36, GREY_D),
+             (342, 500, GREY, 0.95, "TYPED INTERFACES", 36, GREY_D), (508, 668, NAVY, 0.94, "COORDINATION", 36, NAVY),
+             (676, 772, GREY, 0.95, "WORLD", 36, GREY_D), (780, 936, GOLD, 0.93, "RESPONSIBILITY AND LEARNING", 112, GOLD)]
+    for y0, y1, col, a_, lab, lx, lc in bands:
+        if a_ < 1.0:
+            b += R(24, y0, 944, y1 - y0, rx=12, fill=tint(col, a_), stroke="none", sw=0)
+        b += T(lx, y0 + 20, lab, size=13.5, anchor="start", weight="bold", fill=lc)
+    # ================= A: knowledge and task
+    b += I.docs(490, 100, 58, BLUE) + T(452, 68, "Harness", size=15.5, anchor="end", weight="bold", fill=BLUE)
+    for k, ln in enumerate(("19 markdown files: 6 rules,", "4 skills, object, agent and", "memory notes. Retrieval by", "BM25: pass 1 rules (k = 5),", "pass 2 notes (k = 3).")):
+        b += T(452, 86 + k * 16, ln, size=13.5, anchor="end", fill=C_TXT)
+    b += circ(565, 100, 26, GREY_D, I.person, 40, "#F1F3F5") + T(606, 68, "Human instruction", size=15.5, anchor="start", weight="bold", fill=GREY_D)
+    ins = FD["mechanism"]["instruction"].split(": ", 1)[1]
+    for k, ln in enumerate(wrap("Pack the bag: " + ins, 350, 13.5)[:5]):
+        b += T(606, 86 + k * 16, ln, size=13.5, anchor="start", fill=C_TXT)
+    # ================= B: agents
+    b += T(116, 212, "Eye A, Eye B (VLMs, pixels only)", size=14.5, anchor="start", weight="bold", fill=TEAL) + circ(150, 258, 34, TEAL, I.eye)
+    b += circ(530, 262, 44, PURPLE, I.plan) + T(584, 260, "Brain", size=15.5, anchor="start", weight="bold", fill=PURPLE) + T(584, 278, "(text-only LLM)", size=13.5, anchor="start", fill=PURPLE)
+    b += T(835, 212, "Arm L, Arm R (blind executors)", size=14.5, weight="bold", fill=ORANGE)
+    for x in (790, 880):
+        b += circ(x, 258, 30, ORANGE, I.arm)
+    b += L(790, 288, 790, 300, color=ORANGE, sw=2) + L(880, 288, 880, 300, color=ORANGE, sw=2) + L(790, 300, 880, 300, color=ORANGE, sw=2)
+    b += arrow([(490, 130), (490, 238)], color=BLUE, sw=2.2, free="both")
+    b += arrow([(565, 128), (565, 230)], color=GREY_D, sw=2.2, free="both") + T(575, 200, "instruction, AMEND", size=13.5, anchor="start", fill=GREY_D)
+    b += arrow([(484, 244), (186, 244)], color=PURPLE, sw=2.2, free="both") + T(335, 234, "LOOK (via the bus)", size=13.5, fill=PURPLE, weight="bold")
+    # ================= B2: typed interfaces
+    sc = FD["messages"]["examples"]["SCENE"]["content"]["objects"][0]
+    b += L(70, 372, 70, 492, color=TEAL, sw=3) + T(80, 384, "SCENE message (recorded)", size=13.5, anchor="start", weight="bold", fill=TEAL)
+    js = ['{"name": "%s", "cls": "%s",' % (sc["name"], sc["cls"]), ' "region": "%s",' % sc["region"], ' "mass_guess": %s,' % sc["mass_guess"],
+          ' "fragility_guess": %s,' % sc["fragility_guess"], ' "occluded": %s,' % str(sc["occluded"]).lower(), ' "confidence": %s}' % sc["confidence"]]
+    for k, ln in enumerate(js):
+        b += T(80, 404 + k * 16, ln, size=13, anchor="start", font=MONO, fill=C_TXT)
+    b += L(358, 372, 358, 492, color=PURPLE, sw=3) + T(368, 384, "plan: a DAG of grasp (g) and place (p) tasks", size=13.5, anchor="start", weight="bold", fill=PURPLE)
+    nodes = {"ga": (388, 428, "g"), "pa": (436, 428, "p"), "pb": (484, 428, "p"), "pc": (532, 428, "p"), "gb": (484, 474, "g"), "gc": (532, 474, "g")}
+    for x, y, lab in nodes.values():
+        col = PURPLE if lab == "p" else ORANGE
+        b += f'<circle cx="{x}" cy="{y}" r="11" fill="{tint(col, 0.8)}" stroke="{col}" stroke-width="1.8"/>' + T(x, y + 5, lab, size=13.5, fill=col, weight="bold")
+    for a_, c_ in (("ga", "pa"), ("pa", "pb"), ("pb", "pc")):
+        b += arrow([(nodes[a_][0] + 13, nodes[a_][1]), (nodes[c_][0] - 13, nodes[c_][1])], color=GREY_D, sw=1.6, free="both")
+    for k in ("gb", "gc"):
+        b += arrow([(nodes[k][0], nodes[k][1] - 13), (nodes[k][0], 442)], color=GREY_D, sw=1.6, free="both")
+    b += arrow([(546, 428), (566, 428)], color=GREEN, sw=1.6, free="both") if False else ""
+    b += I.gate(604, 428, 46, GREEN) + T(604, 468, "verifier: none,", size=13.5, fill=GREEN, weight="bold") + T(604, 484, "static, or dry run", size=13.5, fill=C_SUB)
+    b += circ(690, 428, 24, GREEN, I.ladder, 34, "#FFFFFF") + T(722, 424, "scheduler,", size=13.5, anchor="start", weight="bold", fill=GREEN) + T(722, 441, "bag lock", size=13.5, anchor="start", fill=C_SUB)
+    b += L(872, 372, 872, 492, color=ORANGE, sw=3)
+    for k, (ln, bold) in enumerate((("skills", True), ("grasp, place,", False), ("handover,", False), ("push_aside", False), ("senses", True), ("force, pose", False))):
+        b += T(882, 386 + k * 17 + (6 if k >= 4 else 0), ln, size=13.5, anchor="start", weight="bold" if bold else None, fill=ORANGE if bold else C_TXT)
+    # ================= C: the bus band, two rows
+    by0 = 538
+    b += R(40, by0, 920, 64, rx=22, fill=tint(NAVY, 0.84), stroke=NAVY, sw=2.4)
+    b += T(64, by0 + 25, "typed message bus: 13 types, schema-checked, token-budgeted", size=14.5, anchor="start", weight="bold", fill=NAVY)
+    groups = [("perceive", TEAL, ["SCENE", "LOOK"]), ("coordinate", NAVY, ["ABILITY", "CLAIM", "OFFER", "DECLINE", "HANDOVER", "LOCK"]),
+              ("feedback", ORANGE, ["STATUS", "BLOCKED", "TOUCH", "CHALLENGE"]), ("human", GREY_D, ["AMEND"])]
+    xl = 600
+    for g, col, _ in groups:
+        b += T(xl, by0 + 25, g, size=13.5, anchor="start", weight="bold", fill=col)
+        xl += tw(g, 13.5, True) + 16
+    x = 64
+    for g, col, ms in groups:
+        for mname in ms:
+            b += T(x, by0 + 51, mname, size=13.5, anchor="start", weight="bold", fill=col)
+            x += tw(mname, 13.5, True) + 15
+    # connectors to the bus
+    b += arrow([(240, 492), (240, 536)], color=TEAL, sw=2.4, free="both") + T(250, 520, "SCENE", size=13.5, anchor="start", fill=TEAL, weight="bold")
+    b += arrow([(346, 536), (346, 272), (484, 272)], color=NAVY, sw=2.2, free="both") + T(415, 262, "SCENE, TOUCH,", size=13, fill=NAVY) + T(415, 292, "CHALLENGE", size=13, fill=NAVY)
+    b += arrow([(690, 454), (690, 536)], color=GREEN, sw=2.4, free="both") + T(700, 510, "verified plan", size=13.5, anchor="start", fill=GREEN, weight="bold")
+    b += arrow([(806, 302), (806, 536)], color=ORANGE, sw=2.2, free="both") + arrow([(826, 536), (826, 302)], color=NAVY, sw=2.2, free="both")
+    b += T(796, 322, "CLAIM, LOCK,", size=13, anchor="end", fill=ORANGE) + T(796, 338, "STATUS, TOUCH,", size=13, anchor="end", fill=ORANGE) + T(796, 354, "CHALLENGE", size=13, anchor="end", fill=ORANGE)
+    b += T(836, 470, "tasks", size=13, anchor="start", fill=NAVY, weight="bold")
+    # notes below the band
+    b += T(40, 632, "modes: push, delta, pull, init-only", size=14.5, anchor="start", weight="bold", fill=NAVY)
+    b += T(40, 650, "per-episode token budget; over-budget messages are refused", size=13.5, anchor="start", fill=C_TXT)
+    b += I.ladder(560, 642, 34, GREEN) + T(584, 632, "recovery ladder on a failed skill", size=14.5, anchor="start", weight="bold", fill=GREEN)
+    b += T(584, 650, "retry, alternate parameters, retreat, reassign, replan, abort", size=13.5, anchor="start", fill=C_TXT)
+    # ================= D: worlds
+    dy = 8
+    wx = [60, 360, 660]
+    b += "".join(f'<circle cx="{wx[0] + 8 + i * 12}" cy="{724 + dy - 12 + j * 12}" r="3.4" fill="{GREEN}"/>' for i in range(3) for j in range(3))
+    b += T(112, 720 + dy, "Symbolic world", size=14.5, anchor="start", weight="bold", fill=GREEN) + T(112, 738 + dy, "fast; the loop is developed here", size=13.5, anchor="start", fill=C_TXT)
+    b += L(wx[1] + 4, 742 + dy, wx[1] + 36, 742 + dy, color=BLUE, sw=2.6) + L(wx[1] + 4, 742 + dy, wx[1] + 4, 710 + dy, color=BLUE, sw=2.6) + f'<circle cx="{wx[1] + 22}" cy="{724 + dy}" r="5" fill="{BLUE}"/>'
+    b += T(wx[1] + 52, 720 + dy, "Pose-level simulator", size=14.5, anchor="start", weight="bold", fill=BLUE) + T(wx[1] + 52, 738 + dy, "same loop outcomes, tested", size=13.5, anchor="start", fill=C_TXT)
+    b += R(wx[2] + 2, 716 + dy, 24, 24, rx=2, fill="none", stroke=ORANGE, sw=2.2) + R(wx[2] + 12, 708 + dy, 24, 24, rx=2, fill="none", stroke=ORANGE, sw=2.2)
+    b += T(wx[2] + 52, 720 + dy, "Isaac Lab", size=14.5, anchor="start", weight="bold", fill=ORANGE) + T(wx[2] + 52, 738 + dy, "physics; outcomes from state change", size=13.5, anchor="start", fill=C_TXT)
+    b += arrow([(24, 730), (12, 730), (12, 258), (112, 258)], color=GREY_D, sw=2.2, free="both")
+    b += arrow([(914, 258), (990, 258), (990, 724), (966, 724)], color=ORANGE, sw=2.2, free="both") + T(952, 246, "skills", size=13.5, fill=ORANGE, weight="bold")
+    # ================= E: responsibility and learning
+    yc = 866
+    b += arrow([(84, 772), (84, 838)], color=GREY_D, sw=2.2, free="both")
+    b += I.mark(84, yc, False, 15) + T(84, 904, "rules.check_final", size=13.5, fill=GREY_D, weight="bold") + T(84, 921, "success or failure", size=13.5, fill=C_SUB)
+    b += arrow([(108, yc), (190, yc)], color=GOLD, sw=2.4, free="both") + T(150, yc - 12, "on failure", size=13.5, fill=GOLD, weight="bold")
+    for k, (nm, x_) in enumerate((("Eye", 226), ("Brain", 286), ("Arm", 346))):
+        fn = {"Eye": I.eye, "Brain": I.plan, "Arm": I.arm}[nm]
+        col = {"Eye": TEAL, "Brain": PURPLE, "Arm": ORANGE}[nm]
+        b += (f'<circle cx="{x_}" cy="{yc}" r="26" fill="none" stroke="{GOLD}" stroke-width="2.4" stroke-dasharray="5 4"/>' if k == 0 else "") + circ(x_, yc, 19, col, fn, 25)
+    b += T(286, yc + 44, "replay with an oracle for one agent", size=13.5, fill=GOLD, weight="bold") + T(286, yc + 61, "at a time; same random draws", size=13.5, fill=C_SUB)
+    b += arrow([(380, yc), (448, yc)], color=GOLD, sw=2.4, free="both")
+    b += f'<circle cx="480" cy="{yc}" r="28" fill="{tint(GOLD, 0.85)}" stroke="{GOLD}" stroke-width="2.2" stroke-dasharray="5 4"/>' + f'<polygon points="480,{yc - 15} 496,{yc + 11} 464,{yc + 11}" fill="none" stroke="{GOLD}" stroke-width="3"/>'
+    b += T(480, yc + 52, "responsibility", size=13.5, fill=GOLD, weight="bold")
+    b += arrow([(512, yc), (566, yc)], color=GOLD, sw=2.4, free="both") + L(572, yc - 46, 572, yc + 46, color=GOLD, sw=2.4)
+    routes = [(yc - 46, TEAL, I.eye, "Eye: LoRA fine-tuning, then rejection sampling (K = 8) guided by credit"),
+              (yc, PURPLE, I.plan, "Brain: SFT, then GRPO on the plan reward; hindsight relabeling"),
+              (yc + 46, ORANGE, I.arm, "Arms: flow-matching distillation of scripted demonstrations")]
+    for y, col, fn, txt in routes:
+        b += arrow([(572, y), (606, y)], color=GOLD, sw=2.2, free="both") + circ(632, y, 17, col, fn, 22)
+        ls = wrap(txt, 290, 13.5)
+        for k, ln in enumerate(ls):
+            b += T(660, y + 5 - (8 if len(ls) > 1 else 0) + k * 16, ln, size=13.5, anchor="start", fill=C_TXT)
+    save_svg("fig_overview", W_, H_, b)

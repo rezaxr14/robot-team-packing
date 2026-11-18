@@ -2,17 +2,18 @@
 
 \begin{figure*}[tbp]
 \centering
-\includegraphics[width=0.92\textwidth]{fig_overview}
-\caption{\textbf{The team and its interfaces.} Eyes see pixels and emit a structured scene; the Brain reads text, retrieves from the harness, and plans; a verifier checks the plan before the scheduler hands tasks to two blind Arms; touch and challenges flow back through a typed message bus. Numbers give the order of one episode. Dashed boxes are optional; red tags mark components whose trained models do not yet exist.}
+\includegraphics[width=0.97\textwidth]{fig_overview}
+\caption{\textbf{The team as a closed loop around the world, with the data each module handles.} The Eyes read the scene and emit typed claims (detections with mass estimates; red marks reports far from the true mass). The Brain plans in text from the instruction, the retrieved harness rules and the scene; its plan is a dependency graph that a dry run checks before verified tasks go to the Arms, and touch and challenges return. Every claim travels on one schema-checked, token-budgeted bus; the stream shows a recorded episode with capsule width proportional to tokens, so scene reports dominate the traffic. The Arms must keep the grip force inside a window set by each object's mass, friction and fragility; the chart shows the windows of the recorded episode's items with every grasp, where slipped grasps were retried with more force. On failure the episode is replayed with an oracle swapped in for one agent at a time; the Eye replay is measured, and the Brain and Arm replays drawn here are what the design predicts for this failure. The scene is an illustrative render, not a simulator image.}
 \label{fig:overview}
+\stalefig{the roles in the lower band are from the old design: the Eye is drawn as ``LoRA fine-tuning'' and the Brain as a text-only planner. The Eyes are conventional computer vision --- a detector plus OpenCV geometry, never a language model --- and the Brain is one Qwen3.5-4B vision-language model that receives typed claims only (no pixels) and commands both arms and both Eyes (D-05, D-06, D-52). Redraw the Eye box as detector training plus credit-weighted selection among candidate readings, label the Brain ``Qwen3.5-4B'' (typed claims in, plan out), and label the Arms FR3 + Franka Hand. Keep the typed-bus, message-stream and force-window panels.}
 \end{figure*}
 
 \subsection{Task, roles and failure model}\label{sec:task}
 The task is to pack a backpack from a table: given a short natural-language instruction (for example which items to pack and which rules to respect), two arms must place the requested items into the bag's compartments.
 The six rules are in \cref{tab:rules}: heavier items go first so that they sit at the bottom of the main compartment, the laptop goes in its slot, the bottle stays upright and apart from the laptop, the lunchbox goes in last, distractor items are left alone, and only one arm may be at the bag at a time.
 The team has three kinds of agents (\cref{fig:overview}).
-Each \emph{Eye} is a vision-language model that sees an image and emits a JSON scene listing each object's class, region, estimated mass and fragility.
-The \emph{Brain} is a text-only language model; it never sees pixels and plans a directed acyclic graph of grasp and place tasks.
+Each \emph{Eye} is a conventional computer-vision pipeline --- a detector plus OpenCV geometry --- that sees an image and emits a typed SCENE claim listing each object's class, region, estimated mass and fragility; an Eye is never a language model.
+The \emph{Brain} is one Qwen3.5-4B vision-language model that commands both arms and both Eyes; in this design it is given no pixels, only typed claims, and plans a directed acyclic graph of grasp and place tasks.
 Each \emph{Arm} is blind: it has proprioception, force sensing and a skill interface, and reports what it feels.
 Failures are charged to an agent by the loop's attribution rules (\cref{sec:success}); these are heuristic labels, which we validate in \cref{sec:experiments}.
 
@@ -32,7 +33,7 @@ The modes trade tokens for information, and their effect on trained agents is a 
 \begin{figure*}[tbp]
 \centering
 \includegraphics[width=\textwidth]{fig_messages}
-\caption{\textbf{The message layer.} (a)~The \nMsgTypes{} types and their required fields; colour shows the sender observed in the recorded episodes. (b)~A recorded CHALLENGE: an Arm reports a measured weight that disagrees with the Eye's report. (c)~Message tokens per episode under four communication modes, from the symbolic fixture (80 seeds): a check that the accounting works, not a result about trained agents.}
+\caption{\textbf{The message layer.} (a)~The \nMsgTypes{} message types: a dot marks the sender (design) and a tick the types exchanged in the recorded episodes, with each type's required fields; one real CHALLENGE message and what the bus does to it (validate, count, deliver); and the share of tokens by type in a recorded episode, where scene reports dominate. (b)~Claims against evidence: for the five objects whose touch contradicted the Eye by more than 20\% in a recorded episode, the Eye's report (diamond), the Arm's touch (circle) and the 20\% acceptance band; a challenge corrects the scene to the touch. (c)~Mean cumulative message tokens against tasks executed for the four communication modes over 80 symbolic-fixture episodes with noisy Eyes (FIXTURE); the end labels give tokens per episode and successes, and check the accounting only.}
 \label{fig:messages}
 \end{figure*}
 
@@ -45,7 +46,7 @@ The modes trade tokens for information, and their effect on trained agents is a 
 
 \subsection{The harness}\label{sec:harness}
 The Brain's procedural knowledge lives in \nHarnessFiles{} short markdown files (\cref{fig:harness}, appendix~B): the six rules, four skill descriptions, object and agent notes, an episode memory and a task template.
-Retrieval is a two-pass BM25 search.
+Retrieval is a two-pass BM25 search, fused with a persistent Qdrant vector ranking by reciprocal-rank fusion (the BM25 pass is the one illustrated in \cref{fig:harness}).
 Pass one queries with the instruction and returns the top five of the six rules; pass two queries with the classes present in the scene and returns the top three object, skill and memory notes.
 The retrieved text is added to the Brain's context.
 After episodes, a monitor writes measured success rates and failure causes back into the skill files.
@@ -59,7 +60,7 @@ At five retrieved rules both retrieve every required rule for this instruction, 
 \begin{figure*}[tbp]
 \centering
 \includegraphics[width=\textwidth]{fig_harness}
-\caption{\textbf{The harness.} (a)~The \nHarnessFiles{} markdown files by type. (b)~Two-pass BM25 retrieval into the Brain's context, with a monitor that writes measured outcomes back to the skill files (dashed: runs after episodes). (c)~Tokenization of the string ``lunchbox1 last'' before and after the fix, and the BM25 score of every rule for the recorded instruction. The pre-fix tokenizer is our reconstruction.}
+\caption{\textbf{The harness.} (a)~The \nHarnessFiles{} markdown files by folder, and one opened: an id, a type and keywords for retrieval, and a body the Brain reads. (b)~Pass 1 of retrieval ranks the six rules by BM25 for the instruction and puts the top five into the Brain's context; a dot marks a rule the instruction needs. Pass 2 retrieves three notes for the scene's classes. (c)~A tokenizer that keeps \texttt{lunchbox1} as one token under-scores the lunchbox rule; splitting letters from digits raises its score and moves it up one rank (the pre-fix tokenizer is our reconstruction). (d)~After episodes a monitor writes measured outcomes back into the skill files, and the next retrieval carries them to the Brain. Illustrative: the values are from the current prototype and will be replaced by the final system's.}
 \label{fig:harness}
 \end{figure*}
 
@@ -91,7 +92,7 @@ At the end the checker of \cref{sec:success} scores the bag and attributes fatal
 \begin{figure*}[tbp]
 \centering
 \includegraphics[width=\textwidth]{fig_loop}
-\caption{\textbf{One recorded episode through the loop} (seed \loopSeed{}, flaky planner, leaky Eyes; fixture). (a)~The \loopTasks{} executed tasks by arm in time order, with the loop round of each, the \loopLooks{} look, \loopChal{} challenges, the amendment at round \loopAmendRound{} and the replans (\loopReplans{}); the episode takes \loopRounds{} rounds and succeeds. (b)~The stages of the loop and what this trace shows of each, including the planner's \loopRej{} rejected drafts; the probe is not used here.}
+\caption{\textbf{The control loop.} (a)~One episode step by step: an optional probe, the Brain's plan, verification (a rejection sends the reasons back), then rounds in which each Arm runs its head task, and an end check by the shared checker. An item missing from the scene triggers LOOK and a replan; a touch that contradicts an Eye by more than 20\%, an amended instruction, and a failed skill interrupt a round. (b)~A recorded episode as a swimlane timeline (\loopTasks{} tasks in \loopRounds{} rounds, with \loopLooks{} look, \loopChal{} challenges and an amendment at round \loopAmendRound{}). (c)~The recovery ladder with one recorded slip: the grasp of book1 fell just below its slip floor and held after the parameters were changed. Failures are charged by attribution rules at the end check; these are heuristic labels. Illustrative: values are from the current prototype.}
 \label{fig:loop}
 \end{figure*}
 
@@ -103,15 +104,21 @@ These are heuristics; \cref{tab:attribution} is the hand-labelled check we owe t
 
 \subsection{Learning signals}\label{sec:signals}
 \Cref{fig:signals} lists what trains what.
-Each Eye is fine-tuned with LoRA on rendered images with scene targets and then improved by rejection sampling: $K=8$ reports per image, keeping the best by field accuracy or by counterfactual credit.
+Each Eye's detector is trained on rendered images with SCENE-JSON targets and then improved by reward-weighted selection among its candidate readings: $K=8$ reports per image, scored by field accuracy or by counterfactual credit. There is no language model in the Eyes. \todo{Detector training and reward-weighted selection are specified here, not measured; no trained Eye is reported.}
 The Brain is fine-tuned on teacher plans that were validated by closed-loop success and then optimized with GRPO using a plan-level reward $R = 0.1\,r_{\text{format}} + 0.2\,r_{\text{feasible}} + 0.6\,r_{\text{rules}} + 0.1\,r_{\text{length}}$, optionally plus a closed-loop rollout term; the components are defined in \cref{fig:signals}.
 The Arms are a small transformer trained by distillation of scripted differential-IK demonstrations with a flow-matching action head: with $x_t=(1-t)x_0+t\,x_1$, noise $x_0$ and action chunk $x_1$, the network predicts $x_1-x_0$; sampling uses eight Euler steps, a chunk of 16 actions of dimension 8, and executes the first four before replanning.
 There is no learned stop signal, so a skill ends by a scripted completion test.
+
+\paragraph{Training implementation and reproducibility.} The Brain's supervised stage and GRPO stage are configured from one hardware profile: the profile fixes dtype, attention backend, adapter targets, batch geometry and the two measured sequence budgets (a forward/backward ceiling and a smaller training ceiling that includes optimizer state). Training uses prompt-masked, chunked causal-LM loss, so a $[\text{tokens}\times\text{vocab}]$ logits tensor is never materialised, and 8-bit optimizer moments keep the 4-bit adapter trainable on a 6\,GB card. A run is resumable inside an epoch: batch order is a pure function of the seed and epoch, and each checkpoint carries the changed weights, optimizer, RNG and batch cursor; it is written locally and pushed to our private Hugging Face repo every $N$ steps, older steps are pruned, and the newest checkpoint is fetched before the next session starts. Retrieval beside the harness's BM25 index is a persistent Qdrant vector index fused by reciprocal-rank fusion; the embedding model is a separate, swappable component. These are engineering properties, checked by gates rather than reported as model-quality results; \todo{the four-step run of gate G-14 only exercises this path --- it is not a trained model}.
 
 \paragraph{Counterfactual Eye credit.}
 For an episode with score $R(\text{real})$, replace Eye $i$'s report by a replacement $r$ (empty, degraded or the oracle truth, optionally for one field only) and replay with the same keyed random draws, giving $R(i,r)$.
 The credit is $C(i,r)=R(\text{real})-R(i,r)$, so a positive credit means the Eye helped relative to the replacement; the \emph{oracle gain} $G=R(\text{oracle})-R(\text{real})=-C(i,\text{oracle})$ is what a perfect Eye would have added.
 All random draws are keyed by (seed, arm, skill, object, attempt), so replays share common random numbers.
+\paragraph{Responsibility for every agent (design).}
+The same replay generalizes from the Eyes to all three roles: the Eye's report is replaced by the true scene, the Brain's plan by an oracle plan for the \emph{same} reports, and the Arms' execution by noise-free execution.
+The gain $\Delta_i=R(\text{oracle}_i)-R(\text{real})$ of each replacement is the agent's responsibility for the episode; for the failure of \cref{fig:mechanism} only the Eye's replacement can repair the plan, because the Brain planned correctly from the numbers it was given.
+\todo{Implement and test the Brain and Arm oracle replays; only the Eye replay exists in the current code.}
 The estimate has two caveats: it is a team counterfactual and is not additive across redundant Eyes, and with a Brain that adapts to the replaced report it measures the adapted team, not the original plan.
 \Cref{fig:credit}a shows one recorded case: a perfect Eye~A would recover \credGain{} of a score of \credBase{}, all of it in the mass field.
 
@@ -126,6 +133,7 @@ The relabeled instruction is weaker than the original, so relabeled data teaches
 \includegraphics[width=\columnwidth]{fig_signals}
 \caption{\textbf{Learning signals.} From training data through component to method, then the plan-level reward read from the code and the episode score used for credit. No trained model has been run with these signals, so all outcomes are pending.}
 \label{fig:signals}
+\stalefig{the Eye row still says ``Eye (VLM)'' and ``LoRA fine-tuning''. The Eyes are conventional computer vision --- a detector plus OpenCV geometry, never a language model (D-01, D-02). Redraw that row as: rendered table images and SCENE JSON targets, detector training, then credit-weighted selection among the detector's candidate readings. The Brain row should name Qwen3.5-4B (one model driving both arms and both Eyes) and the Arm row an FR3 with a Franka Hand. The reward formula in the lower panel is read from the code and stays correct.}
 \end{figure}
 
 \begin{figure*}[tbp]
@@ -145,4 +153,5 @@ The pose-level test validates the integration, not the physics.
 \includegraphics[width=\textwidth]{fig_bridge}
 \caption{\textbf{The Isaac scene and the shared checker.} (a)~Top view from the layout constants: table zones, bag compartments, arm bases and camera positions. (b)~One success function scores three worlds. The Isaac render is pending.}
 \label{fig:bridge}
+\stalefig{the physics column and the quaternion note are from the older stack. The simulator is Isaac Lab 3.0 with Newton (\texttt{mujoco-warp}), with no Isaac Sim and no PhysX, and that path is measured: G-3 ran 30 steps at 21 steps per second with rgb and depth contracts on the RTX 4050 (D-25, D-39). Redraw the column as ``Isaac Lab 3.0 + Newton'', drop the ``Isaac Lab 2.x'' half of the quaternion note (we only use the 3.0 convention), and draw the two Eyes as pan-tilt cameras on a ring rail rather than fixed points, matching the text.}
 \end{figure*}

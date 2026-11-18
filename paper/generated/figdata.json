@@ -10,6 +10,7 @@
     "true_mass": 1.29,
     "eye_mass": 0.779,
     "true_frag": 0.14,
+    "friction": 1.058,
     "eye_frag": 0.14,
     "eye_cls": "book",
     "distractor": false
@@ -20,6 +21,7 @@
     "true_mass": 1.241,
     "eye_mass": 1.106,
     "true_frag": 0.098,
+    "friction": 0.903,
     "eye_frag": 0.098,
     "eye_cls": "book",
     "distractor": false
@@ -30,6 +32,7 @@
     "true_mass": 0.793,
     "eye_mass": 0.658,
     "true_frag": 0.206,
+    "friction": 0.976,
     "eye_frag": 0.206,
     "eye_cls": "bottle",
     "distractor": false
@@ -40,6 +43,7 @@
     "true_mass": 1.877,
     "eye_mass": 1.771,
     "true_frag": 0.433,
+    "friction": 0.955,
     "eye_frag": 0.433,
     "eye_cls": "laptop",
     "distractor": false
@@ -50,6 +54,7 @@
     "true_mass": 0.655,
     "eye_mass": 0.552,
     "true_frag": 0.525,
+    "friction": 0.932,
     "eye_frag": 0.525,
     "eye_cls": "lunchbox",
     "distractor": false
@@ -60,6 +65,7 @@
     "true_mass": 0.3,
     "eye_mass": 0.547,
     "true_frag": 0.5,
+    "friction": 1.0,
     "eye_frag": 0.5,
     "eye_cls": "mug",
     "distractor": true
@@ -70,6 +76,7 @@
     "true_mass": 0.457,
     "eye_mass": 0.257,
     "true_frag": 0.094,
+    "friction": 1.057,
     "eye_frag": 0.094,
     "eye_cls": "notebook",
     "distractor": false
@@ -80,6 +87,7 @@
     "true_mass": 0.226,
     "eye_mass": 0.143,
     "true_frag": 0.081,
+    "friction": 0.929,
     "eye_frag": 0.081,
     "eye_cls": "notebook",
     "distractor": false
@@ -90,6 +98,7 @@
     "true_mass": 0.179,
     "eye_mass": 0.307,
     "true_frag": 0.299,
+    "friction": 0.912,
     "eye_frag": 0.299,
     "eye_cls": "pencilcase",
     "distractor": false
@@ -100,6 +109,7 @@
     "true_mass": 0.3,
     "eye_mass": 0.095,
     "true_frag": 0.5,
+    "friction": 1.0,
     "eye_frag": 0.5,
     "eye_cls": "plate",
     "distractor": true
@@ -2305,7 +2315,8 @@
      "state": "idle"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 48
    },
    {
     "ev": "msg",
@@ -2323,7 +2334,8 @@
      "state": "idle"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 48
    },
    {
     "ev": "msg",
@@ -2386,7 +2398,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 228
    },
    {
     "ev": "msg",
@@ -2469,7 +2482,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 304
    },
    {
     "ev": "msg",
@@ -2482,7 +2496,8 @@
      ]
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 27
    },
    {
     "ev": "msg",
@@ -2555,7 +2570,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 271
    },
    {
     "ev": "msg",
@@ -2628,7 +2644,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 269
    },
    {
     "ev": "exec",
@@ -2651,7 +2668,8 @@
      "peak_force": 17.31
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 46
    },
    {
     "ev": "exec",
@@ -2674,7 +2692,8 @@
      "peak_force": 13.77
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 46
    },
    {
     "ev": "msg",
@@ -2777,7 +2796,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 384
    },
    {
     "ev": "msg",
@@ -2840,7 +2860,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 224
    },
    {
     "ev": "exec",
@@ -2921,7 +2942,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 263
    },
    {
     "ev": "msg",
@@ -2994,7 +3016,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 263
    },
    {
     "ev": "exec",
@@ -3017,7 +3040,8 @@
      "peak_force": 13.42
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 46
    },
    {
     "ev": "msg",
@@ -3032,7 +3056,8 @@
      }
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 42
    },
    {
     "ev": "exec",
@@ -3123,7 +3148,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 307
    },
    {
     "ev": "msg",
@@ -3216,7 +3242,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 344
    },
    {
     "ev": "msg",
@@ -3299,7 +3326,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 307
    },
    {
     "ev": "msg",
@@ -3392,7 +3420,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 344
    },
    {
     "ev": "msg",
@@ -3403,7 +3432,8 @@
      "text": "Pack Maya's bag for school: book1, book2, bottle1, laptop1, lunchbox1, notebook1, notebook2, pencilcase1. Heavy items at the bottom. Laptop in the front slot. Bottle upright and away from the laptop. lunchbox1 last. Leave mug and plate."
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 84
    },
    {
     "ev": "msg",
@@ -3486,7 +3516,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 307
    },
    {
     "ev": "msg",
@@ -3579,7 +3610,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 344
    },
    {
     "ev": "exec",
@@ -3610,7 +3642,8 @@
      "peak_force": 8.69
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 47
    },
    {
     "ev": "msg",
@@ -3693,7 +3726,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 304
    },
    {
     "ev": "msg",
@@ -3776,7 +3810,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 306
    },
    {
     "ev": "exec",
@@ -3799,7 +3834,8 @@
      "peak_force": 10.87
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 47
    },
    {
     "ev": "msg",
@@ -3814,7 +3850,8 @@
      }
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 42
    },
    {
     "ev": "msg",
@@ -3907,7 +3944,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 346
    },
    {
     "ev": "msg",
@@ -4010,7 +4048,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 385
    },
    {
     "ev": "exec",
@@ -4121,7 +4160,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 383
    },
    {
     "ev": "msg",
@@ -4214,7 +4254,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 344
    },
    {
     "ev": "exec",
@@ -4237,7 +4278,8 @@
      "peak_force": 6.92
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 47
    },
    {
     "ev": "msg",
@@ -4252,7 +4294,8 @@
      }
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 43
    },
    {
     "ev": "exec",
@@ -4363,7 +4406,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 384
    },
    {
     "ev": "msg",
@@ -4456,7 +4500,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 348
    },
    {
     "ev": "exec",
@@ -4479,7 +4524,8 @@
      "peak_force": 7.2
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 47
    },
    {
     "ev": "msg",
@@ -4494,7 +4540,8 @@
      }
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 43
    },
    {
     "ev": "msg",
@@ -4587,7 +4634,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 343
    },
    {
     "ev": "msg",
@@ -4700,7 +4748,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 423
    },
    {
     "ev": "exec",
@@ -4811,7 +4860,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 383
    },
    {
     "ev": "msg",
@@ -4904,7 +4954,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 345
    },
    {
     "ev": "exec",
@@ -5005,7 +5056,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 344
    },
    {
     "ev": "msg",
@@ -5098,7 +5150,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 344
    },
    {
     "ev": "exec",
@@ -5121,7 +5174,8 @@
      "peak_force": 8.73
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 47
    },
    {
     "ev": "msg",
@@ -5224,7 +5278,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 385
    },
    {
     "ev": "msg",
@@ -5337,7 +5392,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 423
    },
    {
     "ev": "exec",
@@ -5458,7 +5514,8 @@
      "view": "A"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 424
    },
    {
     "ev": "msg",
@@ -5561,7 +5618,8 @@
      "view": "B"
     },
     "note": "",
-    "ok": true
+    "ok": true,
+    "tok": 386
    }
   ]
  },
@@ -6376,5 +6434,252 @@
    "not_holding",
    "hand_full"
   ]
+ },
+ "comm_curves": {
+  "seeds": "0..79",
+  "eyes": "noisy",
+  "x": "tasks executed",
+  "modes": {
+   "push": {
+    "x": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16
+    ],
+    "mean": [
+     0.0,
+     748.3,
+     798.35,
+     1561.175,
+     2218.1625,
+     2553.025,
+     3255.2875,
+     3627.1875,
+     4321.0875,
+     4726.4875,
+     5406.9375,
+     5871.825,
+     6569.475,
+     7091.2875,
+     7779.7875,
+     8419.4,
+     9147.975
+    ],
+    "n": [
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80
+    ],
+    "mean_total": 10550.6
+   },
+   "delta": {
+    "x": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16
+    ],
+    "mean": [
+     0.0,
+     748.3,
+     798.35,
+     1228.5,
+     1563.6125,
+     1741.275,
+     2122.4,
+     2303.4125,
+     2676.7375,
+     2883.1875,
+     3230.9125,
+     3475.8,
+     3829.85,
+     4103.7625,
+     4448.725,
+     4750.8875,
+     5096.0
+    ],
+    "n": [
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80
+    ],
+    "mean_total": 5736.8
+   },
+   "pull": {
+    "x": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16
+    ],
+    "mean": [
+     0.0,
+     748.3,
+     845.8,
+     942.2125,
+     989.3,
+     1058.3375,
+     1121.125,
+     1193.7375,
+     1259.75,
+     1337.7625,
+     1415.25,
+     1458.4375,
+     1510.7,
+     1581.725,
+     1638.1,
+     1679.85,
+     1753.675
+    ],
+    "n": [
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80
+    ],
+    "mean_total": 1894.825
+   },
+   "init_only": {
+    "x": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16
+    ],
+    "mean": [
+     0.0,
+     748.3,
+     798.35,
+     846.625,
+     852.175,
+     887.475,
+     903.75,
+     932.2875,
+     954.025,
+     986.0125,
+     1008.575,
+     1034.675,
+     1059.8375,
+     1091.125,
+     1110.0,
+     1133.0875,
+     1157.125
+    ],
+    "n": [
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80
+    ],
+    "mean_total": 1182.175
+   }
+  }
  }
 }

@@ -309,9 +309,9 @@ def wrap(s: str, width: float, size: float = 13, bold: bool = False, mono: bool 
 
 
 def card(x, y, w, title=None, body="", h=None, color=BLUE, fill=None, tsize=16.5, bsize=14.5, mono=False, dash=None,
-         pad=10, lh=1.28, title_color=None, body_color=C_TXT, rx=8, sw=1.4, center=False):
+         pad=10, lh=1.28, title_color=None, body_color=C_TXT, rx=8, sw=1.4, center=False, rpad=0):
     """Rounded card with a bold title and a metric-wrapped body. Returns (svg, (x, y, w, h))."""
-    inner = w - 2 * pad
+    inner = w - 2 * pad - rpad
     tl = wrap(title, inner, tsize, True) if title else []
     bl = wrap(body, inner, bsize, False, mono) if body else []
     need = pad + len(tl) * tsize * lh + (4 if tl and bl else 0) + len(bl) * bsize * lh + pad - 2

@@ -39,7 +39,7 @@ class LogBus(M.MessageBus):
     def send(self, msg):
         ok = super().send(msg)
         EVENTS.append({"ev": "msg", "type": msg.type, "from": msg.sender, "to": msg.receiver, "content": msg.content,
-                       "note": msg.note, "ok": ok})
+                       "note": msg.note, "ok": ok, "tok": msg.n_tokens()})
         return ok
 
 
@@ -109,7 +109,7 @@ items = []
 for n, o in sorted(w0.objs.items()):
     rep = rb_a.scenes[0].get(n, {})
     items.append({"name": n, "cls": o.cls, "true_mass": o.mass, "eye_mass": rep.get("mass_guess"),
-                  "true_frag": o.fragility, "eye_frag": rep.get("fragility_guess"), "eye_cls": rep.get("cls"),
+                  "true_frag": o.fragility, "friction": o.friction, "eye_frag": rep.get("fragility_guess"), "eye_cls": rep.get("cls"),
                   "distractor": o.is_distractor})
 chal = [e for e in ev_b if e["ev"] == "msg" and e["type"] == "CHALLENGE"]
 out["mechanism"] = {
@@ -259,6 +259,32 @@ out["bridge"] = {"zone_x": grab("ZONE_X"), "arm_base": grab("ARM_BASE"), "row_y"
                  "eye_poses": ast.literal_eval(re.search(r"EYE_POSES = (\{.*\})", eye_src).group(1)),
                  "skill_outcomes": ["success", "slip", "crush", "out_of_reach", "wrong_slot", "no_space", "locked",
                                     "overload", "not_holding", "hand_full"]}
+
+# ---------------------------------------------------------------- fig_messages: cumulative tokens vs tasks executed, per communication mode
+from rtp.experiments import default_eyes  # noqa: E402
+curves = {}
+KMAX = 16
+for mode in ("push", "delta", "pull", "init_only"):
+    sums, cnts, totals = [0.0] * (KMAX + 1), [0] * (KMAX + 1), []
+    for sd in range(80):
+        EVENTS.clear()
+        wq = logged_world(sd)
+        run_episode(wq, default_eyes(sd, True), ScriptedBrain(), sample_spec(sample_world(sd), sd), H, LoopConfig(comm_mode=mode))
+        cum, k, curve = 0, 0, [0]
+        for e in EVENTS:
+            if e["ev"] == "msg" and e["ok"]:
+                cum += e["tok"]
+            elif e["ev"] == "exec":
+                k += 1
+                if k <= KMAX:
+                    curve.append(cum)
+        totals.append(cum)
+        for kk, v in enumerate(curve):
+            sums[kk] += v
+            cnts[kk] += 1
+    curves[mode] = {"x": list(range(KMAX + 1)), "mean": [sums[i] / cnts[i] if cnts[i] else None for i in range(KMAX + 1)], "n": cnts,
+                    "mean_total": sum(totals) / len(totals)}
+out["comm_curves"] = {"seeds": "0..79", "eyes": "noisy", "x": "tasks executed", "modes": curves}
 
 Path(a.out).parent.mkdir(parents=True, exist_ok=True)
 Path(a.out).write_text(json.dumps(out, indent=1, default=str))

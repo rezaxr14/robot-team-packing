@@ -13,7 +13,7 @@ Counterfactual baselines for multi-agent credit \citep{foerster2018coma} replace
 \todo{Confirm and cite the difference-rewards literature if it is kept in the final text.}
 
 \paragraph{Training signals and simulation.}
-We use group-relative policy optimization \citep{shao2024deepseekmath} for the Brain, flow matching \citep{lipman2023flowmatching} for the Arm policy, low-rank adaptation \citep{hu2022lora} for the language and vision models, and Isaac Lab \citep{mittal2025isaaclab} for physics. \todo{Citations marked TODO-verify in \texttt{refs.bib}: confirm each against its source before submission.}
+We use group-relative policy optimization \citep{shao2024deepseekmath} for the Brain, flow matching \citep{lipman2023flowmatching} for the Arm policy, low-rank adaptation \citep{hu2022lora} for the Brain's text and vision-merger blocks (the Eyes are conventional detectors), and Isaac Lab 3.0 with Newton \citep{mittal2025isaaclab} for physics --- without Isaac Sim or PhysX. \todo{Citations marked TODO-verify in \texttt{refs.bib}: confirm each against its source before submission.}
 
 \paragraph{Benchmark scoring.}
 A level-2 plan is scored by a simulator-free checker in the upstream VIKI-R repository; we read that code and report an audit in \cref{sec:scorer}.

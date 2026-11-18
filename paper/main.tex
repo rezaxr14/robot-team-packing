@@ -33,6 +33,8 @@
 % Every unknown or unfilled item is an explicit red flag.
 \newcommand{\todo}[1]{\textcolor{red}{\textbf{[#1]}}}
 \newcommand{\sys}{\textcolor{red}{\textbf{[SYSTEM-NAME]}}}
+% A figure that no longer matches the implemented system: red note under the float, for a remake.
+\newcommand{\stalefig}[1]{\par\vspace{2pt}\noindent{\footnotesize\textcolor{red}{\textbf{STALE FIGURE --- remake needed:} #1}}}
 \input{generated/figdata_macros}
 
 \title{\textbf{Who Failed? Attributable Failures in Language-Coordinated Robot Teams\\
@@ -53,12 +55,12 @@ with Typed Messages, a Verifying Planner, and Counterfactual Credit}\\[2pt]
 \begin{abstract}
 Teams of language-model agents that control robot arms fail in ways that are hard to attribute: the scene may have been misperceived, the plan may be wrong, or the execution may be poor.
 We study a simulated two-arm packing team built so that every failure can be traced to an interface.
-Two vision-language \emph{Eyes} are the only agents that see pixels; a text-only \emph{Brain} plans from their typed reports and from a file-based harness of rules and skills; two blind \emph{Arms} execute skills and report what they feel.
+Two conventional computer-vision \emph{Eyes} (a detector plus OpenCV geometry) are the only agents that see pixels; one Qwen3.5-4B vision-language \emph{Brain} plans from their typed claims and from a file-based harness of rules and skills; two blind \emph{Arms} execute skills and report what they feel.
 The agents talk through a budgeted bus of \nMsgTypes{} typed messages, the Brain can verify a plan with a dry-run tool before any arm moves, and an Arm can challenge an Eye when touch disagrees with its report.
 The split suggests two training signals, which we specify: counterfactual Eye credit, which replays an episode with one Eye's report replaced under common random numbers, and team hindsight relabeling, which turns failed episodes into validated training records.
-One checker scores a symbolic world, a pose-level simulator and Isaac Lab, and our headline measurement is the gap between plan validity and physical success, with a per-agent attribution of each failure.
+One checker scores a symbolic world and a pose-level simulator and is designed to score Isaac Lab as well; the headline measurement it enables --- the gap between plan validity and physical success with a per-agent attribution of each failure --- is therefore a protocol here, not a result \todo{the Isaac Lab manipulation scene and its checker are not built; only the Newton rgb/depth stepping gate G-3 is measured}.
 We also audit the upstream scorer of VIKI-Bench level~2 and show, on a synthetic case, that its random draw of start positions can make a score depend on luck.
-This version reports the system, the evaluation protocol and mechanism checks on a symbolic fixture; every trained-model, benchmark and physics result is pending and marked as such.
+This version reports the system, the evaluation protocol and mechanism checks on a symbolic fixture; the measured engineering gates check that the pipeline runs, and every trained-model, benchmark and physics result is pending and marked as such.
 \end{abstract}
 
 \input{sections/01_intro}
