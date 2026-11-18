@@ -1,0 +1,44 @@
+{
+  "gate": "G-5 (robot-model ingestion only)",
+  "scope": "Newton MJCF parse + measured mass/DoF; NOT a datasheet or reach test",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1"
+  },
+  "models": {
+    "franka_fr3_v2": {
+      "file": "assets/cache/menagerie/franka_fr3_v2/fr3v2.xml",
+      "bodies": 10,
+      "joints": 10,
+      "joint_dof": 7,
+      "shapes": 36,
+      "total_mass_kg": 17.3122,
+      "masses_finite": true,
+      "checks": {
+        "parsed": true,
+        "finite_mass": true,
+        "has_arm_dof": true
+      }
+    },
+    "franka_fr3_duo": {
+      "file": "assets/cache/menagerie/franka_fr3_duo/scene.xml",
+      "bodies": 20,
+      "joints": 20,
+      "joint_dof": 14,
+      "shapes": 114,
+      "total_mass_kg": 36.2604,
+      "masses_finite": true,
+      "checks": {
+        "parsed": true,
+        "finite_mass": true,
+        "has_arm_dof": true
+      }
+    }
+  },
+  "pending": [
+    "Measure real FR3 masses/limits against the datasheet within 2%.",
+    "Zero-pose reach test and agreement betweenFranka official and Menagerie kinematics within 1 mm."
+  ],
+  "result": "PASS",
+  "error": null
+}
