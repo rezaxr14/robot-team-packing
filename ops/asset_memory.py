@@ -8,14 +8,18 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--profile", default="local_4050")
+    ap.add_argument("--catalog", default="assets/catalog.json")
+    ap.add_argument("--selection", default="assets/selection_downloaded.json")
     ap.add_argument("--build", action="store_true")
     ap.add_argument("--query", default="")
     ap.add_argument("--n", type=int, default=40)
@@ -28,7 +32,7 @@ def main(argv=None) -> int:
     from rtp.profiles import get_profile
     from rtp.scene_assets import resolve_assets
 
-    records = resolve_assets()
+    records = resolve_assets(ROOT / a.catalog, ROOT / a.selection)
     profile = get_profile(a.profile, root=ROOT)
     profile.ensure_dirs()
     path = profile.paths.data / "asset_memory.jsonl"

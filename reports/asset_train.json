@@ -1,0 +1,34 @@
+{
+  "evidence_class": "SIM-POSE (real SimReady assets, pose-level dynamics; NOT Newton physics)",
+  "profile": "local_4050",
+  "stage": "asset_sft",
+  "assets": 14,
+  "manifest": "/home/reza/Projects/robot_team/reports/simready_scene.json",
+  "sft_funnel": {
+    "attempts": 43,
+    "successes": 40,
+    "kept": 40,
+    "seed0": 200000,
+    "evidence": "SIM-POSE",
+    "asset_manifest": "/home/reza/Projects/robot_team/reports/simready_scene.json"
+  },
+  "hindsight_funnel": {
+    "episodes": 112,
+    "failed": 6,
+    "relabeled": 6,
+    "validated": 5,
+    "evidence": "SIM-POSE",
+    "asset_manifest": "/home/reza/Projects/robot_team/reports/simready_scene.json"
+  },
+  "train_rows": 45,
+  "model": "/home/reza/Projects/robot_team/models/local_4050/cache/model/rtp-model-qwen35-4b-851bf6e8",
+  "step": 2,
+  "epoch": 0,
+  "resumed_from": null,
+  "losses": [
+    1.081412,
+    0.742361
+  ],
+  "store": true,
+  "wall_s": 268.9
+}

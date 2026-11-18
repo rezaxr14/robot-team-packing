@@ -71,17 +71,27 @@ class AssetRecord:
 
 def _load_json(path: Path):
     data = json.loads(Path(path).read_text())
-    return data.get("assets", data.get("packages", data)) if isinstance(data, dict) else data
+    if isinstance(data, dict):
+        for key in ("assets", "packages", "entries"):
+            if key in data:
+                return data[key]
+    return data
 
 
 def resolve_assets(catalog: Path | str = DEFAULT_CATALOG,
                    selection: Path | str = DEFAULT_SELECTION) -> list[AssetRecord]:
     """Validate every selected package against the catalog and the files on disk."""
     catalog_entries = _load_json(catalog)
-    selected = _load_json(selection)
-    wanted = set()
+    selection_data = json.loads(Path(selection).read_text())
+    if isinstance(selection_data, dict):
+        selected = selection_data.get("packages", selection_data.get("assets", []))
+    else:
+        selected = selection_data
+    wanted: dict[str, dict] = {}
     for item in selected:
-        wanted.add(_pick(item, "package", "id", "name") if isinstance(item, dict) else item)
+        pkg = _pick(item, "package", "package_id", "id", "name") if isinstance(item, dict) else item
+        if pkg:
+            wanted[pkg] = item if isinstance(item, dict) else {}
     if not wanted:
         raise ValueError(f"no packages selected in {selection}")
 
@@ -89,7 +99,7 @@ def resolve_assets(catalog: Path | str = DEFAULT_CATALOG,
     for item in catalog_entries:
         if not isinstance(item, dict):
             continue
-        pkg = _pick(item, "package", "id", "name")
+        pkg = _pick(item, "package", "package_id", "id", "name")
         if pkg in wanted:
             by_pkg[pkg] = item
     records = []
@@ -97,18 +107,25 @@ def resolve_assets(catalog: Path | str = DEFAULT_CATALOG,
         entry = by_pkg.get(pkg)
         if entry is None:
             raise ValueError(f"selected package {pkg!r} is missing from {catalog}")
-        repo = _pick(entry, "repo", "source", "repo_id", default="unknown")
+        wish = wanted[pkg]
+        repo = _pick(wish, "repo_id", "repo", default=None) or _pick(
+            entry, "repo", "source", "repo_id", default="unknown")
         licence = _pick(entry, "license", "licence", default="see source")
-        cls = _pick(entry, "class", "class_guess", "task_class", default="unknown")
+        cls = (_pick(wish, "task_class", "class", default=None)
+               or _pick(entry, "class", "class_guess", "task_class", default="unknown"))
         paths = [p for p in (_pick(entry, "paths", "files", "local_files", default=[]) or [])]
         local = _pick(entry, "local_path", "path", default=None)
         if local and not paths:
             root = Path(local)
+            if not root.is_absolute():
+                root = ROOT / root
             paths = [str(p) for p in root.rglob("*") if p.is_file()] if root.is_dir() else [str(root)]
         absent = [p for p in paths if not Path(p).exists()]
         if absent:
             raise FileNotFoundError(f"{pkg}: {len(absent)} catalog files missing (first: {absent[0]})")
-        nearest = bool(_pick(entry, "nearest_match", default=False))
+        match = _pick(wish, "match", default="")
+        nearest = bool(_pick(entry, "nearest_match", default=False)
+                       or (match and str(match).lower() != "exact"))
         mass = _pick(entry, "mass_kg", "mass", default=None)
         size = _pick(entry, "size_m", "size", default=None)
         records.append(AssetRecord(package=pkg, repo=str(repo), cls=str(cls),
@@ -125,7 +142,10 @@ def to_world_objects(records: Iterable[AssetRecord], *, seed: int = 0) -> list[O
 
     out = []
     for i, rec in enumerate(records):
-        cls = rec.cls if rec.cls in CLASSES else "book"
+        # Furniture and distractor packages belong to the scene manifest, not the bag-object world.
+        if rec.cls not in CLASSES:
+            continue
+        cls = rec.cls
         mrange, frange, size = CLASSES[cls]
         # deterministic within a class, from the package name (no hidden randomness)
         import hashlib
@@ -134,7 +154,10 @@ def to_world_objects(records: Iterable[AssetRecord], *, seed: int = 0) -> list[O
         mass = float(rec.mass) if rec.mass is not None else mrange[0] + u * (mrange[1] - mrange[0])
         fragility = frange[0] + (1 - u) * (frange[1] - frange[0])
         region = ("table_left", "table_center", "table_right")[i % 3]
-        out.append(Obj(name=f"{rec.package}_{i:02d}", cls=cls, mass=round(mass, 3),
+        # Prefix the task class so the scripted teacher and the rule checker can find the
+        # last-item / laptop-slot objects by name, while keeping the package id for provenance.
+        safe_pkg = "".join(c if c.isalnum() or c in "-_" else "_" for c in rec.package)
+        out.append(Obj(name=f"{cls}_{safe_pkg}_{i:02d}", cls=cls, mass=round(mass, 3),
                        fragility=round(fragility, 3),
                        size=float(rec.size) if rec.size else size,
                        region=region, friction=1.0))
