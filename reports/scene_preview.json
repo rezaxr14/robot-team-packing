@@ -1,0 +1,173 @@
+{
+  "kind": "stage-1 preview: two FR3 arms resting on right side of tabletop + real-textured SimReady objects + 2 eye cams",
+  "scope": "rendered and measured; NOT stepped, NOT a manipulation/safety result",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1"
+  },
+  "robot": "assets/cache/menagerie/franka_fr3_v2/fr3v2.xml",
+  "arm_bases": [
+    {
+      "x": -0.65,
+      "y": 0.0,
+      "z": 0.9
+    },
+    {
+      "x": 0.65,
+      "y": 0.0,
+      "z": 0.9
+    }
+  ],
+  "arm_base_on_table": true,
+  "bodies": 33,
+  "shapes": 282,
+  "counter_top_z": 0.9,
+  "objects": [
+    {
+      "package": "dishware_mug_a01",
+      "usd": "assets/cache/nvidia__simready-assets/dishware_mug_a01/simready_usd/sm_dishware_mug_a01_01.usda",
+      "pos": [
+        -0.45,
+        -0.12,
+        0.94
+      ],
+      "bbox_m": [
+        0.1144,
+        0.0902,
+        0.08
+      ],
+      "scale": 1.0,
+      "placement": "on",
+      "has_albedo": true,
+      "color": null
+    },
+    {
+      "package": "dishware_plate_a01",
+      "usd": "assets/cache/nvidia__simready-assets/dishware_plate_a01/simready_usd/sm_dishware_plate_a01_01.usda",
+      "pos": [
+        -0.15,
+        -0.12,
+        0.91
+      ],
+      "bbox_m": [
+        0.2675,
+        0.2675,
+        0.0202
+      ],
+      "scale": 1.0,
+      "placement": "on",
+      "has_albedo": true,
+      "color": null
+    },
+    {
+      "package": "book_open_a01",
+      "usd": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/sm_book_open_a01_01.usd",
+      "pos": [
+        0.2,
+        -0.12,
+        0.919
+      ],
+      "bbox_m": [
+        0.2069,
+        0.3198,
+        0.0372
+      ],
+      "scale": 1.0,
+      "placement": "on",
+      "has_albedo": true,
+      "color": null
+    },
+    {
+      "package": "misc_notebook_a01",
+      "usd": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/sm_misc_notebook_a01_01.usd",
+      "pos": [
+        -0.15,
+        0.18,
+        0.905
+      ],
+      "bbox_m": [
+        0.2289,
+        0.17,
+        0.01
+      ],
+      "scale": 1.0,
+      "placement": "on",
+      "has_albedo": true,
+      "color": null
+    },
+    {
+      "package": "stationery_pencil_watercolor_black_a01",
+      "usd": "assets/cache/nvidia__simready-assets/stationery_pencil_watercolor_black_a01/simready_usd/sm_stationery_pencil_watercolor_black_a01_01.usd",
+      "pos": [
+        -0.15,
+        0.35,
+        0.904
+      ],
+      "bbox_m": [
+        0.2033,
+        0.0083,
+        0.0083
+      ],
+      "scale": 1.0,
+      "placement": "on",
+      "has_albedo": true,
+      "color": null
+    },
+    {
+      "package": "food_produce_dragonFruit_a01",
+      "usd": "assets/cache/nvidia__simready-assets/food_produce_dragonFruit_a01/simready_usd/sm_food_produce_dragonFruit_a01_01.usd",
+      "pos": [
+        0.45,
+        0.18,
+        0.939
+      ],
+      "bbox_m": [
+        0.1418,
+        0.0836,
+        0.0787
+      ],
+      "scale": 1.0,
+      "placement": "on",
+      "has_albedo": true,
+      "color": null
+    },
+    {
+      "package": "chair_office_amf_black_a01",
+      "usd": "assets/cache/nvidia__simready-assets/chair_office_amf_black_a01/simready_usd/sm_chair_office_amf_black_a01_01.usd",
+      "pos": [
+        0.0,
+        0.75,
+        0.405
+      ],
+      "bbox_m": [
+        0.5397,
+        0.5723,
+        0.8096
+      ],
+      "scale": 1.0,
+      "placement": "floor",
+      "has_albedo": false,
+      "color": [
+        0.15,
+        0.45,
+        0.55
+      ]
+    }
+  ],
+  "frames": {
+    "oblique": "reports/scene_preview/oblique.png",
+    "front": "reports/scene_preview/front.png",
+    "top": "reports/scene_preview/top.png",
+    "eye_left": "reports/scene_preview/eye_left.png",
+    "eye_right": "reports/scene_preview/eye_right.png"
+  },
+  "g13_status": {
+    "dishware_mug_a01": "ok",
+    "dishware_plate_a01": "ok",
+    "book_open_a01": "ok",
+    "misc_notebook_a01": "ok",
+    "stationery_pencil_watercolor_black_a01": "ok",
+    "food_produce_dragonFruit_a01": "ok",
+    "chair_office_amf_black_a01": "ok"
+  }
+}

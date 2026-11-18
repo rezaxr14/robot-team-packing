@@ -1,0 +1,3 @@
+hindsight funnel: {'episodes': 27672, 'failed': 2435, 'relabeled': 2381, 'validated': 2000}
+wrote ['eye_grpo.jsonl', 'hindsight_funnel.json', 'hindsight_sft.jsonl']
+DATASETS_DONE 0

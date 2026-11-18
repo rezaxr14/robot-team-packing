@@ -1,0 +1,363 @@
+{
+  "amended": {
+    "n": 200,
+    "success": {
+      "k": 180,
+      "n": 200,
+      "rate": 0.9,
+      "lo": 0.8505931364369146,
+      "hi": 0.9343300588284289
+    },
+    "plan_pass": {
+      "k": 195,
+      "n": 200,
+      "rate": 0.975,
+      "lo": 0.9428208558483829,
+      "hi": 0.9892754385292123
+    },
+    "gap_plan_minus_success": 0.07499999999999996,
+    "valid_item_frac": 0.995625,
+    "valid_ci": [
+      0.991875,
+      0.99875
+    ],
+    "mean_msg_tokens": 11421.29,
+    "mean_replans": 1.345,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Eye": 7,
+      "Brain": 13
+    }
+  },
+  "arm_noise_high": {
+    "n": 200,
+    "success": {
+      "k": 180,
+      "n": 200,
+      "rate": 0.9,
+      "lo": 0.8505931364369146,
+      "hi": 0.9343300588284289
+    },
+    "plan_pass": {
+      "k": 195,
+      "n": 200,
+      "rate": 0.975,
+      "lo": 0.9428208558483829,
+      "hi": 0.9892754385292123
+    },
+    "gap_plan_minus_success": 0.07499999999999996,
+    "valid_item_frac": 0.99625,
+    "valid_ci": [
+      0.9925,
+      0.999375
+    ],
+    "mean_msg_tokens": 13025.365,
+    "mean_replans": 0.41,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Brain": 14,
+      "Eye": 7
+    }
+  },
+  "comm_delta": {
+    "n": 200,
+    "success": {
+      "k": 181,
+      "n": 200,
+      "rate": 0.905,
+      "lo": 0.8563973488560237,
+      "hi": 0.9383373863501365
+    },
+    "plan_pass": {
+      "k": 195,
+      "n": 200,
+      "rate": 0.975,
+      "lo": 0.9428208558483829,
+      "hi": 0.9892754385292123
+    },
+    "gap_plan_minus_success": 0.06999999999999995,
+    "valid_item_frac": 0.996875,
+    "valid_ci": [
+      0.99375,
+      0.999375
+    ],
+    "mean_msg_tokens": 5786.63,
+    "mean_replans": 0.345,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Brain": 10,
+      "Eye": 9
+    }
+  },
+  "comm_init_only": {
+    "n": 200,
+    "success": {
+      "k": 180,
+      "n": 200,
+      "rate": 0.9,
+      "lo": 0.8505931364369146,
+      "hi": 0.9343300588284289
+    },
+    "plan_pass": {
+      "k": 195,
+      "n": 200,
+      "rate": 0.975,
+      "lo": 0.9428208558483829,
+      "hi": 0.9892754385292123
+    },
+    "gap_plan_minus_success": 0.07499999999999996,
+    "valid_item_frac": 0.99625,
+    "valid_ci": [
+      0.993125,
+      0.99875
+    ],
+    "mean_msg_tokens": 1181.24,
+    "mean_replans": 0.385,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Brain": 13,
+      "Eye": 11
+    }
+  },
+  "comm_pull": {
+    "n": 200,
+    "success": {
+      "k": 181,
+      "n": 200,
+      "rate": 0.905,
+      "lo": 0.8563973488560237,
+      "hi": 0.9383373863501365
+    },
+    "plan_pass": {
+      "k": 195,
+      "n": 200,
+      "rate": 0.975,
+      "lo": 0.9428208558483829,
+      "hi": 0.9892754385292123
+    },
+    "gap_plan_minus_success": 0.06999999999999995,
+    "valid_item_frac": 0.99625,
+    "valid_ci": [
+      0.993125,
+      0.99875
+    ],
+    "mean_msg_tokens": 1989.125,
+    "mean_replans": 0.365,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Brain": 9,
+      "Eye": 9
+    }
+  },
+  "full": {
+    "n": 200,
+    "success": {
+      "k": 181,
+      "n": 200,
+      "rate": 0.905,
+      "lo": 0.8563973488560237,
+      "hi": 0.9383373863501365
+    },
+    "plan_pass": {
+      "k": 195,
+      "n": 200,
+      "rate": 0.975,
+      "lo": 0.9428208558483829,
+      "hi": 0.9892754385292123
+    },
+    "gap_plan_minus_success": 0.06999999999999995,
+    "valid_item_frac": 0.996875,
+    "valid_ci": [
+      0.99375,
+      0.999375
+    ],
+    "mean_msg_tokens": 10627.455,
+    "mean_replans": 0.345,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Brain": 10,
+      "Eye": 9
+    }
+  },
+  "no_challenge": {
+    "n": 200,
+    "success": {
+      "k": 181,
+      "n": 200,
+      "rate": 0.905,
+      "lo": 0.8563973488560237,
+      "hi": 0.9383373863501365
+    },
+    "plan_pass": {
+      "k": 195,
+      "n": 200,
+      "rate": 0.975,
+      "lo": 0.9428208558483829,
+      "hi": 0.9892754385292123
+    },
+    "gap_plan_minus_success": 0.06999999999999995,
+    "valid_item_frac": 0.99625,
+    "valid_ci": [
+      0.993125,
+      0.99875
+    ],
+    "mean_msg_tokens": 10482.01,
+    "mean_replans": 0.055,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Brain": 7,
+      "Eye": 11
+    }
+  },
+  "no_look": {
+    "n": 200,
+    "success": {
+      "k": 181,
+      "n": 200,
+      "rate": 0.905,
+      "lo": 0.8563973488560237,
+      "hi": 0.9383373863501365
+    },
+    "plan_pass": {
+      "k": 195,
+      "n": 200,
+      "rate": 0.975,
+      "lo": 0.9428208558483829,
+      "hi": 0.9892754385292123
+    },
+    "gap_plan_minus_success": 0.06999999999999995,
+    "valid_item_frac": 0.996875,
+    "valid_ci": [
+      0.99375,
+      0.999375
+    ],
+    "mean_msg_tokens": 10627.455,
+    "mean_replans": 0.345,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Brain": 10,
+      "Eye": 9
+    }
+  },
+  "no_replan": {
+    "n": 200,
+    "success": {
+      "k": 181,
+      "n": 200,
+      "rate": 0.905,
+      "lo": 0.8563973488560237,
+      "hi": 0.9383373863501365
+    },
+    "plan_pass": {
+      "k": 195,
+      "n": 200,
+      "rate": 0.975,
+      "lo": 0.9428208558483829,
+      "hi": 0.9892754385292123
+    },
+    "gap_plan_minus_success": 0.06999999999999995,
+    "valid_item_frac": 0.996875,
+    "valid_ci": [
+      0.99375,
+      0.999375
+    ],
+    "mean_msg_tokens": 10505.655,
+    "mean_replans": 0.295,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Brain": 10,
+      "Eye": 10,
+      "Arm": 1
+    }
+  },
+  "one_eye": {
+    "n": 200,
+    "success": {
+      "k": 47,
+      "n": 200,
+      "rate": 0.235,
+      "lo": 0.18157345326946356,
+      "hi": 0.29841492986724655
+    },
+    "plan_pass": {
+      "k": 11,
+      "n": 200,
+      "rate": 0.055,
+      "lo": 0.030985020801370097,
+      "hi": 0.0957879244659355
+    },
+    "gap_plan_minus_success": -0.18,
+    "valid_item_frac": 0.84375,
+    "valid_ci": [
+      0.825625,
+      0.8625
+    ],
+    "mean_msg_tokens": 5269.45,
+    "mean_replans": 0.295,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Eye": 42,
+      "Brain": 141
+    }
+  },
+  "probe": {
+    "n": 200,
+    "success": {
+      "k": 195,
+      "n": 200,
+      "rate": 0.975,
+      "lo": 0.9428208558483829,
+      "hi": 0.9892754385292123
+    },
+    "plan_pass": {
+      "k": 195,
+      "n": 200,
+      "rate": 0.975,
+      "lo": 0.9428208558483829,
+      "hi": 0.9892754385292123
+    },
+    "gap_plan_minus_success": 0.0,
+    "valid_item_frac": 0.996875,
+    "valid_ci": [
+      0.99375,
+      0.999375
+    ],
+    "mean_msg_tokens": 10793.05,
+    "mean_replans": 0.05,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Brain": 5,
+      "Eye": 1
+    }
+  },
+  "static_prompt": {
+    "n": 200,
+    "success": {
+      "k": 0,
+      "n": 200,
+      "rate": 0.0,
+      "lo": 0.0,
+      "hi": 0.018846005918320894
+    },
+    "plan_pass": {
+      "k": 0,
+      "n": 200,
+      "rate": 0.0,
+      "lo": 0.0,
+      "hi": 0.018846005918320894
+    },
+    "gap_plan_minus_success": 0.0,
+    "valid_item_frac": 0.749375,
+    "valid_ci": [
+      0.748125,
+      0.75
+    ],
+    "mean_msg_tokens": 16554.345,
+    "mean_replans": 2.355,
+    "mean_retrieval_recall": 0.2,
+    "episodes_with_fatal_agent": {
+      "Brain": 200,
+      "Eye": 115
+    }
+  }
+}

@@ -35,18 +35,19 @@ REPORT = ROOT / "reports" / "scene_preview.json"
 COUNTER_TOP = 0.90
 COUNTER_T = 0.06
 COUNTER_HX, COUNTER_HY = 0.75, 0.45
-ARM_X = 0.60      # arm base x; 0.15 m margin from the +/-0.75 m table ends
-ARM_Y = -0.12     # near the front edge so bases visibly sit on the table
-ARM_Z = COUNTER_TOP          # measured: fr3v2 base-plate bottom = body origin (offset 0.0 m)
+# Both arm bases on the RIGHT side of the table, spaced in Y so they do not collide.
+# Table surface spans x in [-0.75, 0.75], y in [-0.45, 0.45], top at z=0.90.
+ARM_BASES = [(-0.65, 0.0), (0.65, 0.0)]  # one robot base at each END of the tabletop
+ARM_Z = COUNTER_TOP                          # measured: fr3v2 base-plate bottom = body origin (offset 0.0 m)
 
 # (package, (x, y, "on"|"floor"), rgb used only if the asset has no albedo map)
 ITEMS = [
-    ("dishware_mug_a01",                       (-0.42, -0.10, "on"),   (0.20, 0.20, 0.20)),
-    ("dishware_plate_a01",                     (-0.12, -0.10, "on"),   (0.90, 0.90, 0.90)),
-    ("book_open_a01",                          ( 0.18, -0.10, "on"),   (0.20, 0.20, 0.20)),
-    ("misc_notebook_a01",                      ( 0.42, -0.10, "on"),   (0.20, 0.20, 0.20)),
-    ("stationery_pencil_watercolor_black_a01", ( 0.42,  0.02, "on"),   (0.20, 0.20, 0.20)),
-    ("food_produce_dragonFruit_a01",           ( 0.18,  0.05, "on"),   (0.90, 0.20, 0.40)),
+    ("dishware_mug_a01",                       (-0.45, -0.12, "on"),   (0.20, 0.20, 0.20)),
+    ("dishware_plate_a01",                     (-0.15, -0.12, "on"),   (0.90, 0.90, 0.90)),
+    ("book_open_a01",                          ( 0.20, -0.12, "on"),   (0.20, 0.20, 0.20)),
+    ("misc_notebook_a01",                      (-0.15,  0.18, "on"),   (0.20, 0.20, 0.20)),
+    ("stationery_pencil_watercolor_black_a01", (-0.15,  0.35, "on"),   (0.20, 0.20, 0.20)),
+    ("food_produce_dragonFruit_a01",           ( 0.45,  0.18, "on"),   (0.90, 0.20, 0.40)),
     ("chair_office_amf_black_a01",             ( 0.00,  0.75, "floor"),(0.15, 0.45, 0.55)),
 ]
 
@@ -95,10 +96,10 @@ def build():
     cwd = Path.cwd()
     os.chdir(ARM_DIR)
     try:
-        # Two separate single-arm rigs, bases bolted near the two table ends.
-        for label, x in (("arm_left", -ARM_X), ("arm_right", ARM_X)):
+        # Two separate single-arm rigs, both bases bolted on the right side of the table.
+        for i, (x, y) in enumerate(ARM_BASES):
             builder.add_mjcf("fr3v2.xml",
-                             xform=wp.transform(wp.vec3f(x, ARM_Y, ARM_Z), wp.quat_identity()))
+                             xform=wp.transform(wp.vec3f(x, y, ARM_Z), wp.quat_identity()))
     finally:
         os.chdir(cwd)
 
@@ -109,6 +110,20 @@ def build():
         xform=wp.transform(wp.vec3f(0.0, 0.0, COUNTER_TOP - COUNTER_T / 2), wp.quat_identity()),
         hx=COUNTER_HX, hy=COUNTER_HY, hz=COUNTER_T / 2,
         color=(0.55, 0.57, 0.60), label="countertop")
+
+    # Four legs: from floor z=0 up INTO the tabletop so the table visibly RESTS on them.
+    # Tabletop underside = COUNTER_TOP - COUNTER_T = 0.84; legs run to 0.90 (6 cm into slab).
+    leg_top = COUNTER_TOP          # legs reach up into the slab, not just to its underside
+    leg_h = leg_top
+    leg_r = 0.05  # half-width of each leg
+    for lx in (-COUNTER_HX + 0.06, COUNTER_HX - 0.06):
+        for ly in (-COUNTER_HY + 0.06, COUNTER_HY - 0.06):
+            leg_body = builder.add_body(is_kinematic=True, label="table_leg")
+            builder.add_shape_box(
+                body=leg_body,
+                xform=wp.transform(wp.vec3f(lx, ly, leg_h / 2), wp.quat_identity()),
+                hx=leg_r, hy=leg_r, hz=leg_h / 2,
+                color=(0.40, 0.42, 0.45), label="table_leg")
 
     # Real floor at z=0 (fr3v2.xml has no floor, so nothing floats at counter height).
     ground_body = builder.add_body(is_kinematic=True, label="ground")
@@ -172,16 +187,24 @@ def render(model, width, height):
     # "ready" pose instead of leaving them stretched straight up at the MJCF default.
     import newton
     q = np.asarray(state.joint_q.numpy()).copy()
+    # Each FR3 v2 rig contributes exactly 7 driven DOFs (joints 1..7); base_joint,
+    # link0_joint and link8_joint are 0-DOF. Derive each arm's q-offset from the model
+    # so we never write past an arm into the countertop's free joint (which previously
+    # shifted the whole table +0.20 m in X).
+    import numpy as np
+    jlabels = list(model.joint_label)
+    qstarts = model.joint_q_start.numpy()
+    arm_offsets = [int(qstarts[j]) for j, lbl in enumerate(jlabels) if "fr3v2_joint1" in lbl]
+    assert len(arm_offsets) == 2, f"expected 2 FR3 arms, found offsets {arm_offsets}"
     # Mirrored poses: each arm leans INWARD over the counter toward the workspace.
     poses = [
-        [0.0, -1.15, 0.35, -0.75, 1.10, 0.80, 0.20],  # left arm
-        [0.0,  1.15, 0.35,  0.75, 1.10, 0.80, 0.20],  # right arm (mirrored)
+        [0.0, -1.15, 0.35, -0.75, 1.10, 0.80, 0.20],  # arm 0
+        [0.0,  1.15, 0.35,  0.75, 1.10, 0.80, 0.20],  # arm 1 (mirrored)
     ]
     for arm_i, pose in enumerate(poses):
-        offset = arm_i * 8
+        offset = arm_offsets[arm_i]
         for i, val in enumerate(pose):
-            if offset + i < len(q):
-                q[offset + i] = val
+            q[offset + i] = val
     state.joint_q = wp.array(q, dtype=state.joint_q.dtype, device=model.device)
     newton.eval_fk(model, state.joint_q, state.joint_qd, state)
     sensor = SensorTiledCamera(model, load_textures=True)   # real SimReady albedo maps
@@ -226,12 +249,12 @@ def main() -> int:
     model, placed = build()
     frames = render(model, a.width, a.height)
     report = {
-        "kind": "stage-1 preview: two FR3 arms bolted to table ends + real-textured SimReady objects + 2 eye cams",
+        "kind": "stage-1 preview: two FR3 arms resting on right side of tabletop + real-textured SimReady objects + 2 eye cams",
         "scope": "rendered and measured; NOT stepped, NOT a manipulation/safety result",
         "versions": {"python": platform.python_version(), "newton": metadata.version("newton")},
-        "robot": str(ARM_DIR.relative_to(ROOT) / "scene.xml"),
-        "arm_bases": {"left": [-ARM_X, ARM_Y, ARM_Z], "right": [ARM_X, ARM_Y, ARM_Z],
-                      "table_end_margin_m": round(COUNTER_HX - ARM_X, 3)},
+        "robot": str(ARM_DIR.relative_to(ROOT) / "fr3v2.xml"),
+        "arm_bases": [{"x": x, "y": y, "z": ARM_Z} for x, y in ARM_BASES],
+        "arm_base_on_table": True,   # base-plate bottom (offset 0.0) rests at tabletop z=0.90
         "bodies": model.body_count, "shapes": model.shape_count,
         "counter_top_z": COUNTER_TOP,
         "objects": placed, "frames": frames,

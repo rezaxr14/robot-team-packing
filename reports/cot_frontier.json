@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-11-18T21:54:31.681586+00:00",
+  "task": "rtp-cot-frontier-fullplan",
+  "profile": "local_4050",
+  "model": "google/gemini-3.8-flash",
+  "source_labels": [
+    "kaggle-benchmarks-proxy"
+  ],
+  "api_call": {
+    "method": "POST",
+    "url": "https://mp-staging.kaggle.net/models/openapi/chat/completions",
+    "route": "POST /openapi/chat/completions (OpenAI-compatible Model Proxy)",
+    "auth": "Bearer $MODEL_PROXY_API_KEY (platform-injected in the hosted worker; value never stored)",
+    "body": {
+      "model": "llm.model from kaggle_benchmarks",
+      "messages": [
+        {
+          "role": "user",
+          "content": "<harness prompt>"
+        }
+      ],
+      "max_tokens": 1200,
+      "temperature": 0,
+      "reasoning_effort": "none"
+    },
+    "sdk": "kaggle_benchmarks @kbench.task with requests to Kaggle Model Proxy"
+  },
+  "counts": {
+    "total": 8,
+    "completed": 8,
+    "by_source": {
+      "kaggle-benchmarks-proxy": 8
+    }
+  },
+  "usage": {
+    "prompt_tokens": 18730,
+    "completion_tokens": 5766
+  },
+  "finish_reasons": [
+    "stop",
+    "stop",
+    "stop",
+    "stop",
+    "stop",
+    "stop",
+    "stop",
+    "stop"
+  ],
+  "error_summary": {
+    "count": 0,
+    "errors": []
+  },
+  "kernel_status": "Task:     rtp-cot-frontier-fullplan\nVersion:  1\nStatus:   Completed\nCreated:  2026-11-18 21:51:34\nPublic:   False\nTask URL: https://www.kaggle.com/benchmarks/tasks/rezanadimikj/rtp-cot-frontier-fullplan/1\n\nModel                Status          Started             Ended              \n──────────────────── ─────────────── ─────────────────── ───────────────────\ngemini-3.8-flash     Completed       2026-11-18 21:52:20 2026-11-18 21:53:07\n\nView logs: kaggle b t log rtp-cot-frontier-fullplan [-m <model>]",
+  "quota": [
+    {
+      "period": "Daily",
+      "used": "$0.09",
+      "remaining": "$9.91",
+      "total": "$10.00",
+      "refillAt": "2026-11-19T21:44:50.070000"
+    },
+    {
+      "period": "Monthly",
+      "used": "$0.27",
+      "remaining": "$99.73",
+      "total": "$100.00",
+      "refillAt": "2026-12-14T08:48:59.523000"
+    }
+  ],
+  "trace_path": "/home/reza/Projects/robot_team/data/local_4050/cot_frontier_traces.jsonl",
+  "prompt_path": "/home/reza/Projects/robot_team/data/local_4050/cot_prompts.jsonl",
+  "caveats": [
+    "The interactive Model Proxy from this machine returned HTTP 403: User location \"RU\" is not supported for this model/API; the hosted-task route was used instead.",
+    "Earlier hosted task versions are superseded and are not cited as CoT evidence: versions with `-> None` and postponed `-> dict` annotations failed at import, and the 400/600-token runs ended with finish_reason=length (truncated Plan JSON). The final task uses reasoning_effort=none and max_tokens=1200.",
+    "No Qwen model, Qwen kernel or local GPU generation was used for these traces.",
+    "These are verbatim transport records; plans were not replayed or scored for correctness here."
+  ],
+  "note": "Completions came from the named Kaggle-hosted frontier model via the Model Proxy; transport records are verbatim.",
+  "success": true
+}

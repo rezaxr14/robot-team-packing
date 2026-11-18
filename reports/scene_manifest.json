@@ -1,0 +1,144 @@
+{
+  "scene": "two FR3 arms + placed SimReady objects + ground",
+  "scope": "Newton model assembled and measured; NOT stepped, rendered or safety-tested",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1"
+  },
+  "robot": "assets/cache/menagerie/franka_fr3_duo/scene.xml",
+  "objects": [
+    {
+      "package": "book_open_a01",
+      "usd": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/sm_book_open_a01_01.usd",
+      "placement_xyz": [
+        -0.4,
+        -0.2,
+        0.8
+      ]
+    },
+    {
+      "package": "misc_notebook_a01",
+      "usd": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/sm_misc_notebook_a01_01.usd",
+      "placement_xyz": [
+        -0.2,
+        -0.2,
+        0.8
+      ]
+    },
+    {
+      "package": "bottle_laboratory_a01",
+      "usd": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/simready_usd/sm_bottle_laboratory_a01_01.usd",
+      "placement_xyz": [
+        0.0,
+        -0.2,
+        0.8
+      ]
+    },
+    {
+      "package": "stationery_pencil_watercolor_black_a01",
+      "usd": "assets/cache/nvidia__simready-assets/stationery_pencil_watercolor_black_a01/simready_usd/sm_stationery_pencil_watercolor_black_a01_01.usd",
+      "placement_xyz": [
+        0.20000000000000007,
+        -0.2,
+        0.8
+      ]
+    },
+    {
+      "package": "cart_computer_a01",
+      "usd": "assets/cache/nvidia__simready-assets/cart_computer_a01/simready_usd/sm_cart_computer_a01_01.usd",
+      "placement_xyz": [
+        0.4,
+        -0.2,
+        0.8
+      ]
+    },
+    {
+      "package": "dishware_mug_a01",
+      "usd": "assets/cache/nvidia__simready-assets/dishware_mug_a01/simready_usd/sm_dishware_mug_a01_01.usda",
+      "placement_xyz": [
+        -0.4,
+        0.0,
+        0.8
+      ]
+    },
+    {
+      "package": "dishware_plate_a01",
+      "usd": "assets/cache/nvidia__simready-assets/dishware_plate_a01/simready_usd/sm_dishware_plate_a01_01.usda",
+      "placement_xyz": [
+        -0.2,
+        0.0,
+        0.8
+      ]
+    },
+    {
+      "package": "chair_office_amf_black_a01",
+      "usd": "assets/cache/nvidia__simready-assets/chair_office_amf_black_a01/simready_usd/sm_chair_office_amf_black_a01_01.usd",
+      "placement_xyz": [
+        0.0,
+        0.0,
+        0.8
+      ]
+    },
+    {
+      "package": "cabinet_file_a01",
+      "usd": "assets/cache/nvidia__simready-assets/cabinet_file_a01/simready_usd/sm_cabinet_file_a01_01.usd",
+      "placement_xyz": [
+        0.20000000000000007,
+        0.0,
+        0.8
+      ]
+    },
+    {
+      "package": "paperbag_a01",
+      "error": "ErrorException: \n\tError in 'pxrInternal_v0_26_8__pxrReserved__::SdfLayer::_OpenLayerAndUnlockRegistry' at line 3517 in file .conan2/data"
+    },
+    {
+      "package": "food_produce_dragonFruit_a01",
+      "usd": "assets/cache/nvidia__simready-assets/food_produce_dragonFruit_a01/simready_usd/sm_food_produce_dragonFruit_a01_01.usd",
+      "placement_xyz": [
+        0.4,
+        0.0,
+        0.8
+      ]
+    },
+    {
+      "package": "chair_office_fabric_manager_a01",
+      "usd": "assets/cache/nvidia__simready-assets/chair_office_fabric_manager_a01/simready_usd/sm_chair_office_fabric_manager_a01_01.usd",
+      "placement_xyz": [
+        -0.4,
+        0.2,
+        0.8
+      ]
+    },
+    {
+      "package": "cabinet_file_a02",
+      "usd": "assets/cache/nvidia__simready-assets/cabinet_file_a02/simready_usd/sm_cabinet_file_a02_01.usd",
+      "placement_xyz": [
+        -0.2,
+        0.2,
+        0.8
+      ]
+    },
+    {
+      "package": "furniture_counter_coffeeStation_a01",
+      "usd": "assets/cache/nvidia__simready-assets/furniture_counter_coffeeStation_a01/simready_usd/sm_furniture_counter_coffeeStation_a01_01.usd",
+      "placement_xyz": [
+        0.0,
+        0.2,
+        0.8
+      ]
+    }
+  ],
+  "pending": [
+    "Render the scene with the Newton Warp renderer and inspect contacts.",
+    "Step manipulation episodes with the two FR3 arms and PTZ eyes.",
+    "Validate grasps, drop tests and mass-vs-datasheet (G-13/G-5)."
+  ],
+  "bodies": 83,
+  "joints": 83,
+  "shapes": 375,
+  "total_mass_kg": 459.364,
+  "masses_finite": true,
+  "placed_objects": 13,
+  "result": "PASS"
+}

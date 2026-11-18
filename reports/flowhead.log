@@ -1,0 +1,3 @@
+flow final loss 0.0677 sample MAE 0.0699
+mlp final loss 0.0006 sample MAE 0.0186
+FLOWHEAD_DONE 0

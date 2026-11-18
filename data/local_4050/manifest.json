@@ -1,0 +1,57 @@
+{
+  "created": "2026-11-18T10:25:07+00:00",
+  "deep_verified": true,
+  "files": [
+    {
+      "path": "brain_sft.jsonl",
+      "sha256": "ee5702df9716df3c42cf8fa9bb57c8428dd326e0c978109111322eea67f18656",
+      "size": 297173
+    },
+    {
+      "path": "dataset-metadata.json",
+      "sha256": "b034735962dd1857cc25294970882ad83e0b949f4eb25f32f95838d2a36430c7",
+      "size": 207
+    },
+    {
+      "path": "episode_memory.jsonl",
+      "sha256": "ba08ecc19c2729a8578c0d0dee77847aca8f3dfb99be46177ba14543e753688c",
+      "size": 7203
+    },
+    {
+      "path": "eye_grpo_rows.jsonl",
+      "sha256": "395b33a38d682e03ac890c85173b965c40cb1a7d650335f190aeb262e80251b7",
+      "size": 9312
+    },
+    {
+      "path": "eye_sft.jsonl",
+      "sha256": "c64f3996d7edb23e0b718c26daf2bf5270d6686adc12b04276dd6dd143c2b85d",
+      "size": 91914
+    },
+    {
+      "path": "grpo_prompts.jsonl",
+      "sha256": "c4e93f66b31a4323529ad5833a07697eb30e5ab97755c3391a8c598492e7b9f2",
+      "size": 282712
+    },
+    {
+      "path": "hindsight_sft.jsonl",
+      "sha256": "6d994587a6b095eb33e257ceed6e7149fdc7fd7f7e40bb7448bffe075a9faa04",
+      "size": 310132
+    },
+    {
+      "path": "sft_smoke.jsonl",
+      "sha256": "e896739db26ba79f01088caba0aab22ac6f6b92eb5764b3e66f0aa415db42edb",
+      "size": 396342
+    }
+  ],
+  "kind": "data",
+  "notes": "",
+  "revision": "17632f0c",
+  "schema": 1,
+  "slug": "rtp-data-symbolic-world-and-datagen-17632f0c",
+  "source": "produced by local_4050",
+  "tags": {
+    "kind": "symbolic",
+    "name": "world-and-datagen"
+  },
+  "total_bytes": 1394995
+}

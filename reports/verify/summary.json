@@ -1,0 +1,116 @@
+{
+  "verify_dry_run": {
+    "n": 100,
+    "success": {
+      "k": 100,
+      "n": 100,
+      "rate": 1.0,
+      "lo": 0.9630051925239981,
+      "hi": 0.9999999999999999
+    },
+    "plan_pass": {
+      "k": 48,
+      "n": 100,
+      "rate": 0.48,
+      "lo": 0.38464384320080547,
+      "hi": 0.5768359490982345
+    },
+    "gap_plan_minus_success": -0.52,
+    "valid_item_frac": 1.0,
+    "valid_ci": [
+      1.0,
+      1.0
+    ],
+    "mean_msg_tokens": 11673.99,
+    "mean_replans": 0.01,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {}
+  },
+  "verify_dry_run_0_retries": {
+    "n": 100,
+    "success": {
+      "k": 61,
+      "n": 100,
+      "rate": 0.61,
+      "lo": 0.5120283616749817,
+      "hi": 0.699832780680298
+    },
+    "plan_pass": {
+      "k": 45,
+      "n": 100,
+      "rate": 0.45,
+      "lo": 0.3561437510640346,
+      "hi": 0.5475557296835656
+    },
+    "gap_plan_minus_success": -0.15999999999999998,
+    "valid_item_frac": 0.81625,
+    "valid_ci": [
+      0.74625,
+      0.8775
+    ],
+    "mean_msg_tokens": 10760.85,
+    "mean_replans": 0.29,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Brain": 39
+    }
+  },
+  "verify_none": {
+    "n": 100,
+    "success": {
+      "k": 61,
+      "n": 100,
+      "rate": 0.61,
+      "lo": 0.5120283616749817,
+      "hi": 0.699832780680298
+    },
+    "plan_pass": {
+      "k": 45,
+      "n": 100,
+      "rate": 0.45,
+      "lo": 0.3561437510640346,
+      "hi": 0.5475557296835656
+    },
+    "gap_plan_minus_success": -0.15999999999999998,
+    "valid_item_frac": 0.81625,
+    "valid_ci": [
+      0.74625,
+      0.8775
+    ],
+    "mean_msg_tokens": 10760.85,
+    "mean_replans": 0.29,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Brain": 39
+    }
+  },
+  "verify_static": {
+    "n": 100,
+    "success": {
+      "k": 78,
+      "n": 100,
+      "rate": 0.78,
+      "lo": 0.6892946528499969,
+      "hi": 0.849988254963442
+    },
+    "plan_pass": {
+      "k": 48,
+      "n": 100,
+      "rate": 0.48,
+      "lo": 0.38464384320080547,
+      "hi": 0.5768359490982345
+    },
+    "gap_plan_minus_success": -0.30000000000000004,
+    "valid_item_frac": 0.87875,
+    "valid_ci": [
+      0.8175,
+      0.93
+    ],
+    "mean_msg_tokens": 10552.53,
+    "mean_replans": 0.0,
+    "mean_retrieval_recall": 1.0,
+    "episodes_with_fatal_agent": {
+      "Brain": 22
+    }
+  }
+}

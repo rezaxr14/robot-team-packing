@@ -1,0 +1,80 @@
+{
+  "gpus": [
+    {
+      "name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+      "vram_gb": 6.0,
+      "cc": [
+        8,
+        9
+      ],
+      "driver": "580.178.04",
+      "arch": "ada",
+      "torch_index": "cu128",
+      "sim_stack": "isaac_lab_3.0_newton",
+      "isaac_line": "3.0",
+      "newton_min_cc": "7.5",
+      "newton_ok": true,
+      "warp_pin": null,
+      "vllm_gpu_memory_utilization_4b": 0.5,
+      "qlora_4b_fits": true,
+      "train_lora_4b_fits": false,
+      "can_run_isaac_and_vllm_together": false,
+      "can_run_isaac_vllm_and_train_together": false,
+      "notes": [
+        "Ada (sm_89): cu128 wheels also work; no special handling."
+      ],
+      "warnings": []
+    }
+  ],
+  "system": [
+    {
+      "check": "os",
+      "ok": false,
+      "detail": "Ubuntu 26.10",
+      "severity": "warn"
+    },
+    {
+      "check": "ram >= 32 GB (sim workstation; dev laptops are fine)",
+      "ok": false,
+      "detail": "15 GB",
+      "severity": "warn"
+    },
+    {
+      "check": "disk free >= 100 GB (models, renders, Isaac checkout)",
+      "ok": true,
+      "detail": "217 GB",
+      "severity": "warn"
+    },
+    {
+      "check": "tool: git",
+      "ok": true,
+      "detail": "/usr/bin/git",
+      "severity": "fail"
+    },
+    {
+      "check": "tool: curl",
+      "ok": true,
+      "detail": "/usr/bin/curl",
+      "severity": "warn"
+    },
+    {
+      "check": "tool: gcc",
+      "ok": true,
+      "detail": "/usr/bin/gcc",
+      "severity": "warn"
+    },
+    {
+      "check": "tool: nvidia-smi",
+      "ok": true,
+      "detail": "/usr/bin/nvidia-smi",
+      "severity": "fail"
+    },
+    {
+      "check": "uv or conda",
+      "ok": true,
+      "detail": "/home/reza/.local/bin/uv",
+      "severity": "warn"
+    }
+  ],
+  "hard_fail": false
+}

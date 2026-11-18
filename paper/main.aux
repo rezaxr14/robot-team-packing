@@ -1,0 +1,193 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{mandi2024roco,zhang2024coela}
+\citation{kang2025vikir}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
+\newlabel{sec:intro@cref}{{[section][1][]1}{[1][1][]1}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textbf  {One recorded failure, traced to its source.} (a)~The Eye's mass reports against the true masses; badges 1 and 2 mark the two items that are far off. (b)~The plan built on those reports stacks the notebook above the lighter pencil case, which breaks the heavy-at-the-bottom rule; the loop's attribution rule charges the failure to the Eye. (c)~Why it broke and two fixes: Arm challenges (5{} in this run) or a weighing probe. The strip below shows the three outcomes (scores 0.85{}, 0.99{} and 1.00{}). This is a symbolic fixture episode (seed 24{}, Eye mass noise $\sigma =0.45{}$, scripted Brain): a mechanism illustration, not a result.}}{2}{figure.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:mechanism}{{1}{2}{\textbf {One recorded failure, traced to its source.} (a)~The Eye's mass reports against the true masses; badges 1 and 2 mark the two items that are far off. (b)~The plan built on those reports stacks the notebook above the lighter pencil case, which breaks the heavy-at-the-bottom rule; the loop's attribution rule charges the failure to the Eye. (c)~Why it broke and two fixes: Arm challenges (\mechNChal {} in this run) or a weighing probe. The strip below shows the three outcomes (scores \mechNoFixScore {}, \mechChalScore {} and \mechProbeScore {}). This is a symbolic fixture episode (seed \mechSeed {}, Eye mass noise $\sigma =\mechSigma {}$, scripted Brain): a mechanism illustration, not a result}{figure.caption.1}{}}
+\newlabel{fig:mechanism@cref}{{[figure][1][]1}{[1][2][]2}{}{}{}}
+\citation{kang2025vikir}
+\citation{mandi2024roco}
+\citation{zhang2024coela}
+\citation{andrychowicz2017her}
+\citation{foerster2018coma}
+\citation{shao2024deepseekmath}
+\citation{lipman2023flowmatching}
+\citation{hu2022lora}
+\citation{mittal2025isaaclab}
+\@writefile{toc}{\contentsline {paragraph}{Contributions.}{3}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Status of the evidence.}{3}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related work}{3}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{3}{Related work}{section.2}{}}
+\newlabel{sec:related@cref}{{[section][2][]2}{[1][3][]3}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Cooperative embodied agents with language models.}{3}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Credit assignment and hindsight.}{3}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Training signals and simulation.}{4}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Benchmark scoring.}{4}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}The team}{4}{section.3}\protected@file@percent }
+\newlabel{sec:method}{{3}{4}{The team}{section.3}{}}
+\newlabel{sec:method@cref}{{[section][3][]3}{[1][4][]4}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Task, roles and failure model}{4}{subsection.3.1}\protected@file@percent }
+\newlabel{sec:task}{{3.1}{4}{Task, roles and failure model}{subsection.3.1}{}}
+\newlabel{sec:task@cref}{{[subsection][1][3]3.1}{[1][4][]4}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Typed messages}{4}{subsection.3.2}\protected@file@percent }
+\newlabel{sec:bus}{{3.2}{4}{Typed messages}{subsection.3.2}{}}
+\newlabel{sec:bus@cref}{{[subsection][2][3]3.2}{[1][4][]4}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces The six rules the team must satisfy; the text is the harness file the Brain retrieves (\cref  {sec:harness}).}}{4}{table.caption.9}\protected@file@percent }
+\newlabel{tab:rules}{{1}{4}{The six rules the team must satisfy; the text is the harness file the Brain retrieves (\cref {sec:harness})}{table.caption.9}{}}
+\newlabel{tab:rules@cref}{{[table][1][]1}{[1][4][]4}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces \textbf  {The team and its interfaces.} Eyes see pixels and emit a structured scene; the Brain reads text, retrieves from the harness, and plans; a verifier checks the plan before the scheduler hands tasks to two blind Arms; touch and challenges flow back through a typed message bus. Numbers give the order of one episode. Dashed boxes are optional; red tags mark components whose trained models do not yet exist.}}{5}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:overview}{{2}{5}{\textbf {The team and its interfaces.} Eyes see pixels and emit a structured scene; the Brain reads text, retrieves from the harness, and plans; a verifier checks the plan before the scheduler hands tasks to two blind Arms; touch and challenges flow back through a typed message bus. Numbers give the order of one episode. Dashed boxes are optional; red tags mark components whose trained models do not yet exist}{figure.caption.8}{}}
+\newlabel{fig:overview@cref}{{[figure][2][]2}{[1][4][]5}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}The harness}{5}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:harness}{{3.3}{5}{The harness}{subsection.3.3}{}}
+\newlabel{sec:harness@cref}{{[subsection][3][3]3.3}{[1][5][]5}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces \textbf  {The message layer.} (a)~The 13{} types and their required fields; colour shows the sender observed in the recorded episodes. (b)~A recorded CHALLENGE: an Arm reports a measured weight that disagrees with the Eye's report. (c)~Message tokens per episode under four communication modes, from the symbolic fixture (80 seeds): a check that the accounting works, not a result about trained agents.}}{6}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:messages}{{3}{6}{\textbf {The message layer.} (a)~The \nMsgTypes {} types and their required fields; colour shows the sender observed in the recorded episodes. (b)~A recorded CHALLENGE: an Arm reports a measured weight that disagrees with the Eye's report. (c)~Message tokens per episode under four communication modes, from the symbolic fixture (80 seeds): a check that the accounting works, not a result about trained agents}{figure.caption.10}{}}
+\newlabel{fig:messages@cref}{{[figure][3][]3}{[1][5][]6}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Message schema as implemented. The sender column lists what was observed in the recorded episode of \cref  {fig:loop}; it is not a constraint of the schema.}}{6}{table.caption.11}\protected@file@percent }
+\newlabel{tab:messages}{{2}{6}{Message schema as implemented. The sender column lists what was observed in the recorded episode of \cref {fig:loop}; it is not a constraint of the schema}{table.caption.11}{}}
+\newlabel{tab:messages@cref}{{[table][2][]2}{[1][5][]6}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces \textbf  {The harness.} (a)~The 19{} markdown files by type. (b)~Two-pass BM25 retrieval into the Brain's context, with a monitor that writes measured outcomes back to the skill files (dashed: runs after episodes). (c)~Tokenization of the string ``lunchbox1 last'' before and after the fix, and the BM25 score of every rule for the recorded instruction. The pre-fix tokenizer is our reconstruction.}}{7}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:harness}{{4}{7}{\textbf {The harness.} (a)~The \nHarnessFiles {} markdown files by type. (b)~Two-pass BM25 retrieval into the Brain's context, with a monitor that writes measured outcomes back to the skill files (dashed: runs after episodes). (c)~Tokenization of the string ``lunchbox1 last'' before and after the fix, and the BM25 score of every rule for the recorded instruction. The pre-fix tokenizer is our reconstruction}{figure.caption.12}{}}
+\newlabel{fig:harness@cref}{{[figure][4][]4}{[1][7][]7}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Planning with tools and verification}{7}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:tools}{{3.4}{7}{Planning with tools and verification}{subsection.3.4}{}}
+\newlabel{sec:tools@cref}{{[subsection][4][3]3.4}{[1][7][]7}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}The control loop}{7}{subsection.3.5}\protected@file@percent }
+\newlabel{sec:loop}{{3.5}{7}{The control loop}{subsection.3.5}{}}
+\newlabel{sec:loop@cref}{{[subsection][5][3]3.5}{[1][7][]7}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces \textbf  {Tools and verification.} (a)~The five tools of the tool-using Brain. (b)~A recorded flawed draft (seed 12{}, two placements with swapped ordering dependencies) and the \texttt  {dry\_run} feedback it receives; the revised plan passes. (c)~Verification against a planner replaced by a wrapper that injects errors with probability 0.5 (fixture, 80 seeds): a check of the verifier, not of a model.}}{8}{figure.caption.13}\protected@file@percent }
+\newlabel{fig:tools}{{5}{8}{\textbf {Tools and verification.} (a)~The five tools of the tool-using Brain. (b)~A recorded flawed draft (seed \toolSeed {}, two placements with swapped ordering dependencies) and the \texttt {dry\_run} feedback it receives; the revised plan passes. (c)~Verification against a planner replaced by a wrapper that injects errors with probability 0.5 (fixture, 80 seeds): a check of the verifier, not of a model}{figure.caption.13}{}}
+\newlabel{fig:tools@cref}{{[figure][5][]5}{[1][7][]8}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Success, forces and attribution}{8}{subsection.3.6}\protected@file@percent }
+\newlabel{sec:success}{{3.6}{8}{Success, forces and attribution}{subsection.3.6}{}}
+\newlabel{sec:success@cref}{{[subsection][6][3]3.6}{[1][8][]8}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}Learning signals}{8}{subsection.3.7}\protected@file@percent }
+\newlabel{sec:signals}{{3.7}{8}{Learning signals}{subsection.3.7}{}}
+\newlabel{sec:signals@cref}{{[subsection][7][3]3.7}{[1][8][]8}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces \textbf  {One recorded episode through the loop} (seed 11{}, flaky planner, leaky Eyes; fixture). (a)~The 16{} executed tasks by arm in time order, with the loop round of each, the 1{} look, 4{} challenges, the amendment at round 3{} and the replans (2{}); the episode takes 12{} rounds and succeeds. (b)~The stages of the loop and what this trace shows of each, including the planner's 6{} rejected drafts; the probe is not used here.}}{9}{figure.caption.14}\protected@file@percent }
+\newlabel{fig:loop}{{6}{9}{\textbf {One recorded episode through the loop} (seed \loopSeed {}, flaky planner, leaky Eyes; fixture). (a)~The \loopTasks {} executed tasks by arm in time order, with the loop round of each, the \loopLooks {} look, \loopChal {} challenges, the amendment at round \loopAmendRound {} and the replans (\loopReplans {}); the episode takes \loopRounds {} rounds and succeeds. (b)~The stages of the loop and what this trace shows of each, including the planner's \loopRej {} rejected drafts; the probe is not used here}{figure.caption.14}{}}
+\newlabel{fig:loop@cref}{{[figure][6][]6}{[1][8][]9}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Counterfactual Eye credit.}{9}{section*.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Team hindsight relabeling.}{9}{section*.16}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces \textbf  {Learning signals.} From training data through component to method, then the plan-level reward read from the code and the episode score used for credit. No trained model has been run with these signals, so all outcomes are pending.}}{10}{figure.caption.17}\protected@file@percent }
+\newlabel{fig:signals}{{7}{10}{\textbf {Learning signals.} From training data through component to method, then the plan-level reward read from the code and the episode score used for credit. No trained model has been run with these signals, so all outcomes are pending}{figure.caption.17}{}}
+\newlabel{fig:signals@cref}{{[figure][7][]7}{[1][10][]10}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8}One success definition across three worlds}{10}{subsection.3.8}\protected@file@percent }
+\newlabel{sec:bridge}{{3.8}{10}{One success definition across three worlds}{subsection.3.8}{}}
+\newlabel{sec:bridge@cref}{{[subsection][8][3]3.8}{[1][10][]10}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces \textbf  {Two team-level signals on the episode of \cref  {fig:mechanism}.} (a)~Counterfactual credit for Eye~A: replacing its report changes the episode score; the dashed line is the real score (0.85{}) and an empty report would score 0.575{}. (b)~Hindsight relabeling: the failed episode is rewritten to what it achieved and admitted only after a replay check. Fixture episode (no challenge, no verification, so the Eye error reaches the plan).}}{11}{figure.caption.18}\protected@file@percent }
+\newlabel{fig:credit}{{8}{11}{\textbf {Two team-level signals on the episode of \cref {fig:mechanism}.} (a)~Counterfactual credit for Eye~A: replacing its report changes the episode score; the dashed line is the real score (\credBase {}) and an empty report would score \credEmpty {}. (b)~Hindsight relabeling: the failed episode is rewritten to what it achieved and admitted only after a replay check. Fixture episode (no challenge, no verification, so the Eye error reaches the plan)}{figure.caption.18}{}}
+\newlabel{fig:credit@cref}{{[figure][8][]8}{[1][10][]11}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces \textbf  {The Isaac scene and the shared checker.} (a)~Top view from the layout constants: table zones, bag compartments, arm bases and camera positions. (b)~One success function scores three worlds. The Isaac render is pending.}}{12}{figure.caption.19}\protected@file@percent }
+\newlabel{fig:bridge}{{9}{12}{\textbf {The Isaac scene and the shared checker.} (a)~Top view from the layout constants: table zones, bag compartments, arm bases and camera positions. (b)~One success function scores three worlds. The Isaac render is pending}{figure.caption.19}{}}
+\newlabel{fig:bridge@cref}{{[figure][9][]9}{[1][10][]12}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Evaluation protocol and status}{13}{section.4}\protected@file@percent }
+\newlabel{sec:experiments}{{4}{13}{Evaluation protocol and status}{section.4}{}}
+\newlabel{sec:experiments@cref}{{[section][4][]4}{[1][13][]13}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Protocol}{13}{subsection.4.1}\protected@file@percent }
+\newlabel{sec:protocol}{{4.1}{13}{Protocol}{subsection.4.1}{}}
+\newlabel{sec:protocol@cref}{{[subsection][1][4]4.1}{[1][13][]13}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Evidence classes.}{13}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Seeds and statistics.}{13}{section*.23}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces \textbf  {Planned evaluation design.} Five questions, the experiment that answers each, its evidence class and where it is reported. Track A uses real benchmark data and released models; Track B tests the packing team. Every outcome is pending, and fixture runs are kept out of the design (appendix~F).}}{13}{figure.caption.20}\protected@file@percent }
+\newlabel{fig:design}{{10}{13}{\textbf {Planned evaluation design.} Five questions, the experiment that answers each, its evidence class and where it is reported. Track A uses real benchmark data and released models; Track B tests the packing team. Every outcome is pending, and fixture runs are kept out of the design (appendix~F)}{figure.caption.20}{}}
+\newlabel{fig:design@cref}{{[figure][10][]10}{[1][13][]13}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Evidence classes. A number is reported under exactly one class and never pooled with another.}}{14}{table.caption.21}\protected@file@percent }
+\newlabel{tab:evidence}{{3}{14}{Evidence classes. A number is reported under exactly one class and never pooled with another}{table.caption.21}{}}
+\newlabel{tab:evidence@cref}{{[table][3][]3}{[1][13][]14}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Track A design. L1 and L2 are VIKI-Bench levels. All cells are pending.}}{14}{table.caption.25}\protected@file@percent }
+\newlabel{tab:trackA}{{4}{14}{Track A design. L1 and L2 are VIKI-Bench levels. All cells are pending}{table.caption.25}{}}
+\newlabel{tab:trackA@cref}{{[table][4][]4}{[1][14][]14}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Compute.}{14}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Track A: real benchmark data and released models}{14}{subsection.4.2}\protected@file@percent }
+\newlabel{sec:track-a}{{4.2}{14}{Track A: real benchmark data and released models}{subsection.4.2}{}}
+\newlabel{sec:track-a@cref}{{[subsection][2][4]4.2}{[1][14][]14}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}An audit of the upstream level-2 scorer}{14}{subsection.4.3}\protected@file@percent }
+\newlabel{sec:scorer}{{4.3}{14}{An audit of the upstream level-2 scorer}{subsection.4.3}{}}
+\newlabel{sec:scorer@cref}{{[subsection][3][4]4.3}{[1][14][]14}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces \textbf  {Audit of the upstream level-2 scorer.} (a)~The scoring path as read from the code; the highlighted step draws start positions at random on every call. (b)~A synthetic toy case: a plan valid only for some start positions passes 18 of 40 unseeded draws, has an exhaustive average of 0.5, and a position-agnostic plan passes 40 of 40. The toy case is not a statement about the published VIKI-R numbers.}}{15}{figure.caption.26}\protected@file@percent }
+\newlabel{fig:scorer}{{11}{15}{\textbf {Audit of the upstream level-2 scorer.} (a)~The scoring path as read from the code; the highlighted step draws start positions at random on every call. (b)~A synthetic toy case: a plan valid only for some start positions passes 18 of 40 unseeded draws, has an exhaustive average of 0.5, and a position-agnostic plan passes 40 of 40. The toy case is not a statement about the published VIKI-R numbers}{figure.caption.26}{}}
+\newlabel{fig:scorer@cref}{{[figure][11][]11}{[1][15][]15}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Track B main results (pending). Success with a Wilson interval, the fraction of plans passing the dry run, replans per episode and message tokens.}}{15}{table.caption.27}\protected@file@percent }
+\newlabel{tab:main}{{5}{15}{Track B main results (pending). Success with a Wilson interval, the fraction of plans passing the dry run, replans per episode and message tokens}{table.caption.27}{}}
+\newlabel{tab:main@cref}{{[table][5][]5}{[1][15][]15}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Track B: the packing team}{15}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:track-b}{{4.4}{15}{Track B: the packing team}{subsection.4.4}{}}
+\newlabel{sec:track-b@cref}{{[subsection][4][4]4.4}{[1][15][]15}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces \textbf  {Results figure, generated from the results bundle.} (a)~Success per configuration with Wilson intervals. (b)~Plan pass against success. (c)~Oracle gain by injected fault and field. With no bundle present every bar is empty and marked pending; nothing here is simulated.}}{16}{figure.caption.28}\protected@file@percent }
+\newlabel{fig:results}{{12}{16}{\textbf {Results figure, generated from the results bundle.} (a)~Success per configuration with Wilson intervals. (b)~Plan pass against success. (c)~Oracle gain by injected fault and field. With no bundle present every bar is empty and marked pending; nothing here is simulated}{figure.caption.28}{}}
+\newlabel{fig:results@cref}{{[figure][12][]12}{[1][15][]16}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Ablations (pending).}}{16}{table.caption.29}\protected@file@percent }
+\newlabel{tab:ablations}{{6}{16}{Ablations (pending)}{table.caption.29}{}}
+\newlabel{tab:ablations@cref}{{[table][6][]6}{[1][15][]16}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Ablations}{16}{subsection.4.5}\protected@file@percent }
+\newlabel{sec:ablations}{{4.5}{16}{Ablations}{subsection.4.5}{}}
+\newlabel{sec:ablations@cref}{{[subsection][5][4]4.5}{[1][15][]16}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Oracle gain $G$ of trained Eyes and its breakdown by field (pending).}}{17}{table.caption.30}\protected@file@percent }
+\newlabel{tab:credit}{{7}{17}{Oracle gain $G$ of trained Eyes and its breakdown by field (pending)}{table.caption.30}{}}
+\newlabel{tab:credit@cref}{{[table][7][]7}{[1][16][]17}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Agreement of the loop's attribution with hand labels (pending).}}{17}{table.caption.31}\protected@file@percent }
+\newlabel{tab:attribution}{{8}{17}{Agreement of the loop's attribution with hand labels (pending)}{table.caption.31}{}}
+\newlabel{tab:attribution@cref}{{[table][8][]8}{[1][17][]17}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Counterfactual credit and hindsight}{17}{subsection.4.6}\protected@file@percent }
+\newlabel{sec:credit-eval}{{4.6}{17}{Counterfactual credit and hindsight}{subsection.4.6}{}}
+\newlabel{sec:credit-eval@cref}{{[subsection][6][4]4.6}{[1][16][]17}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7}Is the attribution right?}{17}{subsection.4.7}\protected@file@percent }
+\newlabel{sec:attribution-eval}{{4.7}{17}{Is the attribution right?}{subsection.4.7}{}}
+\newlabel{sec:attribution-eval@cref}{{[subsection][7][4]4.7}{[1][17][]17}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Limitations}{17}{section.5}\protected@file@percent }
+\newlabel{sec:limits}{{5}{17}{Limitations}{section.5}{}}
+\newlabel{sec:limits@cref}{{[section][5][]5}{[1][17][]17}{}{}{}}
+\bibstyle{plainnat}
+\bibdata{refs}
+\bibcite{andrychowicz2017her}{{1}{2017}{{Andrychowicz et~al.}}{{Andrychowicz, Wolski, Ray, Schneider, Fong, Welinder, McGrew, Tobin, Abbeel, and Zaremba}}}
+\bibcite{foerster2018coma}{{2}{2018}{{Foerster et~al.}}{{Foerster, Farquhar, Afouras, Nardelli, and Whiteson}}}
+\bibcite{hu2022lora}{{3}{2022}{{Hu et~al.}}{{Hu, Shen, Wallis, Allen-Zhu, Li, Wang, Wang, and Chen}}}
+\bibcite{kang2025vikir}{{4}{2025}{{Kang et~al.}}{{Kang, Song, Zhou, Qin, Yang, Liu, Torr, Bai, and Yin}}}
+\bibcite{lipman2023flowmatching}{{5}{2023}{{Lipman et~al.}}{{Lipman, Chen, Ben-Hamu, Nickel, and Le}}}
+\bibcite{mandi2024roco}{{6}{2024}{{Mandi et~al.}}{{Mandi, Jain, and Song}}}
+\bibcite{mittal2025isaaclab}{{7}{2025}{{Mittal et~al.}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{18}{section.6}\protected@file@percent }
+\newlabel{sec:conclusion}{{6}{18}{Conclusion}{section.6}{}}
+\newlabel{sec:conclusion@cref}{{[section][6][]6}{[1][18][]18}{}{}{}}
+\bibcite{shao2024deepseekmath}{{8}{2024}{{Shao et~al.}}{{Shao, Wang, Zhu, Xu, Song, Bi, Zhang, Zhang, Li, Wu, and Guo}}}
+\bibcite{zhang2024coela}{{9}{2024}{{Zhang et~al.}}{{Zhang, Du, Shan, Zhou, Du, Tenenbaum, Shu, and Gan}}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Message schema}{19}{appendix.A}\protected@file@percent }
+\newlabel{app:messages}{{A}{19}{Message schema}{appendix.A}{}}
+\newlabel{app:messages@cref}{{[section][1][]A}{[1][19][]19}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Harness files}{19}{appendix.B}\protected@file@percent }
+\newlabel{app:harness}{{B}{19}{Harness files}{appendix.B}{}}
+\newlabel{app:harness@cref}{{[section][2][]B}{[1][19][]19}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces The 19{} harness files with their retrieval keywords.}}{19}{table.caption.34}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {C}Reward and score definitions}{19}{appendix.C}\protected@file@percent }
+\newlabel{app:rewards}{{C}{19}{Reward and score definitions}{appendix.C}{}}
+\newlabel{app:rewards@cref}{{[section][3][]C}{[1][19][]19}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Brain plan reward.}{19}{section*.35}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Episode score.}{20}{section*.36}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Credit.}{20}{section*.37}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {D}Upstream facts and the scorer toy case}{20}{appendix.D}\protected@file@percent }
+\newlabel{app:viki}{{D}{20}{Upstream facts and the scorer toy case}{appendix.D}{}}
+\newlabel{app:viki@cref}{{[section][4][]D}{[1][20][]20}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {E}Environment and tests}{20}{appendix.E}\protected@file@percent }
+\newlabel{app:env}{{E}{20}{Environment and tests}{appendix.E}{}}
+\newlabel{app:env@cref}{{[section][5][]E}{[1][20][]20}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {F}Fixture mechanics checks}{20}{appendix.F}\protected@file@percent }
+\newlabel{app:fixture}{{F}{20}{Fixture mechanics checks}{appendix.F}{}}
+\newlabel{app:fixture@cref}{{[section][6][]F}{[1][20][]20}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Plan verification against a planner wrapped to inject errors with probability 0.5 (clean Eyes).}}{20}{table.caption.38}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Communication modes (noisy Eyes): message tokens are a four-characters-per-token proxy.}}{21}{table.caption.39}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Heavy Eye mass noise ($\sigma =0.45$ on both Eyes): weighing probe, challenge only, and no fix.}}{21}{table.caption.40}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Effect of the look request when each Eye omits an item with probability 0.4.}}{21}{table.caption.41}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces Oracle gain $G$ for Eye~A by injected fault type, with the breakdown by field: the estimator puts the gain in the field that carries the fault.}}{21}{table.caption.42}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {G}Reproducing the figures and numbers}{22}{appendix.G}\protected@file@percent }
+\newlabel{app:repro}{{G}{22}{Reproducing the figures and numbers}{appendix.G}{}}
+\newlabel{app:repro@cref}{{[section][7][]G}{[1][22][]22}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces Reproducibility facts.}}{22}{table.caption.43}\protected@file@percent }
+\gdef \@abspage@last{22}

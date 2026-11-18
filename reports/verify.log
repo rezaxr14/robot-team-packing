@@ -1,0 +1,28 @@
+done verify_none
+done verify_static
+done verify_dry_run
+done verify_dry_run_0_retries
+## Main
+| Config | n | Success % [95% CI] | Valid items % | Plan-pass % | Gap (pp) | Msg tokens | Retrieval recall |
+|---|---|---|---|---|---|---|---|
+| verify_dry_run | 100 | 100.0 [96.3, 100.0] | 100.0 | 48.0 | -52.0 | 11674 | 1.00 |
+| verify_dry_run_0_retries | 100 | 61.0 [51.2, 70.0] | 81.6 | 45.0 | -16.0 | 10761 | 1.00 |
+| verify_none | 100 | 61.0 [51.2, 70.0] | 81.6 | 45.0 | -16.0 | 10761 | 1.00 |
+| verify_static | 100 | 78.0 [68.9, 85.0] | 87.9 | 48.0 | -30.0 | 10553 | 1.00 |
+
+## Ablations vs full
+| Config vs verify_none | paired n | mean diff in success (pp) | 95% paired-bootstrap CI (pp) |
+|---|---|---|---|
+| verify_dry_run | 100 | +39.0 | [+30.0, +48.0] |
+| verify_dry_run_0_retries | 100 | +0.0 | [+0.0, +0.0] |
+| verify_static | 100 | +17.0 | [+10.0, +25.0] |
+
+## Fatal-failure attribution (auto)
+| Config | failed episodes | with Eye | with Brain | with Arm |
+|---|---|---|---|---|
+| verify_dry_run | 0 | 0 | 0 | 0 |
+| verify_dry_run_0_retries | 39 | 0 | 39 | 0 |
+| verify_none | 39 | 0 | 39 | 0 |
+| verify_static | 22 | 0 | 22 | 0 |
+
+VERIFY_DONE 0

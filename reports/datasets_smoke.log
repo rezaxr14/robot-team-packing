@@ -1,0 +1,6 @@
+wrote ['brain_sft.jsonl', 'eye_grpo.jsonl', 'grpo.jsonl', 'hindsight_funnel.json', 'hindsight_sft.jsonl']
+
+
+
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00, 488.16it/s]
+runs/tiny
