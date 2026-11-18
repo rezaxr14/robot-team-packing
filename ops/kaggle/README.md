@@ -48,3 +48,20 @@ second secret with the same name.
 5. `dataset_create_new` (or `dataset_create_version` if it already exists).
 
 The kernel is `is_private: true`; nothing about this run is public.
+
+## Result (2026-11-18)
+
+`rezanadimikj/rtp-publish-private-token` completed. The dataset
+`rezanadimikj/rtp-model-qwen35-4b-851bf6e8` is private (`isPrivate: true`) and contains the two
+safetensors shards (5.33 GB + 3.99 GB) plus tokenizer/config files — 9.32 GB uploaded entirely by
+Kaggle. `verify`:
+
+```bash
+$V/bin/python ops/kaggle_model.py verify
+$V/bin/kaggle datasets files rezanadimikj/rtp-model-qwen35-4b-851bf6e8
+```
+
+The slug matches `rtp.remotes.kaggle_slug(ac.model_spec("Qwen/Qwen3.5-4B",
+revision="851bf6e8", name="qwen35-4b"))`, so the notebooks find it with
+`store.resolve(spec, profile, attached="/kaggle/input")` without any download into the working
+directory.
