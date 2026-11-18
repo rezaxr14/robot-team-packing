@@ -1,5 +1,7 @@
 # robot-team-packing — Implementation Plan (v2, replaces the earlier draft)
 
+> **User's current authoritative instruction:** [`docs/USER_PLAN_VERBATIM.md`](docs/USER_PLAN_VERBATIM.md). Follow it where it differs from this file until a new plan is supplied.
+
 Date: 2026-11-17. Status: **working plan.** Some gates have since been measured; §12 records the
 status of each gate against a report, and `docs/STATUS_HONEST.md` is authoritative for claim status.
 Base: `origin/main` @ `a50347f`. `paper/` text is aligned in place; its figure SVG/PDF are frozen.
