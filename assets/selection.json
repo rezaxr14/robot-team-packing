@@ -1,0 +1,233 @@
+{
+  "schema": 1,
+  "generated_utc": "2026-11-19",
+  "purpose": "Curated SimReady packages to ingest for the D-34 digital twin / gate G-13 (docs/ASSETS.md 4). This is an explicit allow-list: ops/fetch_simready.py --fetch refuses any package not listed here.",
+  "byte_budget": 200000000,
+  "download_policy": {
+    "include": [
+      ".metadata/* and com.nvidia.simready.packaging.json (licence + BOM + conformance)",
+      "simready_usd/sm_*.usd|usda root layer",
+      "simready_usd/payloads/*.usd|usda and payloads/{MuJoCo,Newton,PhysX,Physics}/*.usda",
+      "simready_usd/runnables/physics/*.usd|usda",
+      "simready_usd/source_assets/*.mdl and simready_usd/materials/**/*.mdl",
+      "simready_usd/.simready/validation.json",
+      "one 256x256 thumbnail PNG and up to two <=1.5 MB texture PNGs per package"
+    ],
+    "exclude": [
+      "large albedo/normal texture maps (many are 10-40 MB each; full package download would exceed the budget)",
+      "every package not enumerated below"
+    ],
+    "note": "All package ids below were confirmed to exist in the live Hugging Face dataset tree on 2026-11-19. 'nearest' means no exact asset for the task class exists in nvidia/simready-assets; the stand-in is named explicitly and must not be reported as an exact match."
+  },
+  "repos": [
+    {
+      "repo_id": "nvidia/simready-assets",
+      "repo_type": "dataset",
+      "source_url": "https://huggingface.co/datasets/nvidia/simready-assets",
+      "default_license": "CC-BY-4.0",
+      "license_note": "Per docs/ASSETS.md (S-35); per-package licence verified from com.nvidia.simready.packaging.json during --catalog."
+    }
+  ],
+  "packages": [
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "book_open_a01",
+      "task_class": "book",
+      "match": "exact",
+      "is_furniture": false,
+      "why": "Open book; exact match for the 'book' task class."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "decor_book_b02",
+      "task_class": "book",
+      "match": "exact",
+      "is_furniture": false,
+      "why": "Closed decorative book; second book instance for variation."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "misc_notebook_a01",
+      "task_class": "notebook",
+      "match": "exact",
+      "is_furniture": false,
+      "why": "Notebook, exact class; present in live tree (a01..a04)."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "misc_notebook_a02",
+      "task_class": "notebook",
+      "match": "exact",
+      "is_furniture": false,
+      "why": "Second notebook instance for class variation."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "bottle_laboratory_a01",
+      "task_class": "bottle",
+      "match": "exact",
+      "is_furniture": false,
+      "why": "Laboratory bottle; exact 'bottle' class, small payload."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "bottle_laboratory_a02",
+      "task_class": "bottle",
+      "match": "exact",
+      "is_furniture": false,
+      "why": "Second laboratory bottle instance."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "container_bottle_glass_a01",
+      "task_class": "bottle",
+      "match": "exact",
+      "is_furniture": false,
+      "why": "Glass bottle container, third bottle instance."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "dishware_mug_a01",
+      "task_class": "cup/mug",
+      "match": "exact",
+      "is_furniture": false,
+      "why": "Mug; exact container class, very small package (~2 MB of selected files)."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "dishware_mug_a02",
+      "task_class": "cup/mug",
+      "match": "exact",
+      "is_furniture": false,
+      "why": "Second mug instance."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "dishware_plate_a01",
+      "task_class": "plate",
+      "match": "exact",
+      "is_furniture": false,
+      "why": "Plate; exact class."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "dishware_plate_a02",
+      "task_class": "plate",
+      "match": "exact",
+      "is_furniture": false,
+      "why": "Second plate instance."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "stationery_pencil_watercolor_red_a01",
+      "task_class": "pencilcase",
+      "match": "nearest",
+      "is_furniture": false,
+      "why": "Nearest match only: live query found no 'pencilcase' package in nvidia/simready-assets; this is a single watercolor pencil, not a pencil case.",
+      "nearest_note": "No pencilcase package exists; a loose watercolor pencil is the closest graspable stationery item."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "stationery_pencil_watercolor_azure_a01",
+      "task_class": "pencilcase",
+      "match": "nearest",
+      "is_furniture": false,
+      "why": "Second colour variant of the pencil stand-in for pencilcase.",
+      "nearest_note": "No pencilcase package exists; this is a single pencil."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "cart_computer_a01",
+      "task_class": "laptop/computer",
+      "match": "nearest",
+      "is_furniture": false,
+      "why": "Nearest match only: no 'laptop' package exists in nvidia/simready-assets; this is a computer on a cart.",
+      "nearest_note": "Stand-in for a laptop/computer; not a laptop."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "computer_monitor_office_a01",
+      "task_class": "laptop/computer",
+      "match": "nearest",
+      "is_furniture": false,
+      "why": "Office computer monitor; second stand-in for the laptop/computer class (small selected payload ~1.7 MB).",
+      "nearest_note": "Monitor, not a laptop."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "storage_box_c01",
+      "task_class": "lunchbox/food container",
+      "match": "nearest",
+      "is_furniture": false,
+      "why": "Nearest match only: no 'lunchbox' package exists; a small storage box is the closest rigid food-container analogue (a01/b01 have 100+ MB geometries, c01 is 7.6 MB).",
+      "nearest_note": "Generic storage box used as a lunchbox stand-in; not a purpose-built lunchbox."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "dishware_bowl_a01",
+      "task_class": "lunchbox/food container",
+      "match": "nearest",
+      "is_furniture": false,
+      "why": "Second nearest-match container (bowl); exact 'container' taxonomy item with a small selected payload.",
+      "nearest_note": "Bowl, not a lunchbox."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "paperbag_a01",
+      "task_class": "bag",
+      "match": "nearest",
+      "is_furniture": false,
+      "why": "Nearest match only: no 'backpack' package exists; paper bag is the closest graspable bag.",
+      "nearest_note": "Paper bag, not a backpack."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "chair_office_amf_black_a01",
+      "task_class": "chair",
+      "match": "exact",
+      "is_furniture": true,
+      "why": "Office chair; exact furniture class for G-13's >=3 furniture pieces."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "chair_office_fabric_manager_a01",
+      "task_class": "chair",
+      "match": "exact",
+      "is_furniture": true,
+      "why": "Second office chair instance."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "cabinet_file_a02",
+      "task_class": "cabinet",
+      "match": "exact",
+      "is_furniture": true,
+      "why": "Filing cabinet; exact furniture class (a02 chosen: 0.64 MB geometry vs 4.5 MB for a01)."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "storage_shelf_basic_b01",
+      "task_class": "shelf",
+      "match": "exact",
+      "is_furniture": true,
+      "why": "Storage shelf; exact furniture class (b01 chosen over a01, whose geometry is 50 MB)."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "fixture_counter_a01",
+      "task_class": "counter",
+      "match": "exact",
+      "is_furniture": true,
+      "why": "Kitchen counter fixture; exact furniture class and occlusion prop for the kitchen scene."
+    },
+    {
+      "repo_id": "nvidia/simready-assets",
+      "package_id": "furniture_coffeeTable_a01",
+      "task_class": "table",
+      "match": "nearest",
+      "is_furniture": true,
+      "why": "Nearest match for the work table: a standard SimReady table whose dimensions must be overridden to the measured lab table (docs/ASSETS.md 5).",
+      "nearest_note": "Coffee table used as a table stand-in until the measured lab table dimensions are applied."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "attempts": 43,
+  "successes": 40,
+  "kept": 40,
+  "seed0": 200000,
+  "evidence": "SIM-POSE",
+  "asset_manifest": "/home/reza/Projects/robot_team/reports/simready_scene.json",
+  "rows": 40,
+  "path": "/home/reza/Projects/robot_team/data/local_4050/asset_sft.jsonl",
+  "model": "scripted teacher"
+}

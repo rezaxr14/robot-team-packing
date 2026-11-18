@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "purpose": "texture-free SimReady subset actually downloaded from HF",
+  "packages": [
+    {
+      "package": "book_open_a01",
+      "task_class": "book",
+      "match": "exact",
+      "nearest_match": false,
+      "why": "SimReady package mapped to book (exact match)"
+    },
+    {
+      "package": "misc_notebook_a01",
+      "task_class": "notebook",
+      "match": "exact",
+      "nearest_match": false,
+      "why": "SimReady package mapped to notebook (exact match)"
+    },
+    {
+      "package": "bottle_laboratory_a01",
+      "task_class": "bottle",
+      "match": "exact",
+      "nearest_match": false,
+      "why": "SimReady package mapped to bottle (exact match)"
+    },
+    {
+      "package": "stationery_pencil_watercolor_black_a01",
+      "task_class": "pencilcase",
+      "match": "nearest",
+      "nearest_match": true,
+      "why": "SimReady package mapped to pencilcase (nearest match)"
+    },
+    {
+      "package": "cart_computer_a01",
+      "task_class": "laptop",
+      "match": "nearest",
+      "nearest_match": true,
+      "why": "SimReady package mapped to laptop (nearest match)"
+    },
+    {
+      "package": "paperbag_a01",
+      "task_class": "lunchbox",
+      "match": "nearest",
+      "nearest_match": true,
+      "why": "SimReady package mapped to lunchbox (nearest match)"
+    },
+    {
+      "package": "dishware_mug_a01",
+      "task_class": "mug",
+      "match": "exact",
+      "nearest_match": false,
+      "why": "SimReady package mapped to mug (exact match)"
+    },
+    {
+      "package": "dishware_plate_a01",
+      "task_class": "plate",
+      "match": "exact",
+      "nearest_match": false,
+      "why": "SimReady package mapped to plate (exact match)"
+    },
+    {
+      "package": "food_produce_dragonFruit_a01",
+      "task_class": "other",
+      "match": "nearest",
+      "nearest_match": true,
+      "why": "SimReady package mapped to other (nearest match)"
+    },
+    {
+      "package": "chair_office_amf_black_a01",
+      "task_class": "chair",
+      "match": "exact",
+      "nearest_match": false,
+      "why": "SimReady package mapped to chair (exact match)"
+    },
+    {
+      "package": "chair_office_fabric_manager_a01",
+      "task_class": "chair",
+      "match": "exact",
+      "nearest_match": false,
+      "why": "SimReady package mapped to chair (exact match)"
+    },
+    {
+      "package": "cabinet_file_a01",
+      "task_class": "cabinet",
+      "match": "exact",
+      "nearest_match": false,
+      "why": "SimReady package mapped to cabinet (exact match)"
+    },
+    {
+      "package": "cabinet_file_a02",
+      "task_class": "cabinet",
+      "match": "exact",
+      "nearest_match": false,
+      "why": "SimReady package mapped to cabinet (exact match)"
+    },
+    {
+      "package": "furniture_counter_coffeeStation_a01",
+      "task_class": "table",
+      "match": "exact",
+      "nearest_match": false,
+      "why": "SimReady package mapped to table (exact match)"
+    }
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "schema": 1,
+  "generated_utc": "2026-11-18T21:10:05+00:00",
+  "tool": "ops/fetch_simready.py",
+  "method": "cache-scan (offline, no downloads)",
+  "selection": "assets/selection.json",
+  "totals": {
+    "packages": 3,
+    "files": 60,
+    "bytes": 6150913,
+    "budget_bytes": 200000000,
+    "repos": [
+      "nvidia/simready-assets"
+    ],
+    "selected_packages": 24,
+    "pending_packages": 21
+  },
+  "coverage": {
+    "object_packages": 3,
+    "object_classes": 3,
+    "furniture_pieces": 0,
+    "meets_20_objects_6_classes_3_furniture": false
+  },
+  "per_class": {
+    "book": {
+      "packages": 1,
+      "files": 21,
+      "bytes": 1754128,
+      "exact": 1,
+      "nearest": 0,
+      "is_furniture": false
+    },
+    "bottle": {
+      "packages": 1,
+      "files": 18,
+      "bytes": 4018893,
+      "exact": 1,
+      "nearest": 0,
+      "is_furniture": false
+    },
+    "notebook": {
+      "packages": 1,
+      "files": 21,
+      "bytes": 377892,
+      "exact": 1,
+      "nearest": 0,
+      "is_furniture": false
+    }
+  },
+  "pending": [
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "decor_book_b02",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a02",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a02",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "container_bottle_glass_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "dishware_mug_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "dishware_mug_a02",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "dishware_plate_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "dishware_plate_a02",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "stationery_pencil_watercolor_red_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "stationery_pencil_watercolor_azure_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "cart_computer_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "computer_monitor_office_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "storage_box_c01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "dishware_bowl_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "paperbag_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "chair_office_amf_black_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "chair_office_fabric_manager_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "cabinet_file_a02",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "storage_shelf_basic_b01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "fixture_counter_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "furniture_coffeeTable_a01",
+      "reason": "no files in local cache"
+    }
+  ],
+  "skipped_files": [],
+  "cache_inventory": {
+    "_meta": {
+      "files": 146,
+      "bytes": 466372
+    },
+    "menagerie": {
+      "files": 138,
+      "bytes": 204168448
+    },
+    "nvidia__simready-assets": {
+      "files": 60,
+      "bytes": 6150913
+    }
+  },
+  "notes": [
+    "Per-package licence verified from packaging.json/LICENSE.txt for selected packages only.",
+    "Large albedo/normal textures excluded; one thumbnail and <=2 small textures per package kept.",
+    "Nearest-match classes are recorded explicitly in assets/selection.json and assets/ATTRIBUTION.md.",
+    "cache_inventory: ~196 MB under cache/menagerie is Franka robot meshes (G-5, a different deliverable), NOT SimReady. Only cache/nvidia__simready-assets/<package> counts as SimReady bytes.",
+    "A cache scan is a point-in-time snapshot: files written to assets/cache after this run are not in the manifest; re-run --fetch --from-cache to refresh."
+  ]
+}

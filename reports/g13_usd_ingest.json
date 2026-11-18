@@ -1,0 +1,91 @@
+{
+  "gate": "G-13 (USD ingestion only)",
+  "scope": "Real SimReady USD geometry imported into Newton; NOT the full G-13 gate (no drop test, grasp test, mass-vs-datasheet check or rendered textures)",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1"
+  },
+  "source": "nvidia/simready-assets",
+  "packages": {
+    "book_open_a01": {
+      "file": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/sm_book_open_a01_01.usd",
+      "bodies": 1,
+      "shapes": 1,
+      "mass_kg": 0.24836,
+      "masses_finite": true
+    },
+    "misc_notebook_a01": {
+      "file": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/sm_misc_notebook_a01_01.usd",
+      "bodies": 1,
+      "shapes": 1,
+      "mass_kg": 0.16827,
+      "masses_finite": true
+    },
+    "bottle_laboratory_a01": {
+      "error": "ValueError: Found 2 joint(s) not belonging to any articulation. Call add_articulation() for all joints. Orphan joints: ['/RootNode/Joints/joint_part_01_joint_00', '/RootNode/Joints/joint_cap_0"
+    },
+    "stationery_pencil_watercolor_black_a01": {
+      "file": "assets/cache/nvidia__simready-assets/stationery_pencil_watercolor_black_a01/simready_usd/sm_stationery_pencil_watercolor_black_a01_01.usd",
+      "bodies": 1,
+      "shapes": 1,
+      "mass_kg": 0.05077,
+      "masses_finite": true
+    },
+    "cart_computer_a01": {
+      "file": "assets/cache/nvidia__simready-assets/cart_computer_a01/simready_usd/sm_cart_computer_a01_01.usd",
+      "bodies": 10,
+      "shapes": 10,
+      "mass_kg": 116.83305,
+      "masses_finite": true
+    },
+    "dishware_mug_a01": {
+      "error": "no root USD found"
+    },
+    "dishware_plate_a01": {
+      "error": "no root USD found"
+    },
+    "chair_office_amf_black_a01": {
+      "file": "assets/cache/nvidia__simready-assets/chair_office_amf_black_a01/simready_usd/sm_chair_office_amf_black_a01_01.usd",
+      "bodies": 1,
+      "shapes": 1,
+      "mass_kg": 7.44925,
+      "masses_finite": true
+    },
+    "cabinet_file_a01": {
+      "error": "ValueError: Found 12 joint(s) not belonging to any articulation. Call add_articulation() for all joints. Orphan joints: ['/RootNode/Joints/joint_glass_01_joint_00', '/RootNode/Joints/joint_gla"
+    },
+    "paperbag_a01": {
+      "error": "no root USD found"
+    },
+    "food_produce_dragonFruit_a01": {
+      "file": "assets/cache/nvidia__simready-assets/food_produce_dragonFruit_a01/simready_usd/sm_food_produce_dragonFruit_a01_01.usd",
+      "bodies": 1,
+      "shapes": 1,
+      "mass_kg": 0.34947,
+      "masses_finite": true
+    },
+    "chair_office_fabric_manager_a01": {
+      "file": "assets/cache/nvidia__simready-assets/chair_office_fabric_manager_a01/simready_usd/sm_chair_office_fabric_manager_a01_01.usd",
+      "bodies": 13,
+      "shapes": 13,
+      "mass_kg": 8.22506,
+      "masses_finite": true
+    },
+    "cabinet_file_a02": {
+      "error": "ValueError: Found 2 joint(s) not belonging to any articulation. Call add_articulation() for all joints. Orphan joints: ['/RootNode/Joints/joint_door_01_joint_00', '/RootNode/Joints/joint_door_"
+    },
+    "furniture_counter_coffeeStation_a01": {
+      "error": "RuntimeError: Failed to allocate 2575056 bytes on device 'cuda:0'"
+    }
+  },
+  "pending": [
+    "Compare imported mass with the package metadata within 5%.",
+    "10 s drop test stable in Newton.",
+    "Scripted Franka Hand grasp >= 80% on >= 10 objects.",
+    "Textures visible in the Newton Warp renderer (textures were deliberately not downloaded).",
+    "Build the full two-FR3 kitchen scene from these packages."
+  ],
+  "imported": 7,
+  "attempted": 14,
+  "result": "PARTIAL"
+}

@@ -1,0 +1,597 @@
+{
+  "schema": 1,
+  "generated_utc": "2026-11-18T21:10:05+00:00",
+  "method": "cache-scan (offline, no downloads)",
+  "budget_bytes": 200000000,
+  "bytes_downloaded": 6150913,
+  "files": [
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": ".metadata/LICENSE.txt",
+      "size": 18657,
+      "sha256": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/.metadata/LICENSE.txt"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": ".metadata/com.nvidia.simready.conformance.Package-Candidate@1.0.0.json",
+      "size": 881,
+      "sha256": "28eddde3fac67285db7cfe5fe7265fb1f95770f2207211fb8d0baff044528a8f",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/.metadata/com.nvidia.simready.conformance.Package-Candidate@1.0.0.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": ".metadata/com.nvidia.simready.conformance.Package@1.0.0.json",
+      "size": 763,
+      "sha256": "0f0a2803652ce40e0955f3d0aab7f55f48e372e08e170bcbfc03e9c56cd6c987",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/.metadata/com.nvidia.simready.conformance.Package@1.0.0.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": ".metadata/com.nvidia.simready.packaging.bom.json",
+      "size": 12396,
+      "sha256": "54665a550c8cbb20490808f8c202dff9c1ab8fd2c4479df649dab82aea08c1a4",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/.metadata/com.nvidia.simready.packaging.bom.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": ".metadata/com.nvidia.simready.root_usds.json",
+      "size": 93,
+      "sha256": "8697105b7be7b8723201752da31bae5ff22a94ea824434a5b91d4ec4bb74b1d2",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/.metadata/com.nvidia.simready.root_usds.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "com.nvidia.simready.packaging.json",
+      "size": 558,
+      "sha256": "bfca8973503add35fe273b7cd52ab4376a2e646a2927a27a4a43689e16af1038",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/com.nvidia.simready.packaging.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/MuJoCo/disabled.usda",
+      "size": 6800,
+      "sha256": "29066f8d65368192f10a5bdc24d1dee5c2b470dc322ddd70358e35bbc512d229",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/MuJoCo/disabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/MuJoCo/enabled.usda",
+      "size": 7692,
+      "sha256": "57d01e2d05927849d60f2dad6824e85bbf90462fe486a615e4ccfecf79fd9690",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/MuJoCo/enabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/Newton/disabled.usda",
+      "size": 6800,
+      "sha256": "29066f8d65368192f10a5bdc24d1dee5c2b470dc322ddd70358e35bbc512d229",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/Newton/disabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/Newton/enabled.usda",
+      "size": 7850,
+      "sha256": "9bde056570a76d11a952b84a68b96198bde7bd2bc3aacdb26bb512ac30ab5efb",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/Newton/enabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/PhysX/disabled.usda",
+      "size": 6800,
+      "sha256": "29066f8d65368192f10a5bdc24d1dee5c2b470dc322ddd70358e35bbc512d229",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/PhysX/disabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/PhysX/enabled.usda",
+      "size": 7062,
+      "sha256": "25a010baffd7158e81efa7108658c5514eb6ab11aaa514af3ccba8546f34af6d",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/PhysX/enabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/Physics/physics.usda",
+      "size": 8269,
+      "sha256": "7a541652fec3160577e331c500619780f7c22aed7048be6bdde9e2f8af3ca72c",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/Physics/physics.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/base.usda",
+      "size": 11566,
+      "sha256": "5acaa552fef5ec44963b38cd66678a18d886c61bf458f0b2aa536e5dba3d35fe",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/base.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/geometries.usd",
+      "size": 1573977,
+      "sha256": "3bb10bd25a7a63045cf64ba95ec6a8ea4eb0c316888155ba86fe8d193ea60404",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/geometries.usd"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/instances.usda",
+      "size": 9314,
+      "sha256": "b27e2d43a3deb6e90aac47acdeb0612584b57215b7acc407c76f382cbdcc65fd",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/instances.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/instances_mujoco.usda",
+      "size": 9586,
+      "sha256": "3ae950710856dd7b4eb27ef1c722505630d552cbaab72adb34d1f126ba324de1",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/instances_mujoco.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/instances_newton.usda",
+      "size": 9437,
+      "sha256": "65fb8cfa2b8ad2745a8e41dd731c5c3c3a978d7400baed3c2ca64cbccf7f02ad",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/instances_newton.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/instances_physx.usda",
+      "size": 9454,
+      "sha256": "3f0baef4c719341094a74472b0ae73a8e09f151134a08ec5e829040f064ec536",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/instances_physx.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/payloads/materials.usda",
+      "size": 23902,
+      "sha256": "1100510356fc916cf51bcbdd607c1a430580e482acaf447c73e227b029f7e812",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/payloads/materials.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "book_open_a01",
+      "path": "simready_usd/sm_book_open_a01_01.usd",
+      "size": 22271,
+      "sha256": "043e95c42226d672cf141a20a17422607f259003fba35d2451794b4bf93d00bd",
+      "local_path": "assets/cache/nvidia__simready-assets/book_open_a01/simready_usd/sm_book_open_a01_01.usd"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": ".metadata/LICENSE.txt",
+      "size": 18657,
+      "sha256": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/.metadata/LICENSE.txt"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": ".metadata/com.nvidia.simready.conformance.Package-Candidate@1.0.0.json",
+      "size": 885,
+      "sha256": "66c5b42788e172ef25a98c2e5f3580b7cbf61be882f50417736ad4334d4bde9f",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/.metadata/com.nvidia.simready.conformance.Package-Candidate@1.0.0.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": ".metadata/com.nvidia.simready.conformance.Package@1.0.0.json",
+      "size": 763,
+      "sha256": "b8a00ebf4035b5372c28ccdc3d4e2f6c63dbc99c50834786c14d500dd54890b6",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/.metadata/com.nvidia.simready.conformance.Package@1.0.0.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": ".metadata/com.nvidia.simready.packaging.bom.json",
+      "size": 15117,
+      "sha256": "10fb602a894b3353b555a034f007e809ad2a4fd68394ac9b3eb60053e61ae952",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/.metadata/com.nvidia.simready.packaging.bom.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": ".metadata/com.nvidia.simready.root_usds.json",
+      "size": 97,
+      "sha256": "a0b8ea805b6dd2ad7a2116f69d1e75ea00efe43a9ef45843afc0a4dc662683c0",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/.metadata/com.nvidia.simready.root_usds.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "com.nvidia.simready.packaging.json",
+      "size": 562,
+      "sha256": "9f41942957d37b17f5ae18193855c1eb3c4193cfc35d6b5d325e99b2ebc08b5e",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/com.nvidia.simready.packaging.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/MuJoCo/disabled.usda",
+      "size": 4173,
+      "sha256": "db74ffab9c778bfdeb0ea89326d7aa557220869debab8903c5bafd31d8097cbd",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/MuJoCo/disabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/MuJoCo/enabled.usda",
+      "size": 5108,
+      "sha256": "8dce85c268aa15be80a7dcbf6842ba28e8ac27511fdfa0c72c78053b45c8449c",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/MuJoCo/enabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/Newton/disabled.usda",
+      "size": 4173,
+      "sha256": "db74ffab9c778bfdeb0ea89326d7aa557220869debab8903c5bafd31d8097cbd",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/Newton/disabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/Newton/enabled.usda",
+      "size": 5073,
+      "sha256": "4984cfdd6ae42d751f92c9d8325ca53e1972be77834322673ce3de5575804b07",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/Newton/enabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/PhysX/disabled.usda",
+      "size": 4173,
+      "sha256": "db74ffab9c778bfdeb0ea89326d7aa557220869debab8903c5bafd31d8097cbd",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/PhysX/disabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/PhysX/enabled.usda",
+      "size": 4526,
+      "sha256": "16b49952b0b975da33592fe39ac789318c054b842345f1040f779f00c41060ab",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/PhysX/enabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/Physics/physics.usda",
+      "size": 5034,
+      "sha256": "8f7e9cf206217a1a6a91420681053f6f0d2d9e079dddd291c8421cece34441d0",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/Physics/physics.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/base.usda",
+      "size": 9276,
+      "sha256": "3af3f13463d20fd75934871ba23f43eeac4704a9799663d555cbef2afa819c22",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/base.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/geometries.usd",
+      "size": 237733,
+      "sha256": "40aef0bd822fcbd48457b0a5f4bdab56a5830396a25c59cb344dabfa75735ff1",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/geometries.usd"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/instances.usda",
+      "size": 6175,
+      "sha256": "6339446a531471daf2f9002f63de9a1504f7295b3619f8071e6da45918e45d11",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/instances.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/instances_mujoco.usda",
+      "size": 6447,
+      "sha256": "59d4e1aee0e5ce92b99fc58af4b3868b231ef222d8ab1071b0543d4fea5eab3c",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/instances_mujoco.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/instances_newton.usda",
+      "size": 6298,
+      "sha256": "1a06858ca1c1daaed14a1318a716c42e943715a50bc4b24b667985ece59e3ca2",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/instances_newton.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/instances_physx.usda",
+      "size": 6315,
+      "sha256": "7285f4209e8c539514b73a734714b222f23d914e1fd076d411fc94801cb5852a",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/instances_physx.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/payloads/materials.usda",
+      "size": 15830,
+      "sha256": "fa38dda3248554b1071536311d70295db07786e727dcc6b1fa83f8bd706658ba",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/payloads/materials.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a01",
+      "path": "simready_usd/sm_misc_notebook_a01_01.usd",
+      "size": 21477,
+      "sha256": "f1e5e25d4ba62beb8e9dd3a2b82a825b526b8d974955d8d008ef21288501b96e",
+      "local_path": "assets/cache/nvidia__simready-assets/misc_notebook_a01/simready_usd/sm_misc_notebook_a01_01.usd"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": ".metadata/LICENSE.txt",
+      "size": 18657,
+      "sha256": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/.metadata/LICENSE.txt"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": ".metadata/com.nvidia.simready.conformance.Package-Candidate@1.0.0.json",
+      "size": 889,
+      "sha256": "db62cbb7442362b6b9636a01576cec80648135bed747ee2711d934fb471586b5",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/.metadata/com.nvidia.simready.conformance.Package-Candidate@1.0.0.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": ".metadata/com.nvidia.simready.conformance.Package@1.0.0.json",
+      "size": 763,
+      "sha256": "7dd184cf485a06c881e8cd63161b9dcc6f1c87b7db78fd7fafacbfb233624978",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/.metadata/com.nvidia.simready.conformance.Package@1.0.0.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": ".metadata/com.nvidia.simready.packaging.bom.json",
+      "size": 10150,
+      "sha256": "3db069ce2015a54cc886fffc08a47962452468a8a3374a84600b1f0d83e5223c",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/.metadata/com.nvidia.simready.packaging.bom.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": ".metadata/com.nvidia.simready.root_usds.json",
+      "size": 101,
+      "sha256": "b43a4a6a2209b80cc0c8f9ee6d7f6daf2be0bbfeb497432d28e57c05a80f4e2e",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/.metadata/com.nvidia.simready.root_usds.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": "com.nvidia.simready.packaging.json",
+      "size": 566,
+      "sha256": "b0e91df9ff7f2c2e9437d7796eccaff26ca1f7f1128bb21308d242d27c5f1546",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/com.nvidia.simready.packaging.json"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": "simready_usd/payloads/MuJoCo/disabled.usda",
+      "size": 4146,
+      "sha256": "f549f45dc5599dc0b249cecf7306ac755398b5810eeeed5a9ddcf9e98f2865ea",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/simready_usd/payloads/MuJoCo/disabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": "simready_usd/payloads/MuJoCo/enabled.usda",
+      "size": 5678,
+      "sha256": "ac74cc2348f1fdba10f2d9931fe357b14fdb1016326ea0b9931098d3caf70070",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/simready_usd/payloads/MuJoCo/enabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": "simready_usd/payloads/Newton/disabled.usda",
+      "size": 4146,
+      "sha256": "f549f45dc5599dc0b249cecf7306ac755398b5810eeeed5a9ddcf9e98f2865ea",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/simready_usd/payloads/Newton/disabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": "simready_usd/payloads/Newton/enabled.usda",
+      "size": 5781,
+      "sha256": "19f4bf2b31bd48cb30a23edae338b6d0c2217135265b7856367ed7b43ee6c3b2",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/simready_usd/payloads/Newton/enabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": "simready_usd/payloads/PhysX/disabled.usda",
+      "size": 4146,
+      "sha256": "f549f45dc5599dc0b249cecf7306ac755398b5810eeeed5a9ddcf9e98f2865ea",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/simready_usd/payloads/PhysX/disabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": "simready_usd/payloads/PhysX/enabled.usda",
+      "size": 4762,
+      "sha256": "ba59d8a9fbec81217ff0d96a504c9e000d72bc8954bcc9b947f984966bf98c7b",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/simready_usd/payloads/PhysX/enabled.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": "simready_usd/payloads/Physics/physics.usda",
+      "size": 7099,
+      "sha256": "9b72c8fda2cf51ac53ca3a62e688c207c7d200d316e28798bec8e2808be7e0c9",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/simready_usd/payloads/Physics/physics.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": "simready_usd/payloads/base.usda",
+      "size": 14033,
+      "sha256": "1dc8d8302a92dc4be8f112fa4421717ef046eecd79207f2bb9c1fcb84a10c982",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/simready_usd/payloads/base.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": "simready_usd/payloads/geometries.usd",
+      "size": 3911646,
+      "sha256": "e163dbc6a9e27bf9547ac7be328eb68d2fadc829de68e649a88aaf342296cae6",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/simready_usd/payloads/geometries.usd"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": "simready_usd/payloads/instances.usda",
+      "size": 8373,
+      "sha256": "656c4e55238390891bf4ec456fdb130e01f32a04a260ea76a1fba903777c9003",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/simready_usd/payloads/instances.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": "simready_usd/payloads/instances_mujoco.usda",
+      "size": 9202,
+      "sha256": "114f3f401cc30738402f038bb68defa9d2c4648500e78af5d030b294bddb49d6",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/simready_usd/payloads/instances_mujoco.usda"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a01",
+      "path": "simready_usd/payloads/instances_newton.usda",
+      "size": 8755,
+      "sha256": "d3767ab47e8fa07d240e426735da380d6cf3c17426a371c904298549752bcf51",
+      "local_path": "assets/cache/nvidia__simready-assets/bottle_laboratory_a01/simready_usd/payloads/instances_newton.usda"
+    }
+  ],
+  "skipped": [],
+  "pending": [
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "decor_book_b02",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "misc_notebook_a02",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "bottle_laboratory_a02",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "container_bottle_glass_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "dishware_mug_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "dishware_mug_a02",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "dishware_plate_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "dishware_plate_a02",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "stationery_pencil_watercolor_red_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "stationery_pencil_watercolor_azure_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "cart_computer_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "computer_monitor_office_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "storage_box_c01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "dishware_bowl_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "paperbag_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "chair_office_amf_black_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "chair_office_fabric_manager_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "cabinet_file_a02",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "storage_shelf_basic_b01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "fixture_counter_a01",
+      "reason": "no files in local cache"
+    },
+    {
+      "repo": "nvidia/simready-assets",
+      "package": "furniture_coffeeTable_a01",
+      "reason": "no files in local cache"
+    }
+  ]
+}

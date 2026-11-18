@@ -1,0 +1,39 @@
+{
+  "build": {
+    "episodes": 40,
+    "successes": 37,
+    "failures": 3,
+    "source": "asset-backed pose-level environment"
+  },
+  "path": "/home/reza/Projects/robot_team/data/local_4050/asset_memory.jsonl",
+  "query": "pack the notebook and bottle",
+  "success_hits": [
+    {
+      "seed": 300000,
+      "score": 0.09726032993459796
+    },
+    {
+      "seed": 300001,
+      "score": 0.09726032993459796
+    },
+    {
+      "seed": 300017,
+      "score": 0.09726032993459796
+    }
+  ],
+  "failure_hits": [
+    {
+      "seed": 300008,
+      "score": 0.9796755536126028
+    },
+    {
+      "seed": 300026,
+      "score": 0.9796755536126028
+    },
+    {
+      "seed": 300012,
+      "score": 0.9540310779475536
+    }
+  ],
+  "augmented_prompt_chars": 9929
+}
