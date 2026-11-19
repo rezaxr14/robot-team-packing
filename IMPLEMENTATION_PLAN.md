@@ -1,13 +1,35 @@
-# robot-team-packing — Implementation Plan (v2, replaces the earlier draft)
+# robot-team-packing — Implementation Plan (v3, aligned to docs/USER_PLAN_VERBATIM.md)
 
 > **User's current authoritative instruction:** [`docs/USER_PLAN_VERBATIM.md`](docs/USER_PLAN_VERBATIM.md). Follow it where it differs from this file until a new plan is supplied.
 
 Date: 2026-11-17. Status: **working plan.** Some gates have since been measured; §12 records the
 status of each gate against a report, and `docs/STATUS_HONEST.md` is authoritative for claim status.
 Base: `origin/main` @ `a50347f`. `paper/` text is aligned in place; its figure SVG/PDF are frozen.
+**Build spec for the agents: `docs/AGENT_BUILD_SPEC.md`** (design) and **`docs/AGENT_RUNBOOK.md`** (numbered steps A1–A10 arms first, then R1–R9, with commands, files and acceptance per step).
 Specs referenced from here: `docs/IMPEDANCE_SPEC.md` · `docs/SIMULATION.md` · `docs/HARDWARE.md` · `docs/COMPATIBILITY.md` · `docs/KAGGLE_MODELS.md` · `docs/SCHEMAS.md` · `docs/SOURCE_REGISTER.md` · `harness_files/brain/{rules,skills}.md`.
 
 Labels: **[V:S-nn]** verified in a source I read (register: `docs/SOURCE_REGISTER.md`) · **[R]** from the repo's own docs, not re-checked · **[D]** decision taken by this plan (default, changeable by you) · **[G]** unverified; settled by a named verification gate, never assumed.
+
+---
+
+## 0. The directive and where each part stands
+
+`docs/USER_PLAN_VERBATIM.md` is the instruction. Status vocabulary: `docs/STATUS_HONEST.md` (FIXTURE / SIM-POSE / SIM / MODEL / HARDWARE); nothing below is claimed beyond its evidence class.
+
+| # | requirement | state | where |
+|---|---|---|---|
+| R1 | frontier models via Kaggle (Haiku 5.5, Luna first; then Opus, Sonnet, new Gemini); local access through `localhost:10808` | transport + hosted runner built, fixture-tested, **not yet run on Kaggle** | `rtp/kaggle_chat.py` (`RTP_HTTP_PROXY`), `ops/kaggle/multiturn/` |
+| R2 | multi-turn episodes on our scene exposing skills, rules, memory, tools | built on SIM-POSE (CPU); scene bundle / view library / GPU replay designed | `rtp/datagen_run.py`, `docs/DATAGEN_KAGGLE.md` |
+| R3 | capture, verify, record model / failed / succeeded; update success-failure memory; repeat | built: replay verification, quarantine, per-model ledger, memory rebuild | `rtp/datagen_ingest.py`, `rtp/datagen_memory.py`, `ops/datagen_iterate.py` |
+| R4 | thousands of examples, then SFT + GRPO on Qwen3.5-4B | pending R2 at scale | P7, P8 |
+| R5 | proper held-out test set (all sorts of tasks) and the benchmark matrix of §10 | harness + fixture scores exist; broader families pending | P9 |
+| R6 | actual 3D scene: kitchen, 2 eyes, 2 arms, VLM brain, kitchen top, camera placement | placement study done (DESIGN); scene PARTIAL | `docs/SCENE_DESIGN.md`, `reports/eye_placement.json` |
+| R7 | impedance control safe next to people; how and when to train the arm | abstract-plant G-6b PASS + torch cross-check; Newton articulation + hardware pending | `docs/IMPEDANCE_SPEC.md`, `rtp/control/compliance.py`, `reports/g6b_compliance.json` |
+| R8 | arm BEFORE CoT/datagen | decision D-62, enforced by `arm_model` + `sft_eligible` | `docs/DATAGEN_KAGGLE.md` §3 |
+
+Agent work packages and interfaces: `docs/AGENT_BUILD_SPEC.md`. Exact steps, in order, arms first: `docs/AGENT_RUNBOOK.md`.
+
+Execution order: arm skills and compliance (P3, P5) -> arm certification -> datagen at scale (P7). Bring-up of the harness/CoT on Haiku and Luna does not wait: it runs under the stand-in `sim_pose_v0` arm model and is excluded from SFT.
 
 ---
 
@@ -22,6 +44,10 @@ Labels: **[V:S-nn]** verified in a source I read (register: `docs/SOURCE_REGISTE
 | D-29 | Arms: **two Franka Research 3** (7-DoF, torque sensor in every joint, 1 kHz torque interface, open Cartesian-impedance reference controllers incl. a dual-arm example). Gripper: Franka Hand. | [D] |
 | D-30 | Eyes: two PTZ cameras on motorised ring-rail carriages with 12 calibrated stations (Eye-A), machine-vision + servo pan/tilt as fallback (Eye-B). | [D] |
 | D-31 | Control layering: L0 hardware safety → L1 1 kHz impedance → L2 planner/skills/learned policies → L3 Brain. Learned policies emit only bounded deltas. | [D] |
+| D-62 | **Arm before datagen.** Arm skills are trained and certified in Newton first; records carry `arm_model`; only certified-arm records reach SFT. | you |
+| D-63 | **Data-gen architecture**: scene bundle on GPU -> multi-turn episodes in a hosted CPU task (one model per run) -> local replay-verified ingest + memory rebuild -> GPU replay gate. | [D] |
+| D-64 | **Benchmark matrix** exactly as §10 (M1-M8). | you |
+| D-65 | **Layout**: island 1.8 x 0.9 m, arms on the centre line at +-0.35 m, eyes ring R 1.6 / H 2.2 m with the two eyes opposed and perpendicular to the arm axis (`docs/SCENE_DESIGN.md`). | [D] from study |
 | D-32 | Brain training coverage, profiles, per-profile isolation, Qdrant+BM25, LangGraph: as in the repo's V2 architecture, unchanged **[R]**. | repo |
 | D-33 | **Local-first sequencing.** Everything that does not need Kaggle is built and run locally first. Teacher/judge data generation uses the Kaggle-hosted frontier models, exactly as in your plan; it starts when you supply the skill and CLI auth. There is no substitute data source. | you |
 | D-34 | **Assets: SimReady first.** Objects, furniture and kitchen structure come from NVIDIA SimReady USD assets (`docs/ASSETS.md`); robots from manufacturer models (Franka URDF/USD/MJCF, MuJoCo Menagerie MJCF). Own CAD only for fixtures that do not exist (ring rail, mounts). | you |
@@ -194,23 +220,30 @@ Standards: ISO 10218-1/-2:2025 absorbed ISO/TS 15066 incl. power-and-force limit
 * **Orchestration**: LangGraph graph `retrieve → eye_loop → plan → verify → execute → monitor(PUSHED/YIELDED/RESUMED) → attribute → recover|done`, checkpointed; pin and verify version at install **[G]**. **Memory**: Qdrant local, dense + sparse + BM25 with RRF (client-side RRF fallback), collections `harness_docs`, `episode_notes` **[R]**.
 * **Brain thinking mode**: Qwen3.5 defaults to thinking; the Brain runs with a hard thinking-token cap and a stated-rationale field; decided by ablation in Phase 8.
 
-## 9. Kaggle-hosted frontier models as teachers (details: `docs/KAGGLE_MODELS.md`)
+## 9. Multi-turn data generation on Kaggle (HARD REQUIREMENT; design and cost model in `docs/DATAGEN_KAGGLE.md`)
 
-Pool: whatever your Kaggle skill exposes, tiered by measured accepted-example yield per unit cost (not by name): **strong**, **bulk**, **cheap**, **open-weight diversity**. Roles:
-1. **Teacher**: given rendered eye frames (Newton Warp) + structured OBS + rules + tool list, output parseable tool calls + plan DAG + short stated rationale.
-2. **Judge**: score a rollout's plan quality and attribute a failure (eye/brain/arm), cross-checked against the programmatic verdict.
-3. **Hard-case miner**: propose arrangements that break the current Brain from failure notes.
-4. **Compliance-aware teacher**: scenarios where a human pushes an arm mid-plan; teacher must produce correct wait/replan behaviour.
-5. **Agreement signal**: ≥2 teachers agreeing + verifier pass = high-confidence example.
-Nothing is trusted because a teacher said it: every example passes the **verifier gate**, then a **sim-replay gate** (success or attributed failure), then eye-efficiency and diversity filters. Only emitted text is stored (no hidden reasoning assumed). The budget controller reads quota/cost from the interface the skill provides and stops at 80 %. Teacher data comes only from the Kaggle-hosted models; the pipeline is built and tested now against recorded response fixtures, and generation starts when the skill and CLI auth arrive.
+* Hosted tasks are CPU-only (4 CPU, no GPU, no torch), one model per run, git + pip reachable; Haiku 5.5, Luna, Opus and Astra are hosted-only; the interactive key reaches a 6-vision-model subset (`KAGGLE_SKILL.md`). So: **A** GPU scene bundle (Newton + SimReady + FR3 Duo; rendered eye views; certified arm outcome tables) -> **B** hosted multi-turn episodes (`ToolBrain` + `run_episode`; skills, rules, memory, tools) -> **C** local replay-verified ingest, per-model ledger, memory rebuild -> **D** GPU replay gate; then repeat with the new memory.
+* Built now (B, C on SIM-POSE, 46 fixture tests): `rtp/kaggle_chat.py` (proxy transport, typed errors, learned parameter quirks, per-turn journal, no double payment), `rtp/datagen_run.py` (episodes, shards, pause/resume), `rtp/datagen_ingest.py` (replay verification through the same code path, quarantine, ledger, SFT eligibility), `rtp/datagen_memory.py` (success/failure notes), `ops/kaggle/multiturn/build_task.py`, `ops/datagen_iterate.py`.
+* Ladder: fixtures -> 10 episodes Haiku 5.5 -> Luna -> 100 each x 2 memory iterations -> Opus / Sonnet / new Gemini on hard-case slices and benchmark rows. Gates DG-1..DG-5.
+* Every record: model, decoding actually used, all turns, tool calls, plans, evaluated outcome, `arm_model`, shard, iteration. Eval-mode records never feed memory or training; datagen seeds are >= 100000, held-out seeds < 100000.
 
-## 10. Data, benchmarks and contribution evidence
+## 10. Benchmark (your matrix) and contribution evidence
 
-* **Episode capture** (all runs): raw+processed frames, both eye states/commands, OBS, Brain inputs/outputs, tool calls/results, plans, arm reports, **L1 telemetry (e, F_ext, clamps, push events)**, outcome, recovery (`docs/SCHEMAS.md`).
-* **Benchmark**: frozen seeds in the Isaac Lab + Newton kitchen; splits: train / held-out arrangement / held-out eye station / held-out object instance / occlusion level. External dual-arm check: RoboTwin 2.0 via a symbolic-skill adapter (baselines ACT, DP, DP3, RDT, π0; Franka/UR5 embodiments) [V:S-28].
-* **Baselines**: our ablations; π0/RDT/ACT/DP fine-tuned on demonstrations from our own sim; frontier model as zero-shot Brain via Kaggle; base Qwen3.5-4B with identical tools.
-* **Metrics**: localisation mAP/centre error; occlusion success vs visibility; viewpoint information gain and success-vs-budget; eye-tool redundancy; two-arm handover/lock conflicts; manipulation success; wall-clock; recovery rate; collisions; **compliance metrics (push displacement vs F/K, settle time, overshoot, return speed, peak force, plan-pause correctness, resume error)**; generalisation with Wilson intervals / paired bootstrap **[R]**.
-* **Contribution candidates (conditional on measurement)**: costed active two-eye control by a small VLM; Eye/Brain/Arm failure attribution; block-coverage ablation for a DeltaNet/attention VLM; retrieval recovery + hindsight; a VLM-planned dual-arm system whose arms are measurably compliant to human pushes. Novelty is checked by a literature survey at the start of Phase 9 before any claim. No result is stated before it exists.
+**Held-out test set** (seeds < 100000, never in training or memory): all sorts of tasks, not packing only: packing variants, heavy/fragile ordering, occlusion-heavy arrangements, distractors, handover-required, **human-push interruption** (PUSHED/YIELDED/RESUMED mid-plan), kitchen task families on SimReady objects, unseen layouts (SimReady Homes) and unseen objects; >= 30 episodes per family. Scored with the existing Wilson / paired-bootstrap code (`rtp/benchmark.py`, `rtp/stats.py`).
+
+| row | system | condition |
+|---|---|---|
+| M1 | base Qwen3.5-4B | zero-shot |
+| M2 | base Qwen3.5-9B | zero-shot |
+| M3 | 4B SFT | as M1 |
+| M4 | 4B SFT + GRPO, k = 4 | as M1 |
+| M5 | 4B SFT + GRPO, k = 8 | as M1 |
+| M6 | frontier model(s) | zero-shot |
+| M7 | the same frontier model(s) | in the harness (skills, tools, memory, rules, success/failure memory RAG) |
+| M8 | base Qwen3.5-4B (untrained) | in the harness |
+Effects measured: SFT = M3 - M1; GRPO k=4 / k=8 = M4, M5 - M3; harness on frontier = M7 - M6; harness on base 4B = M8 - M1. Trained-model-in-harness rows are an optional extension, not in your list. Frontier rows use `rtp/datagen_run.py` in `mode="eval"`; cost per 300-episode pass is in `docs/DATAGEN_KAGGLE.md` §6 (estimates).
+
+Metrics (unchanged): success, plan pass, per-family success, localisation, occlusion handling, eye-tool use, two-arm coordination, recovery, collisions, compliance metrics (push deflection vs F/K, settle time, return speed, plan-pause correctness), generalisation splits. Contribution claims stay conditional on measurement; no result is stated before it exists. Existing `paper/` text is not modified by this plan.
 
 ## 11. Notebooks and Kaggle asset cache
 
@@ -228,11 +261,13 @@ Resolution order: **attached Kaggle dataset → local cache → normal download 
 | G-1 | real Qwen3.5-4B config/modules/chat template; dense vs MoE | module dump matches adapter map; dense confirmed. **Status: PASS** — `reports/qwen35_modules.json` (738 tensors, 4.66 B parameters, dense; module tree in DECISIONS §F). | 0 |
 | G-2 | DeltaNet fast path per GPU | `is_fast_path_available`; 100-step finite loss; tokens/s + peak VRAM logged. **Status: PASS on the 4050** — `reports/g2_fastpath.json` (100 steps, 329.5 tok/s at seq 256, peak 4.99 GB; DECISIONS §F). | 0/2 |
 | G-3 | Newton-only Isaac Lab install runs a camera task with `physics=newton_mjwarp` + Newton Warp renderer | **PASS on both**: 4050 (`reports/g3_sim.json`) and Kaggle T4 (`reports/g3_sim_t4.json`) — 30 steps, rgb+depth contracts, all six checks, versions logged (D-39, D-51). One device at a time (D-50); cube-fall, not manipulation. | 0/2 |
-| G-4 | Teacher client integration (runs when your Kaggle skill is supplied; **non-blocking** for every other phase) | `rtp/teacher/client.py` returns a parseable plan for an image+text scene from ≥ 1 model per tier; cost per call logged. **Status: NOT RUN / no report** — `RTP_SERVE_URL` unset; no frontier model ran, scripted teacher traces only (D-53). | 7 |
+| G-4 | Teacher client integration (superseded by DG-1..DG-5 in `docs/DATAGEN_KAGGLE.md`; transport built and fixture-tested) (runs when your Kaggle skill is supplied; **non-blocking** for every other phase) | `rtp/teacher/client.py` returns a parseable plan for an image+text scene from ≥ 1 model per tier; cost per call logged. **Status: NOT RUN / no report** — `RTP_SERVE_URL` unset; no frontier model ran, scripted teacher traces only (D-53). | 7 |
 | G-5 | FR3 / FR3 Duo + Franka Hand load in Newton from Franka's official model (`add_urdf`/`add_mjcf`) and from Menagerie `franka_fr3_v2`/`franka_fr3_duo`; effort-mode override works | masses/limits within 2 % of datasheet; zero-pose reach test; both sources agree on kinematics within 1 mm. **Status: NOT RUN / no report** — an FR3 MJCF from Menagerie was just downloaded (`reports/robot_assets.json`), not imported or validated (D-54). | 2 |
 | G-6 | sim impedance vs analytic mass-spring-damper | step response error ≤ 5 %; stable at chosen dt. **Status: PASS as a simulation-only cross-check** — `reports/g6_impedance.json`: max relative step error **0.27 %**, stable at 1 kHz, 10 N push and return measured; **not** Phase 3 acceptance, hardware validation or a safety certification (D-22, D-58). | 3 |
+| G-6b | compliance supervisor on an abstract plant | **PASS** (SIM-ABSTRACT): `reports/g6b_compliance.json`, 8/8 rows | 3 |
 | G-7 | external wrench on EE and elbow via `permanent_wrench_composer` and direct `state.body_f`, with solver substeps > 1 | applied impulse per step = F·dt within 2 % (proves PR #8269 behaviour is in our Isaac Lab tag). **Status: NOT RUN / no report.** | 3 |
 | G-13 | SimReady → Newton ingestion (`docs/ASSETS.md`) | ≥ 20 objects over ≥ 6 classes + 3 furniture pieces import; mass within 5 % of package metadata; 10 s drop test stable; scripted Franka Hand grasp ≥ 80 % on ≥ 10 objects; textures visible in the Newton Warp renderer. **Status: NOT RUN / no report** — ingestion in progress, no asset catalogue or asset-based scene (D-54). | 2 |
+| DG-1…DG-5 | hosted Haiku run, GPU-kernel roster, real-record replay, first memory iteration, image turn | see `docs/DATAGEN_KAGGLE.md` §7 | 7 |
 | G-8 | eye rendering throughput | ≥ 10 fps/eye at 640×480 on RTX 4090-class (recorded for other profiles). **Status: NOT RUN / no report.** | 4 |
 | G-9 | PTZ repeatability | pan/tilt return error ≤ 0.1°, zoom intrinsics reproducible. **Status: NOT RUN / no report.** | 11 |
 | G-10 | L1 loop jitter on RT-PC | p99 ≤ 100 µs at 1 kHz. **Status: NOT RUN / no report.** | 10 |

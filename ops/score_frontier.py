@@ -29,7 +29,6 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
 
     from rtp.benchmark import assert_no_train_overlap, make_cases
-    from rtp.brain import ReplayBrain if False else None  # placeholder removed below
     from rtp.frontier_cot import read_traces, split_completion
     from rtp.harness import Harness
     from rtp.hindsight import ReplayBrain

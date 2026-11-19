@@ -1,0 +1,1006 @@
+{
+  "evidence_class": "DESIGN (assumed room dimensions; replace VARIANTS/ROOM with measurements)",
+  "selection_rule": "reach_any >= 0.95 and reach_both >= 0.30 (handover zone), then maximise worst-case two-eye coverage",
+  "rule_satisfied_by": [
+    "free_side_s35"
+  ],
+  "chosen_layout": "free_side_s35",
+  "layout_comparison": {
+    "wall_back_arms": {
+      "best_R_H": [
+        2.0,
+        2.2
+      ],
+      "pair": {
+        "stations": [
+          0,
+          8
+        ],
+        "sep_deg": 120.0,
+        "union_cov_min_over_arm_poses": 0.8395,
+        "both_see_min": 0.3916
+      },
+      "minimal_station_set_for_99pct": [
+        9,
+        0,
+        6,
+        8,
+        1,
+        10
+      ],
+      "minimal_set_worst_case_coverage": 0.8661,
+      "cells_never_seen_worst_pose": 131,
+      "reach": {
+        "any": 0.9282828282828283,
+        "both": 0.31212121212121213,
+        "left": 0.6202020202020202,
+        "right": 0.6202020202020202
+      },
+      "dead_zone": {
+        "n_cells": 131,
+        "bbox_xy": [
+          -0.2999999999999996,
+          0.30000000000000093,
+          -0.10000000000000003,
+          0.34999999999999987
+        ],
+        "per_y_row": {
+          "-0.10": 1,
+          "-0.05": 13,
+          "-0.00": 13,
+          "0.05": 13,
+          "0.10": 13,
+          "0.15": 13,
+          "0.20": 16,
+          "0.25": 16,
+          "0.30": 16,
+          "0.35": 17
+        }
+      }
+    },
+    "wall_end_arms": {
+      "best_R_H": [
+        2.0,
+        2.2
+      ],
+      "pair": {
+        "stations": [
+          1,
+          9
+        ],
+        "sep_deg": 120.0,
+        "union_cov_min_over_arm_poses": 0.9325,
+        "both_see_min": 0.183
+      },
+      "minimal_station_set_for_99pct": [
+        9,
+        1,
+        8,
+        10
+      ],
+      "minimal_set_worst_case_coverage": 0.9346,
+      "cells_never_seen_worst_pose": 64,
+      "reach": {
+        "any": 0.8585858585858586,
+        "both": 0.0,
+        "left": 0.4292929292929293,
+        "right": 0.4292929292929293
+      },
+      "dead_zone": {
+        "n_cells": 64,
+        "bbox_xy": [
+          -0.75,
+          0.7500000000000013,
+          -0.10000000000000003,
+          0.04999999999999993
+        ],
+        "per_y_row": {
+          "-0.10": 1,
+          "-0.05": 31,
+          "-0.00": 31,
+          "0.05": 1
+        }
+      }
+    },
+    "free_island_back_arms": {
+      "best_R_H": [
+        2.0,
+        2.2
+      ],
+      "pair": {
+        "stations": [
+          0,
+          8
+        ],
+        "sep_deg": 120.0,
+        "union_cov_min_over_arm_poses": 0.8395,
+        "both_see_min": 0.3916
+      },
+      "minimal_station_set_for_99pct": [
+        9,
+        0,
+        6,
+        3,
+        8,
+        10,
+        1,
+        5
+      ],
+      "minimal_set_worst_case_coverage": 0.8814,
+      "cells_never_seen_worst_pose": 116,
+      "reach": {
+        "any": 0.9282828282828283,
+        "both": 0.31212121212121213,
+        "left": 0.6202020202020202,
+        "right": 0.6202020202020202
+      },
+      "dead_zone": {
+        "n_cells": 116,
+        "bbox_xy": [
+          -0.2999999999999996,
+          0.30000000000000093,
+          -0.10000000000000003,
+          0.34999999999999987
+        ],
+        "per_y_row": {
+          "-0.10": 1,
+          "-0.05": 13,
+          "-0.00": 13,
+          "0.05": 13,
+          "0.10": 13,
+          "0.15": 13,
+          "0.20": 13,
+          "0.25": 13,
+          "0.30": 13,
+          "0.35": 11
+        }
+      }
+    },
+    "free_island_end_arms": {
+      "best_R_H": [
+        2.0,
+        2.2
+      ],
+      "pair": {
+        "stations": [
+          3,
+          9
+        ],
+        "sep_deg": 180.0,
+        "union_cov_min_over_arm_poses": 0.9652,
+        "both_see_min": 0.32
+      },
+      "minimal_station_set_for_99pct": [
+        3,
+        8,
+        10,
+        1,
+        5
+      ],
+      "minimal_set_worst_case_coverage": 0.9673,
+      "cells_never_seen_worst_pose": 32,
+      "reach": {
+        "any": 0.8585858585858586,
+        "both": 0.0,
+        "left": 0.4292929292929293,
+        "right": 0.4292929292929293
+      },
+      "dead_zone": {
+        "n_cells": 32,
+        "bbox_xy": [
+          -0.75,
+          0.7500000000000013,
+          -0.10000000000000003,
+          -0.050000000000000044
+        ],
+        "per_y_row": {
+          "-0.10": 1,
+          "-0.05": 31
+        }
+      }
+    },
+    "free_back_s35": {
+      "best_R_H": [
+        2.0,
+        2.2
+      ],
+      "pair": {
+        "stations": [
+          0,
+          8
+        ],
+        "sep_deg": 120.0,
+        "union_cov_min_over_arm_poses": 0.8395,
+        "both_see_min": 0.3916
+      },
+      "minimal_station_set_for_99pct": [
+        9,
+        0,
+        6,
+        3,
+        8,
+        10,
+        1,
+        5
+      ],
+      "minimal_set_worst_case_coverage": 0.8814,
+      "cells_never_seen_worst_pose": 116,
+      "reach": {
+        "any": 0.9282828282828283,
+        "both": 0.31212121212121213,
+        "left": 0.6202020202020202,
+        "right": 0.6202020202020202
+      },
+      "dead_zone": {
+        "n_cells": 116,
+        "bbox_xy": [
+          -0.2999999999999996,
+          0.30000000000000093,
+          -0.10000000000000003,
+          0.34999999999999987
+        ],
+        "per_y_row": {
+          "-0.10": 1,
+          "-0.05": 13,
+          "-0.00": 13,
+          "0.05": 13,
+          "0.10": 13,
+          "0.15": 13,
+          "0.20": 13,
+          "0.25": 13,
+          "0.30": 13,
+          "0.35": 11
+        }
+      }
+    },
+    "free_side_s35": {
+      "best_R_H": [
+        2.0,
+        2.2
+      ],
+      "pair": {
+        "stations": [
+          3,
+          9
+        ],
+        "sep_deg": 180.0,
+        "union_cov_min_over_arm_poses": 0.9853,
+        "both_see_min": 0.5314
+      },
+      "minimal_station_set_for_99pct": [
+        3,
+        9,
+        8,
+        10,
+        1,
+        5
+      ],
+      "minimal_set_worst_case_coverage": 0.9874,
+      "cells_never_seen_worst_pose": 12,
+      "reach": {
+        "any": 1.0,
+        "both": 0.46464646464646464,
+        "left": 0.7323232323232324,
+        "right": 0.7323232323232324
+      },
+      "dead_zone": {
+        "n_cells": 12,
+        "bbox_xy": [
+          -0.24999999999999956,
+          0.2500000000000009,
+          -0.10000000000000003,
+          -0.050000000000000044
+        ],
+        "per_y_row": {
+          "-0.10": 1,
+          "-0.05": 11
+        }
+      }
+    },
+    "free_back_s55": {
+      "best_R_H": [
+        2.0,
+        2.2
+      ],
+      "pair": {
+        "stations": [
+          2,
+          8
+        ],
+        "sep_deg": 180.0,
+        "union_cov_min_over_arm_poses": 0.7444,
+        "both_see_min": 0.1002
+      },
+      "minimal_station_set_for_99pct": [
+        9,
+        2,
+        7,
+        0,
+        3,
+        8,
+        1,
+        10,
+        6
+      ],
+      "minimal_set_worst_case_coverage": 0.8078,
+      "cells_never_seen_worst_pose": 188,
+      "reach": {
+        "any": 0.9141414141414141,
+        "both": 0.1202020202020202,
+        "left": 0.5171717171717172,
+        "right": 0.5171717171717172
+      },
+      "dead_zone": {
+        "n_cells": 188,
+        "bbox_xy": [
+          -0.4999999999999998,
+          0.5000000000000011,
+          -0.10000000000000003,
+          0.34999999999999987
+        ],
+        "per_y_row": {
+          "-0.10": 1,
+          "-0.05": 21,
+          "-0.00": 21,
+          "0.05": 21,
+          "0.10": 21,
+          "0.15": 21,
+          "0.20": 21,
+          "0.25": 21,
+          "0.30": 21,
+          "0.35": 19
+        }
+      }
+    },
+    "free_side_s55": {
+      "best_R_H": [
+        2.0,
+        2.2
+      ],
+      "pair": {
+        "stations": [
+          2,
+          8
+        ],
+        "sep_deg": 180.0,
+        "union_cov_min_over_arm_poses": 0.9759,
+        "both_see_min": 0.2841
+      },
+      "minimal_station_set_for_99pct": [
+        3,
+        8,
+        10,
+        1,
+        5
+      ],
+      "minimal_set_worst_case_coverage": 0.979,
+      "cells_never_seen_worst_pose": 20,
+      "reach": {
+        "any": 1.0,
+        "both": 0.2222222222222222,
+        "left": 0.6111111111111112,
+        "right": 0.6111111111111112
+      },
+      "dead_zone": {
+        "n_cells": 20,
+        "bbox_xy": [
+          -0.44999999999999973,
+          0.45000000000000107,
+          -0.10000000000000003,
+          -0.050000000000000044
+        ],
+        "per_y_row": {
+          "-0.10": 1,
+          "-0.05": 19
+        }
+      }
+    },
+    "free_back_s70": {
+      "best_R_H": [
+        2.0,
+        2.2
+      ],
+      "pair": {
+        "stations": [
+          2,
+          9
+        ],
+        "sep_deg": 150.0,
+        "union_cov_min_over_arm_poses": 0.6912,
+        "both_see_min": 0.0358
+      },
+      "minimal_station_set_for_99pct": [
+        9,
+        2,
+        6,
+        0,
+        8,
+        3,
+        7,
+        1,
+        10
+      ],
+      "minimal_set_worst_case_coverage": 0.7526,
+      "cells_never_seen_worst_pose": 242,
+      "reach": {
+        "any": 0.8404040404040404,
+        "both": 0.020202020202020204,
+        "left": 0.4303030303030303,
+        "right": 0.4303030303030303
+      },
+      "dead_zone": {
+        "n_cells": 242,
+        "bbox_xy": [
+          -0.6499999999999999,
+          0.6500000000000012,
+          -0.10000000000000003,
+          0.34999999999999987
+        ],
+        "per_y_row": {
+          "-0.10": 1,
+          "-0.05": 27,
+          "-0.00": 27,
+          "0.05": 27,
+          "0.10": 27,
+          "0.15": 27,
+          "0.20": 27,
+          "0.25": 27,
+          "0.30": 27,
+          "0.35": 25
+        }
+      }
+    },
+    "free_side_s70": {
+      "best_R_H": [
+        2.0,
+        2.2
+      ],
+      "pair": {
+        "stations": [
+          2,
+          8
+        ],
+        "sep_deg": 180.0,
+        "union_cov_min_over_arm_poses": 0.9706,
+        "both_see_min": 0.2327
+      },
+      "minimal_station_set_for_99pct": [
+        3,
+        8,
+        10,
+        1,
+        5
+      ],
+      "minimal_set_worst_case_coverage": 0.9727,
+      "cells_never_seen_worst_pose": 26,
+      "reach": {
+        "any": 0.9959595959595959,
+        "both": 0.044444444444444446,
+        "left": 0.5202020202020202,
+        "right": 0.5202020202020202
+      },
+      "dead_zone": {
+        "n_cells": 26,
+        "bbox_xy": [
+          -0.5999999999999999,
+          0.6000000000000012,
+          -0.10000000000000003,
+          -0.050000000000000044
+        ],
+        "per_y_row": {
+          "-0.10": 1,
+          "-0.05": 25
+        }
+      }
+    }
+  },
+  "detail": {
+    "evidence_class": "DESIGN (assumed room dimensions; replace ROOM with measurements)",
+    "assumptions": {
+      "room": {
+        "island": {
+          "x": [
+            -0.9,
+            0.9
+          ],
+          "y": [
+            -0.45,
+            0.45
+          ],
+          "z_top": 0.9
+        },
+        "arm_base_xy": [
+          [
+            -0.35,
+            0.0
+          ],
+          [
+            0.35,
+            0.0
+          ]
+        ],
+        "room_bounds": {
+          "x": [
+            -3.0,
+            3.0
+          ],
+          "y": [
+            -2.6,
+            2.55
+          ],
+          "z": [
+            0.0,
+            2.6
+          ]
+        },
+        "obstacles": {
+          "wall_cabinets": [
+            [
+              -3.0,
+              2.25,
+              1.45
+            ],
+            [
+              3.0,
+              2.6,
+              2.15
+            ]
+          ],
+          "column": [
+            [
+              0.95,
+              -0.65,
+              0.0
+            ],
+            [
+              1.25,
+              -0.35,
+              2.6
+            ]
+          ],
+          "tall_unit": [
+            [
+              -2.9,
+              0.3,
+              0.0
+            ],
+            [
+              -2.3,
+              0.95,
+              2.1
+            ]
+          ]
+        }
+      },
+      "hfov_deg": 70,
+      "vfov_deg": 50,
+      "zoom": 1,
+      "stations": 12,
+      "look_at": [
+        0,
+        0,
+        0.9
+      ],
+      "workspace_points": 990,
+      "arm_poses": [
+        "Lhome_Rhome",
+        "Lhome_Rreach",
+        "Lreach_Rhome",
+        "Lreach_Rreach"
+      ],
+      "heights_sampled_m_above_top": [
+        0.05,
+        0.2
+      ]
+    },
+    "ranked_configs": [
+      {
+        "R": 2.0,
+        "H": 2.2,
+        "valid_stations": 12,
+        "best_station_cov_min": 0.7904,
+        "pair": {
+          "stations": [
+            3,
+            9
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9853,
+          "both_see_min": 0.5314
+        }
+      },
+      {
+        "R": 2.0,
+        "H": 2.4,
+        "valid_stations": 12,
+        "best_station_cov_min": 0.7788,
+        "pair": {
+          "stations": [
+            3,
+            9
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9853,
+          "both_see_min": 0.5084
+        }
+      },
+      {
+        "R": 2.0,
+        "H": 2.5,
+        "valid_stations": 12,
+        "best_station_cov_min": 0.7673,
+        "pair": {
+          "stations": [
+            3,
+            9
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9853,
+          "both_see_min": 0.4969
+        }
+      },
+      {
+        "R": 1.8,
+        "H": 2.2,
+        "valid_stations": 12,
+        "best_station_cov_min": 0.7746,
+        "pair": {
+          "stations": [
+            2,
+            8
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9843,
+          "both_see_min": 0.4161
+        }
+      },
+      {
+        "R": 1.8,
+        "H": 2.4,
+        "valid_stations": 12,
+        "best_station_cov_min": 0.7631,
+        "pair": {
+          "stations": [
+            3,
+            9
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9832,
+          "both_see_min": 0.4906
+        }
+      },
+      {
+        "R": 1.8,
+        "H": 2.5,
+        "valid_stations": 12,
+        "best_station_cov_min": 0.7516,
+        "pair": {
+          "stations": [
+            3,
+            9
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9832,
+          "both_see_min": 0.4675
+        }
+      },
+      {
+        "R": 1.6,
+        "H": 2.2,
+        "valid_stations": 12,
+        "best_station_cov_min": 0.7547,
+        "pair": {
+          "stations": [
+            3,
+            9
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9811,
+          "both_see_min": 0.4759
+        }
+      },
+      {
+        "R": 1.6,
+        "H": 2.4,
+        "valid_stations": 12,
+        "best_station_cov_min": 0.7432,
+        "pair": {
+          "stations": [
+            3,
+            9
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9665,
+          "both_see_min": 0.4528
+        }
+      },
+      {
+        "R": 1.4,
+        "H": 2.2,
+        "valid_stations": 11,
+        "best_station_cov_min": 0.7348,
+        "pair": {
+          "stations": [
+            3,
+            9
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9665,
+          "both_see_min": 0.4361
+        }
+      },
+      {
+        "R": 1.6,
+        "H": 2.5,
+        "valid_stations": 12,
+        "best_station_cov_min": 0.7317,
+        "pair": {
+          "stations": [
+            2,
+            8
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9602,
+          "both_see_min": 0.3585
+        }
+      },
+      {
+        "R": 1.4,
+        "H": 2.4,
+        "valid_stations": 11,
+        "best_station_cov_min": 0.7233,
+        "pair": {
+          "stations": [
+            2,
+            8
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9602,
+          "both_see_min": 0.3449
+        }
+      },
+      {
+        "R": 1.2,
+        "H": 2.2,
+        "valid_stations": 11,
+        "best_station_cov_min": 0.7191,
+        "pair": {
+          "stations": [
+            2,
+            8
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9602,
+          "both_see_min": 0.3354
+        }
+      },
+      {
+        "R": 1.4,
+        "H": 2.5,
+        "valid_stations": 11,
+        "best_station_cov_min": 0.7117,
+        "pair": {
+          "stations": [
+            2,
+            8
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9591,
+          "both_see_min": 0.3375
+        }
+      },
+      {
+        "R": 1.2,
+        "H": 2.4,
+        "valid_stations": 11,
+        "best_station_cov_min": 0.7075,
+        "pair": {
+          "stations": [
+            2,
+            8
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.9591,
+          "both_see_min": 0.3187
+        }
+      },
+      {
+        "R": 1.2,
+        "H": 2.5,
+        "valid_stations": 11,
+        "best_station_cov_min": 0.7075,
+        "pair": {
+          "stations": [
+            2,
+            8
+          ],
+          "sep_deg": 180.0,
+          "union_cov_min_over_arm_poses": 0.956,
+          "both_see_min": 0.3166
+        }
+      }
+    ],
+    "recommended": {
+      "R": 2.0,
+      "H": 2.2,
+      "eye_A_B_stations": {
+        "stations": [
+          3,
+          9
+        ],
+        "sep_deg": 180.0,
+        "union_cov_min_over_arm_poses": 0.9853,
+        "both_see_min": 0.5314
+      },
+      "station_table": [
+        {
+          "k": 0,
+          "az_deg": 0.0,
+          "cam_xyz": [
+            2.0,
+            0.0,
+            2.2
+          ],
+          "valid": true,
+          "coverage_worst_arm_pose": 0.695
+        },
+        {
+          "k": 1,
+          "az_deg": 30.0,
+          "cam_xyz": [
+            1.732,
+            1.0,
+            2.2
+          ],
+          "valid": true,
+          "coverage_worst_arm_pose": 0.6719
+        },
+        {
+          "k": 2,
+          "az_deg": 60.0,
+          "cam_xyz": [
+            1.0,
+            1.732,
+            2.2
+          ],
+          "valid": true,
+          "coverage_worst_arm_pose": 0.7453
+        },
+        {
+          "k": 3,
+          "az_deg": 90.0,
+          "cam_xyz": [
+            0.0,
+            2.0,
+            2.2
+          ],
+          "valid": true,
+          "coverage_worst_arm_pose": 0.7904
+        },
+        {
+          "k": 4,
+          "az_deg": 120.0,
+          "cam_xyz": [
+            -1.0,
+            1.732,
+            2.2
+          ],
+          "valid": true,
+          "coverage_worst_arm_pose": 0.7453
+        },
+        {
+          "k": 5,
+          "az_deg": 150.0,
+          "cam_xyz": [
+            -1.732,
+            1.0,
+            2.2
+          ],
+          "valid": true,
+          "coverage_worst_arm_pose": 0.6719
+        },
+        {
+          "k": 6,
+          "az_deg": 180.0,
+          "cam_xyz": [
+            -2.0,
+            0.0,
+            2.2
+          ],
+          "valid": true,
+          "coverage_worst_arm_pose": 0.695
+        },
+        {
+          "k": 7,
+          "az_deg": 210.0,
+          "cam_xyz": [
+            -1.732,
+            -1.0,
+            2.2
+          ],
+          "valid": true,
+          "coverage_worst_arm_pose": 0.609
+        },
+        {
+          "k": 8,
+          "az_deg": 240.0,
+          "cam_xyz": [
+            -1.0,
+            -1.732,
+            2.2
+          ],
+          "valid": true,
+          "coverage_worst_arm_pose": 0.673
+        },
+        {
+          "k": 9,
+          "az_deg": 270.0,
+          "cam_xyz": [
+            -0.0,
+            -2.0,
+            2.2
+          ],
+          "valid": true,
+          "coverage_worst_arm_pose": 0.7264
+        },
+        {
+          "k": 10,
+          "az_deg": 300.0,
+          "cam_xyz": [
+            1.0,
+            -1.732,
+            2.2
+          ],
+          "valid": true,
+          "coverage_worst_arm_pose": 0.673
+        },
+        {
+          "k": 11,
+          "az_deg": 330.0,
+          "cam_xyz": [
+            1.732,
+            -1.0,
+            2.2
+          ],
+          "valid": true,
+          "coverage_worst_arm_pose": 0.217
+        }
+      ],
+      "minimal_station_set_for_99pct": [
+        3,
+        9,
+        8,
+        10,
+        1,
+        5
+      ],
+      "minimal_set_worst_case_coverage": 0.9874
+    },
+    "dead_zone": {
+      "n_cells": 12,
+      "bbox_xy": [
+        -0.24999999999999956,
+        0.2500000000000009,
+        -0.10000000000000003,
+        -0.050000000000000044
+      ],
+      "per_y_row": {
+        "-0.10": 1,
+        "-0.05": 11
+      }
+    },
+    "cells": {
+      "n": 990,
+      "min_stations_seeing_a_cell_worst_pose": 0,
+      "cells_seen_by_fewer_than_2_stations": 14,
+      "cells_never_seen": 12
+    },
+    "variant": "free_side_s35",
+    "reach": {
+      "any": 1.0,
+      "both": 0.46464646464646464,
+      "left": 0.7323232323232324,
+      "right": 0.7323232323232324
+    }
+  }
+}

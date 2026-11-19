@@ -1,0 +1,113 @@
+{
+  "gate": "G-6b",
+  "evidence_class": "SIM-ABSTRACT (6-DoF point mass, numpy)",
+  "pass": true,
+  "config": {
+    "zeta": 1.0,
+    "mass_lin": 3.0,
+    "inertia_rot": 0.15,
+    "f_push": 8.0,
+    "f_release": 4.0,
+    "m_push": 1.0,
+    "m_release": 0.5,
+    "e_pause": 0.03,
+    "t_rel": 0.2,
+    "delta_max": 0.2,
+    "rot_delta_max": 0.6,
+    "f_lin_max": 40.0,
+    "f_fault": 80.0,
+    "m_max": 4.0,
+    "v_lin_max": 0.25,
+    "v_return": 0.1,
+    "w_return": 0.3,
+    "d_lim": 3000.0,
+    "t_yield_max": 30.0,
+    "eps_e": 0.003,
+    "eps_rot": 0.02,
+    "t_settle": 0.15,
+    "v_settled": 0.01,
+    "stiffness_tau": 0.1,
+    "ref_tau": 0.02,
+    "fault_clamp_ticks": 2000
+  },
+  "profile": "free_motion",
+  "K_lin_N_per_m": 200.0,
+  "rows": {
+    "steady_deflection": {
+      "max_rel_err": 5.4140785887279996e-05,
+      "limit": 0.1,
+      "cases": 24,
+      "pass": true
+    },
+    "release_return": {
+      "settle_s": 1.0170000000000001,
+      "limit_s": 2.5,
+      "peak_return_speed_m_s": 0.10946889395872603,
+      "speed_limit_m_s": 0.11000000000000001,
+      "overshoot_m": 0.0,
+      "overshoot_limit_m": 0.01,
+      "rms_after_6s_m": 8.275566576462122e-16,
+      "rms_limit_m": 0.002,
+      "pass": true
+    },
+    "plan_pause_resume": {
+      "plan_clock_range_while_held": 0.0,
+      "final_position_error_m": 5.670464098272987e-13,
+      "events": [
+        "PUSHED",
+        "YIELDED",
+        "RESUMED err=0.000535"
+      ],
+      "pass": true
+    },
+    "moving_plan_no_false_yield": {
+      "yield_count": 0,
+      "pass": true
+    },
+    "invariants_random_pushes": {
+      "ticks": 120000,
+      "pushes": 42,
+      "max_force_N": 40.0,
+      "force_limit_N": 40.0,
+      "max_moment_Nm": 2.950875102844032,
+      "moment_limit_Nm": 4.0,
+      "leash_violations": 0,
+      "max_return_speed_m_s": 0.11377769016314906,
+      "faults": [],
+      "pass": true
+    },
+    "payload_mass_kg_vs_3kg_identified": {
+      "cases": {
+        "3.0": {
+          "settle_s": 1.0170000000000001,
+          "final_state": "TRACK"
+        },
+        "4.5": {
+          "settle_s": 0.9989999999999999,
+          "final_state": "TRACK"
+        },
+        "6.0": {
+          "settle_s": 0.998,
+          "final_state": "TRACK"
+        }
+      },
+      "pass": true
+    },
+    "latency_3ms_noise_0p5N": {
+      "max_abs_x_m": 0.07478331875119262,
+      "settle_s": 0.635,
+      "pass": true
+    },
+    "impact_120N_20ms_controlled_stop": {
+      "fault": true,
+      "final_speed_m_s": 1.2698951045775723e-18,
+      "pass": true
+    }
+  },
+  "not_covered": [
+    "Newton articulation (null-space/elbow push, joint torque rate limit)",
+    "hardware",
+    "ISO 10218-2:2025 contact limits (placeholders in config)",
+    "safety certification"
+  ]
+}
