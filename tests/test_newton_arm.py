@@ -155,7 +155,8 @@ def test_nullspace_projector_annihilates_task_torques():
 def test_torque_is_jtf_plus_nullspace_plus_gravity_with_clamps():
     rng = np.random.default_rng(5)
     J = rng.normal(size=(6, 7))
-    arm, kin = _arm(jac=J, tau_max=8.0, torque_rate_nm_per_ms=1000.0)
+    arm, kin = _arm(jac=J, tau_max=8.0, torque_rate_nm_per_ms=1000.0,
+                    friction_comp=False, speed_limiter_gain=0.0)
     q = np.asarray(Q_HOME, dtype=float) + 0.01
     dq = rng.normal(size=7) * 0.01
     g = rng.normal(size=7)
@@ -185,6 +186,41 @@ def test_torque_rate_limit_is_applied_per_tick():
     assert np.all(np.abs(t1 - t0) <= 1.0 + 1e-12)
     t2, _ = arm.step(q2, np.zeros(7), np.zeros(6))
     assert np.all(np.abs(t2 - t1) <= 1.0 + 1e-12)
+
+
+def test_residual_wrench_compensation_is_bounded_and_configurable():
+    """Residual feedback is off by default and never exceeds the force caps."""
+    arm, _ = _arm()
+    assert arm.cfg.residual_comp_gain == 0.0
+    cfg = NewtonArmConfig(residual_comp_gain=4.0, residual_beta=0.1)
+    arm2 = NewtonCompliantArm(cfg, kinematics=FakeKinematics())
+    q = np.asarray(Q_HOME, dtype=float)
+    _, info = arm2.step(q, np.zeros(7), np.array([35.0, 0, 0, 1.5, 0, 0]))
+    from rtp.control.compliance import ComplianceConfig
+    caps = ComplianceConfig()
+    assert np.all(np.abs(info["force_used"][:3]) <= caps.f_lin_max + 1e-9)
+    assert np.all(np.abs(info["force_used"][3:]) <= caps.m_max + 1e-9)
+    with pytest.raises(ValueError):
+        NewtonArmConfig(residual_comp_gain=-1.0)
+
+
+def test_speed_limiter_only_acts_when_returning_or_released():
+    """The secondary limiter is inactive in TRACK with no push, active in RETURN."""
+    arm, _ = _arm()
+    assert arm.cfg.speed_limiter_gain > 0
+    q = np.asarray(Q_HOME, dtype=float)
+    _, info = arm.step(q, np.zeros(7), np.zeros(6))
+    assert np.all(info["tau_speed"] == 0.0)
+    # force a RETURN state by pushing then releasing on the fake plant
+    for _ in range(300):
+        arm.step(q, np.zeros(7), np.array([20.0, 0, 0, 0, 0, 0]))
+    for _ in range(400):
+        _, info = arm.step(q, np.zeros(7), np.zeros(6))
+        if info["state"] == State.RETURN:
+            break
+    assert info["state"] == State.RETURN
+    # with zero velocity there is no excess speed, so still no torque
+    assert np.all(info["tau_speed"] == 0.0)
 
 
 def test_plan_clock_freezes_on_push_and_resumes():

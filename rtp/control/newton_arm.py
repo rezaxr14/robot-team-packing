@@ -87,6 +87,23 @@ class NewtonArmConfig:
     k_null: float = 5.0                  # Nm/rad null-space PD; must be <= 20
     tau_max: float = 50.0                # Nm per-joint saturation (placeholder)
     torque_rate_nm_per_ms: float = 1.0   # Nm/ms torque-rate saturation [V:S-20]
+    #: Coulomb friction feed-forward.  The Menagerie FR3 v2 MJCF declares
+    #: ``frictionloss="0.2"`` Nm on every actuated joint; that bias is the main
+    #: reason the measured steady deflection exceeded F/K in the first A5 run.
+    #: Value is read from the model, not identified here; set to 0 to disable.
+    friction_nm: float = 0.2
+    friction_comp: bool = True
+    #: Residual-wrench compensation (runbook A5: injected wrench + controller
+    #: contact estimate).  The unmodelled joint friction shifts the equilibrium
+    #: by ``(J^+)^T tau_fric``; feeding back the filtered residual
+    #: ``F_imp + f_ext`` drives it to zero.  Default off; enabled by the harness
+    #: after measuring that a fixed frictionloss feed-forward is not valid.
+    residual_comp_gain: float = 0.0
+    residual_beta: float = 0.05
+    #: Additional joint-space damping on excess return speed.  The supervisor's
+    #: soft limiter (D-66) is Cartesian and its force is clipped at F_lin_max;
+    #: this term reinforces the same cap using the full joint-torque budget.
+    speed_limiter_gain: float = 4000.0   # N s / m (mapped through J[:3].T)
     compliance: Optional[ComplianceConfig] = None
     q_home: tuple = Q_HOME
     #: torque-rate ramp at start-up: ``None`` means the first command is unclamped,
@@ -98,6 +115,10 @@ class NewtonArmConfig:
             raise ValueError(f"k_null must be in [0, 20] Nm/rad (elbow must yield), got {self.k_null}")
         if self.tau_max <= 0 or self.torque_rate_nm_per_ms <= 0 or self.dt <= 0:
             raise ValueError("dt, tau_max and torque_rate_nm_per_ms must be positive")
+        if self.friction_nm < 0 or self.speed_limiter_gain < 0 or self.residual_comp_gain < 0:
+            raise ValueError("friction_nm, speed_limiter_gain and residual_comp_gain must be non-negative")
+        if not 0.0 < self.residual_beta <= 1.0:
+            raise ValueError("residual_beta must be in (0, 1]")
         if len(self.q_home) != 7:
             raise ValueError("q_home must have 7 joints")
 
@@ -195,6 +216,8 @@ class NewtonCompliantArm:
         self.prev_tau = None if self.cfg.prev_tau is None else _to_numpy(self.cfg.prev_tau).copy()
         self._ref_rotvec: Optional[np.ndarray] = None
         self._ref_pos: Optional[np.ndarray] = None
+        self._fric_dir = np.zeros(7)      # remembered stiction direction per joint
+        self._res_filt = np.zeros(6)      # filtered wrench residual
         self.sup = ComplianceSupervisor(self.cfg.compliance, self.cfg.profile)
 
     # -- lifecycle ---------------------------------------------------------- #
@@ -205,6 +228,8 @@ class NewtonCompliantArm:
         self.prev_tau = None
         self._ref_rotvec = None
         self._ref_pos = None
+        self._fric_dir = np.zeros(7)
+        self._res_filt = np.zeros(6)
         self.sup.reset(self.cfg.profile, x0=x0)
 
     @property
@@ -282,9 +307,26 @@ class NewtonCompliantArm:
 
         x, xdot, J = self.task_state(q, dq, ref_rotvec)
         out = self.sup.step(dt, x, xdot, f_ext, plan_fn, scale=scale)
+        c = self.cfg.compliance or ComplianceConfig()
+
+        # Residual-wrench compensation: (F_imp + f_ext) is nonzero at steady
+        # state only because of unmodelled friction/bias.  Feeding a filtered
+        # copy back drives that residual to zero, so the equilibrium is
+        # F_imp = -f_ext, i.e. |delta| = F/K as specified.  The corrected wrench
+        # is re-clamped to the supervisor's force/moment caps.
+        force_used = out.force.copy()
+        if self.cfg.residual_comp_gain > 0.0:
+            residual = out.force + f_ext
+            self._res_filt += self.cfg.residual_beta * (residual - self._res_filt)
+            force_used = force_used + self.cfg.residual_comp_gain * self._res_filt
+            nl, nm = float(np.linalg.norm(force_used[:3])), float(np.linalg.norm(force_used[3:]))
+            if nl > c.f_lin_max:
+                force_used[:3] *= c.f_lin_max / nl
+            if nm > c.m_max:
+                force_used[3:] *= c.m_max / nm
 
         # Cartesian wrench -> joint torque.
-        tau_task = J.T @ out.force
+        tau_task = J.T @ force_used
 
         # Weak dynamically-consistent null-space PD (k_null <= 20 so elbows yield).
         Jpinv = np.linalg.pinv(J, rcond=1e-3)
@@ -295,6 +337,44 @@ class NewtonCompliantArm:
 
         g = np.zeros(7) if gravity_comp is None else _to_numpy(gravity_comp)
         tau_raw = tau_task + tau_null + g
+
+        fn, mn = np.linalg.norm(f_ext[:3]), np.linalg.norm(f_ext[3:])
+        # Coulomb friction feed-forward.  MJCF frictionloss is 0.2 Nm per joint
+        # and opposes motion; during a sustained push it biases the equilibrium
+        # by roughly friction/K.  Use the joint torques that would create the
+        # measured external wrench to pick the stiction direction while pushing,
+        # and the last significant joint velocity otherwise.  Without a push and
+        # with no motion the memory is cleared so it cannot create a rest bias.
+        tau_fric = np.zeros(7)
+        if self.cfg.friction_comp and self.cfg.friction_nm > 0.0:
+            if fn > c.f_push or mn > c.m_push:
+                push_torques = J.T @ f_ext
+                cand = np.where(np.abs(push_torques) > 1e-3, np.sign(push_torques), 0.0)
+                self._fric_dir = np.where(cand != 0.0, cand, self._fric_dir)
+            else:
+                moving = np.abs(dq) > 0.02
+                self._fric_dir = np.where(moving, np.sign(dq), self._fric_dir)
+                if not np.any(moving) and np.max(np.abs(dq)) < 0.01:
+                    self._fric_dir = np.zeros(7)
+            tau_fric = self.cfg.friction_nm * self._fric_dir
+            tau_raw = tau_raw + tau_fric
+
+        # Reinforce the supervisor's soft speed limiter on EVERY return tick.
+        # The supervisor's Cartesian limiter is clipped at F_lin_max; this term
+        # acts on the excess *measured* flange speed through J[:3].T using the
+        # remaining joint-torque budget, still subject to the clamp/rate limit.
+        tau_speed = np.zeros(7)
+        released = fn < c.f_release and mn < c.m_release
+        letting_go = out.state == State.RETURN or (out.state == State.YIELD and released)
+        if letting_go and self.cfg.speed_limiter_gain > 0.0:
+            v = xdot[:3]
+            speed = float(np.linalg.norm(v))
+            cap = c.v_return
+            if speed > cap:
+                F_lim = -self.cfg.speed_limiter_gain * (speed - cap) * v / speed
+                tau_speed = J[:3].T @ F_lim
+                tau_raw = tau_raw + tau_speed
+
         torque_clamped = bool(np.any(np.abs(tau_raw) > self.cfg.tau_max))
         tau = np.clip(tau_raw, -self.cfg.tau_max, self.cfg.tau_max)
         limited = rate_limit_numpy(tau, self.prev_tau, self.cfg.max_delta)
@@ -308,6 +388,7 @@ class NewtonCompliantArm:
             "s": float(out.s),
             "k_lin": float(out.k_lin),
             "force": out.force.copy(),
+            "force_used": force_used.copy(),
             "x": x,
             "xdot": xdot,
             "x_ref": out.x_ref.copy(),
@@ -315,6 +396,8 @@ class NewtonCompliantArm:
             "tau_task": tau_task,
             "tau_null": tau_null,
             "gravity_comp": g,
+            "tau_friction": tau_fric,
+            "tau_speed": tau_speed,
             "tau_raw": tau_raw,
             "tau": limited.copy(),
             "torque_clamped": torque_clamped,
