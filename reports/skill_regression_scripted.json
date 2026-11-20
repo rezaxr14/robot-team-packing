@@ -1,0 +1,241 @@
+{
+  "step": "A7 (plumbing only)",
+  "evidence_class": "SIM-POSE",
+  "kind": "sim_pose_standin",
+  "scope": "regression suite over the A6 state-machine stand-in; NOT physical skill outcomes",
+  "trials": 5,
+  "cases": {
+    "grasp_in_window": {
+      "rate": 1.0,
+      "passed": true,
+      "example_outcomes": [
+        "success"
+      ],
+      "tags": [
+        "grasp"
+      ]
+    },
+    "grasp_slip_low_force": {
+      "rate": 0.0,
+      "passed": false,
+      "example_outcomes": [
+        "success"
+      ],
+      "tags": [
+        "grasp",
+        "force"
+      ]
+    },
+    "grasp_crush_high_force": {
+      "rate": 0.0,
+      "passed": false,
+      "example_outcomes": [
+        "success"
+      ],
+      "tags": [
+        "grasp",
+        "force"
+      ]
+    },
+    "grasp_out_of_reach": {
+      "rate": 0.0,
+      "passed": false,
+      "example_outcomes": [
+        "success"
+      ],
+      "tags": [
+        "grasp",
+        "reach"
+      ]
+    },
+    "grasp_center_both_arms": {
+      "rate": 0.0,
+      "passed": false,
+      "example_outcomes": [
+        "out_of_reach"
+      ],
+      "tags": [
+        "grasp",
+        "reach"
+      ]
+    },
+    "weigh_ok_reports_mass_and_changes_nothing": {
+      "rate": 0.0,
+      "passed": false,
+      "example_outcomes": [
+        "success"
+      ],
+      "tags": [
+        "weigh"
+      ]
+    },
+    "weigh_out_of_reach": {
+      "rate": 0.0,
+      "passed": false,
+      "example_outcomes": [
+        "success"
+      ],
+      "tags": [
+        "weigh",
+        "reach"
+      ]
+    },
+    "weigh_hand_full": {
+      "rate": 1.0,
+      "passed": true,
+      "example_outcomes": [
+        "success",
+        "hand_full"
+      ],
+      "tags": [
+        "weigh"
+      ]
+    },
+    "grasp_overload": {
+      "rate": 0.0,
+      "passed": false,
+      "example_outcomes": [
+        "success"
+      ],
+      "tags": [
+        "grasp"
+      ]
+    },
+    "grasp_hand_full": {
+      "rate": 1.0,
+      "passed": true,
+      "example_outcomes": [
+        "success",
+        "hand_full"
+      ],
+      "tags": [
+        "grasp"
+      ]
+    },
+    "pick_place_main": {
+      "rate": 0.0,
+      "passed": false,
+      "example_outcomes": [
+        "success",
+        "other_failure"
+      ],
+      "tags": [
+        "place",
+        "sequence"
+      ]
+    },
+    "place_without_grasp": {
+      "rate": 1.0,
+      "passed": true,
+      "example_outcomes": [
+        "not_holding"
+      ],
+      "tags": [
+        "place"
+      ]
+    },
+    "place_wrong_slot": {
+      "rate": 1.0,
+      "passed": true,
+      "example_outcomes": [
+        "success",
+        "wrong_slot"
+      ],
+      "tags": [
+        "place"
+      ]
+    },
+    "place_laptop_in_slot": {
+      "rate": 0.0,
+      "passed": false,
+      "example_outcomes": [
+        "success",
+        "other_failure"
+      ],
+      "tags": [
+        "place"
+      ]
+    },
+    "place_no_space": {
+      "rate": 0.0,
+      "passed": false,
+      "example_outcomes": [
+        "success",
+        "other_failure"
+      ],
+      "tags": [
+        "place"
+      ]
+    },
+    "place_bag_locked_by_other": {
+      "rate": 1.0,
+      "passed": true,
+      "example_outcomes": [
+        "success",
+        "locked"
+      ],
+      "tags": [
+        "place",
+        "lock"
+      ]
+    },
+    "handover_ok": {
+      "rate": 0.0,
+      "passed": false,
+      "example_outcomes": [
+        "success",
+        "success"
+      ],
+      "tags": [
+        "handover"
+      ]
+    },
+    "handover_hand_full": {
+      "rate": 0.0,
+      "passed": false,
+      "example_outcomes": [
+        "success",
+        "out_of_reach"
+      ],
+      "tags": [
+        "handover"
+      ]
+    }
+  },
+  "by_tag": {
+    "grasp": [
+      2,
+      7
+    ],
+    "force": [
+      0,
+      2
+    ],
+    "reach": [
+      0,
+      3
+    ],
+    "weigh": [
+      1,
+      3
+    ],
+    "place": [
+      3,
+      6
+    ],
+    "sequence": [
+      0,
+      1
+    ],
+    "lock": [
+      1,
+      1
+    ],
+    "handover": [
+      0,
+      2
+    ]
+  },
+  "passed": 6,
+  "total": 18
+}
