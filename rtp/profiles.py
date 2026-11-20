@@ -9,7 +9,7 @@ resume file, serving flags) is derived here. The CLI equivalent is the ``RTP_PRO
 an explicit ``get_profile(name)`` argument wins over both.
 
 Isolation is the point: a profile writes only inside its own ``runs/<profile>/``,
-``data/<profile>/`` and ``models/<profile>/`` trees, so two profiles can train, resume and
+``data/<profile>/`` and ``~/models/<profile>/`` trees, so two profiles can train, resume and
 evaluate without ever touching each other's adapters, optimizer state, logs or caches.
 
 Capability claims (bf16, FlashAttention-2) are *resolved*, never assumed:
@@ -108,6 +108,7 @@ class Profile:
     supported: bool = True
     notes: str = ""
     root: Path = field(default=Path("."), compare=False, repr=False)
+    models_root: str | None = None  # default: $RTP_MODELS or ~/models, never the repo root
     train_max_len: int = 0       # SFT ceiling with adapters + optimizer (0 => max_len)
 
     @property
@@ -127,8 +128,8 @@ class Profile:
             logs=runs / "logs",
             reports=runs / "reports",
             data=r / "data" / self.name,
-            models=r / "models" / self.name,
-            hf_home=r / "models" / self.name / "hf",
+            models=Path(self.models_root or os.environ.get("RTP_MODELS", str(Path.home() / "models"))) / self.name,
+            hf_home=Path(self.models_root or os.environ.get("RTP_MODELS", str(Path.home() / "models"))) / self.name / "hf",
         )
 
     @property
@@ -162,6 +163,7 @@ class Profile:
         """Config that affects a run's results. Paths are excluded so hashes are portable."""
         d = asdict(self)
         d.pop("root", None)
+        d.pop("models_root", None)  # storage location, not a result-affecting knob
         d["lora_targets"] = list(self.lora_targets)
         d["eval_seeds"] = list(self.eval_seeds)
         d["effective_batch"] = self.effective_batch
@@ -271,8 +273,17 @@ def repo_root() -> Path:
 
 
 def profiles(root: Path | str | None = None) -> dict[str, Profile]:
-    """The profile dict. ``root`` defaults to ``$RTP_ROOT`` or the repo checkout."""
-    return _profile_table(Path(root) if root is not None else repo_root())
+    """The profile dict. ``root`` defaults to ``$RTP_ROOT`` or the repo checkout.
+
+    With an explicit, non-repo root (tests, sandboxes) all trees, including models, stay
+    under that root. With the real repo root, models point to ``$RTP_MODELS`` / ``~/models``
+    so no weights are ever downloaded into the checkout.
+    """
+    chosen = Path(root) if root is not None else repo_root()
+    table = _profile_table(chosen)
+    if root is not None and chosen.resolve() != repo_root().resolve():
+        table = {k: replace(p, models_root=str(chosen / "models")) for k, p in table.items()}
+    return table
 
 
 #: Static view for introspection (paths anchored at the repo root at import time).
