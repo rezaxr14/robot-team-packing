@@ -232,3 +232,13 @@ fuck head dont make model folder in the repo rrot we laready teh fuking qwen in 
 ```
 remove old shit from the run/ folder it has 8 gb shit in it 
 ```
+
+### U044
+```
+where did you add the rules that prevent you to make this shit every again go and print it here
+```
+
+### U045
+```
+we dont use claude.md idiot we use agent.md
+```
