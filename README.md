@@ -29,6 +29,7 @@ reward source, not a physics result**.
 - [`docs/SCENE_DESIGN.md`](docs/SCENE_DESIGN.md) — two-arm, two-eye kitchen layout (D-65, DESIGN).
 - [`docs/IMPEDANCE_SPEC.md`](docs/IMPEDANCE_SPEC.md) — compliance/impedance spec and status.
 - [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md) — version constraints, profile matrix, isolation.
+- [`docs/RESEARCH_MEMORY.md`](docs/RESEARCH_MEMORY.md) — index/decision log for external research; detailed findings in `docs/findings/`.
 
 **Design / reference:**
 - [`docs/ARCHITECTURE_V2.md`](docs/ARCHITECTURE_V2.md) — V2 design contract (eyes, schemas, Qwen structure, retrieval, training).
