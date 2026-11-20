@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# Source this file: `source ops/env.sh`. Everything big lives under $RTP_HOME (default ~/rtp_work).
+# Source this file: `source ops/env.sh`.
+# Everything for this project lives under the project root or ~/venvs (the single venv folder).
 export RTP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-export RTP_HOME="${RTP_HOME:-$HOME/rtp_work}"
-export VENVS="$RTP_HOME/venvs"
+export RTP_HOME="${RTP_HOME:-$RTP_ROOT}"
+export VENVS="${VENVS:-$HOME/venvs}"
 export MODELS="$RTP_HOME/models"
 export DATA="$RTP_HOME/data"
 export RUNS="$RTP_HOME/runs"
-export HF_HOME="${HF_HOME:-$RTP_HOME/hf_cache}"
-export ISAACLAB_DIR="$RTP_HOME/IsaacLab"
+export HF_HOME="${HF_HOME:-$RTP_ROOT/.hf_cache}"
+export ISAACLAB_DIR="$RTP_ROOT/.isaac/IsaacLab"
 export ISAACLAB_REF="${ISAACLAB_REF:-v3.0.0}"   # Isaac Lab 3.0 GA (D-25); Python 3.12, Newton backend
 export ISAAC_PY="${ISAAC_PY:-$VENVS/isaac_newton/bin/python}"   # the Newton-only venv (ops/install.sh --isaac)
 export PATH="$HOME/.local/bin:$PATH"

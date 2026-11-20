@@ -144,7 +144,7 @@ from rtp.vlm_eye import VLMEye, eye_messages  # legacy VLM-Eye prototype; Eyes a
 * G-14 PASS (`reports/sft_smoke.json`): 4 real QLoRA steps on the 4B model with a mid-epoch resume
   from the private HF checkpoint (loss 0.876 → 0.236). It is a smoke, **not a reportable trained
   model**.
-* Isaac Lab 3.0 + Newton (no Isaac Sim, no PhysX) is installed at `~/rtp_work/IsaacLab`; the venv is
+* Isaac Lab 3.0 + Newton (no Isaac Sim, no PhysX) is installed at `<repo>/.isaac/IsaacLab`; the venv is
   `$ISAAC_PY` from `ops/env.sh`. G-3 evidence: `reports/g3_sim.json` (4050) **and**
   `reports/g3_sim_t4.json` (Kaggle T4, D-51). Both are falling-cube rgb/depth gates on **one device
   at a time** (D-50); no asset-based manipulation scene exists.

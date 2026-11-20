@@ -1,6 +1,6 @@
 # A2 — Isaac Lab 3.0 + Newton arm API findings
 
-Sources: local checkout `$ISAACLAB_DIR` = `/home/reza/rtp_work/IsaacLab` (release/3.0.0, git HEAD `e3f7d9ff1`), Newton 1.6.1 in `$ISAAC_PY`, Warp 1.17.0, torch 2.11.0+cu130, GPU RTX 4050 Laptop.
+Sources: local checkout `$ISAACLAB_DIR` = `<repo>/.isaac/IsaacLab` (release/3.0.0, git HEAD `e3f7d9ff1`), Newton 1.6.1 in `$ISAAC_PY`, Warp 1.17.0, torch 2.11.0+cu130, GPU RTX 4050 Laptop.
 "VERIFIED by running …" means the command was executed in this session and its output is recorded below. Everything else is source reading only.
 Sections are in the order they were landed (1, 2, 3, 6 first — A3's dependencies — then 4, 5, 7, 8).
 

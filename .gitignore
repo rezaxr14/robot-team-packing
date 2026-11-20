@@ -18,3 +18,10 @@ models/
 
 # downloaded asset binaries (kept locally / on Kaggle, never in git)
 assets/cache/
+
+# local toolchain moved into the project (never commit)
+.isaac/
+.hf_cache/
+.tools/
+ops/kaggle/multiturn/task.py
+

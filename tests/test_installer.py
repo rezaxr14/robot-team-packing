@@ -51,7 +51,7 @@ def test_dry_run_prints_the_offline_flags(tmp_path):
     assert "--no-index" in r.stdout and f"--find-links {tmp_path}" in r.stdout
     torch_line = next(line for line in r.stdout.splitlines() if " torch torchvision" in line)
     assert "--no-index" in torch_line and "--index-url" not in torch_line      # never the index offline
-    assert str(Path.home() / "rtp_work" / "venvs" / "local_4090") in r.stdout  # per-profile venv
+    assert str(Path.home() / "venvs" / "local_4090") in r.stdout  # per-profile venv in the single venv folder
 
 
 def test_a_wheelhouse_that_is_not_a_directory_is_refused(tmp_path):

@@ -224,7 +224,7 @@ every substep; regression test `test_staged_body_force_acts_on_every_solver_subs
 the repro printed 0.100 m/s for 1, 2 and 4 substeps before the fix. It was merged
 2026-10-08 and backported to `release/3.0.0` as commit `5608601`. This is exactly gate G-7
 (`docs/AGENT_RUNBOOK.md:93-100`, impulse = F·dt within 2 % with substeps > 1). Our local
-checkout (`/home/reza/rtp_work/IsaacLab`, HEAD `e3f7d9ff1`) contains the staged-force code
+checkout (`<repo>/.isaac/IsaacLab`, HEAD `e3f7d9ff1`) contains the staged-force code
 (`source/isaaclab_newton/isaaclab_newton/physics/newton_manager.py:1674-1711`), so the fix is
 present; still **verify by running G-7 at substeps 1 and 4**, and write the backport commit
 into the report.
@@ -315,7 +315,7 @@ here**; only short factual summaries and derived arithmetic appear above.
 | S19 | NVIDIA SimReady Assets dataset card (`license: cc-by-4.0`) | https://huggingface.co/datasets/nvidia/simready-assets/raw/main/README.md | 2026-11-20 | external source, not reproduced here |
 
 Local sources (not in the table above) are repository files already cited by path, plus the
-local Isaac Lab checkout `/home/reza/rtp_work/IsaacLab` at git `e3f7d9ff1` (wrench composer
+local Isaac Lab checkout `<repo>/.isaac/IsaacLab` at git `e3f7d9ff1` (wrench composer
 and staged substep-force code paths listed in §4).
 
 ## Concrete plan for this repo

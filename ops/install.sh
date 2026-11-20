@@ -21,8 +21,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RTP_HOME="${RTP_HOME:-$HOME/rtp_work}"
-VENVS_ROOT="${RTP_VENVS:-$RTP_HOME/venvs}"
+RTP_HOME="${RTP_HOME:-$ROOT}"          # everything project-local; no external work tree
+VENVS_ROOT="${RTP_VENVS:-$HOME/venvs}" # the single venv folder for all profiles
 PY="${RTP_PYTHON:-3.12}"
 TORCH_INDEX="${RTP_TORCH_INDEX:-https://download.pytorch.org/whl/cu128}"
 DRY=0; FORCE=0; CHECK=0; ISAAC=0; TEX=0; FLASH=auto; PROFILE=""; VENV=""; DRIVER_MAJOR=""; WHEELHOUSE=""; PRINT_PKGS=0

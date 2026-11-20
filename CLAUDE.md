@@ -2,6 +2,17 @@
 
 These rules come from explicit user instructions. They override generic "helpful" behaviour.
 
+## Workspace boundary — HARD RULE (violation = hard failure / "hell")
+
+0. **Work only from `~/Projects/robot_team`.** Never create, modify, move or delete any file,
+   directory, venv, cache or temp file anywhere else on this machine — not in `/home/reza`,
+   `/tmp`, `/home/reza/rtp_work`, or a "harmless" scratch path. The ONLY local exception is the
+   single venv folder `~/venvs`, which the user explicitly ordered for the toolchain.
+   Kaggle/HF are remote and are governed by their own rules below.
+   Enforced by `tests/test_workspace_boundary.py`; a failure must stop all work.
+   The old `~/rtp_work` tree was removed on 2026-11-20 after moving `IsaacLab` into
+   `.isaac/` inside this repo and the Newton venv into `~/venvs/isaac_newton`. Do not recreate it.
+
 ## Git
 
 1. **NEVER push to git without explicit, per-instance user approval.** "Push the commit" / "push it" means: show the exact commit(s) and remote, then wait for an explicit yes. A previous push approval does not cover the next push. The only exception already given was the one-time push of commit `75e2344` on 2026-11-20.
