@@ -161,3 +161,23 @@ stop shitting around in my pc you animal
 ```
 record my prompts verbatim as they come in a doc in the docs/ so we can measure how faithfull you were to them you fuking retard shit head
 ```
+
+### U030
+```
+move this fuking shit as weel you idiot /home/reza/Textures/
+```
+
+### U031
+```
+make a audit subagent to go and remove any file that refrences anywhre other than repo project location you shit head, 
+```
+
+### U032
+```
+stop fuking my pc, you are scoped to that fuking folder alone
+```
+
+### U033
+```
+continuue your shitty work animmal
+```
