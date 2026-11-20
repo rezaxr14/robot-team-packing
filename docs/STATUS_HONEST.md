@@ -22,6 +22,18 @@ Updated: 2026-11-19 (will be amended as each gate actually passes).
 | Compared with other omni models | **HARNESS ONLY** | `reports/omni_comparison.{json,md}` has a strict prediction loader, Wilson + paired bootstrap; all competitor rows and the trained-Brain row are `not run` with no numbers |
 | Impedance control making arms safe around people/children | **SIM CROSS-CHECK ONLY** | `rtp/control/impedance.py` + `ops/g6_impedance.py`: step error 0.27% (limit 5%), push deflection 0.06655 m vs F/K 0.06667 m, return error 9.6e-10 m (`reports/g6_impedance.json`). **NOT** a safety certification; D-22 assigns hardware/L0/L1 sign-off to Claude; no plan-clock gate, leash, clamps, state machine or ISO limits |
 
+## Update 2026-11-20 — A1 (arms first) and Plan v3
+
+| item | evidence class | state |
+|---|---|---|
+| Applied patch `robot-team-packing-update.patch` (`git am --3way`), patch file removed | GATE | plan v3, A1-A10 runbook, multi-turn datagen loop, compliance supervisor, eye study are now in the tree; patch deleted after applying |
+| Full test suite before A1 | FIXTURE/MODEL | `428 passed, 10 skipped` on the training venv (`python -m pytest -q`) |
+| A1 FR3 flange kinematics vs Newton `eval_fk` | SIM-POSE | **PASS**: 102 configurations, max position error 0.00224 mm, rotation error 0.0 deg, joint limits match; `reports/g5_reach.json`; 6 tests in `tests/test_fr3_kinematics.py` |
+| A2 Newton arm API findings | — | **not done** (in progress) |
+| A3-A10 (arm smoke, wrench, articulation compliance, scene, skills, distillation, push robustness, certification) | — | **not run**; no reports exist |
+| R3 cheap-model Kaggle bring-up | — | **not run** (allowed before A10; its records are excluded from SFT) |
+| R4-R9 (scale datagen, SFT, GRPO, M1-M8 matrix) | — | **not run** |
+
 ## Update 2026-11-18 — multi-turn data generation, compliance supervisor, eye placement
 
 | item | evidence class | state |

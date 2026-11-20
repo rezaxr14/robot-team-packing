@@ -24,8 +24,10 @@ What is implemented (the authored spec, verbatim math):
 
 Supporting pieces for the cross-check (not part of the deployed law):
 
-* a 7-DoF joint-space toy arm with forward kinematics and an analytic Jacobian
-  (torch autograd or central finite differences), for batched shape tests;
+* forward kinematics and a Jacobian for the calibrated FR3 flange
+  (``ImpedanceConfig.kinematics = "fr3"``, the default after A1; ``"toy"`` keeps
+  the original generic link chain), with torch autograd or central differences
+  as independent cross-checks;
 * a 1-DoF mass-spring-damper equivalent with its closed-form step response, for
   the G-6 analytic-vs-sim comparison;
 * ``push_response`` that scripted-pushes that equivalent and reports
@@ -76,6 +78,10 @@ class ImpedanceConfig:
     identification and sign-off belong to Claude.
     """
 
+    #: ``"fr3"`` uses the calibrated FR3 flange model from
+    #: :mod:`rtp.control.fr3_kinematics` (verified against Newton in A1);
+    #: ``"toy"`` keeps the original generic chain for legacy regression tests.
+    kinematics: str = "fr3"
     k_lin: float = 150.0            # N/m, translation (spec example [V:S-20])
     k_rot: float = 10.0             # Nm/rad, rotation (spec example [V:S-20])
     k_null: float = 5.0             # Nm/rad, nullspace PD (spec: <= 20 so elbow yields)
@@ -100,6 +106,10 @@ class ImpedanceConfig:
 
     def dt_ms(self) -> float:
         return self.dt * 1000.0
+
+    def __post_init__(self) -> None:
+        if self.kinematics not in ("fr3", "toy"):
+            raise ValueError(f"kinematics must be 'fr3' or 'toy', got {self.kinematics!r}")
 
 
 # --------------------------------------------------------------------------- #
@@ -197,24 +207,36 @@ def _rotvec(R: torch.Tensor) -> torch.Tensor:
     b = R.shape[0]
     trace = R[:, 0, 0] + R[:, 1, 1] + R[:, 2, 2]
     cosang = torch.clamp((trace - 1.0) / 2.0, -1.0, 1.0)
-    ang = torch.acos(cosang)
     vee = torch.stack(
         (R[:, 2, 1] - R[:, 1, 2], R[:, 0, 2] - R[:, 2, 0], R[:, 1, 0] - R[:, 0, 1]), dim=1
     )
-    small = ang < 1e-6
-    # For small angles rotvec ~= 0.5 * vee; otherwise rotvec = ang/(2 sin(ang)) * vee.
-    denom = 2.0 * torch.sin(ang)
-    scale = torch.where(small, torch.ones_like(denom) * 0.5, ang / torch.where(denom.abs() < 1e-12, torch.ones_like(denom), denom))
-    rv = scale.unsqueeze(1) * vee
-    return torch.where(small.unsqueeze(1), 0.5 * vee, rv)
+    # Numerically stable angle: sin(theta) = ||vee||/2, cos(theta) = (trace-1)/2.
+    # atan2 avoids the infinite derivative of acos near theta=0, which broke the
+    # central-difference vs autograd Jacobian check for the calibrated FR3 chain.
+    sinang = 0.5 * torch.linalg.norm(vee, dim=1)
+    ang = torch.atan2(sinang, cosang)
+    small = sinang < 1e-12
+    safe = torch.where(small, torch.ones_like(sinang), 2.0 * sinang)
+    scale = torch.where(small, torch.ones_like(sinang) * 0.5, ang / safe)
+    return scale.unsqueeze(1) * vee
 
 
-def forward_kinematics(q: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-    """Toy 7-DoF arm FK. ``q``: (B,7) -> position (B,3), rotation (B,3,3)."""
+def forward_kinematics(q: torch.Tensor, kinematics: str = "fr3") -> tuple[torch.Tensor, torch.Tensor]:
+    """7-DoF arm FK. ``q``: (B,7) -> position (B,3), rotation (B,3,3).
+
+    ``kinematics="fr3"`` (default) uses the calibrated Menagerie FR3 v2 flange
+    chain from :mod:`rtp.control.fr3_kinematics` (A1, reports/g5_reach.json).
+    ``"toy"`` keeps the original generic link chain for legacy tests.
+    """
     q = torch.as_tensor(q)
-    b, nq = q.shape
-    if nq != NQ:
-        raise ValueError(f"expected {NQ} joints, got {nq}")
+    if q.shape[-1] != NQ:
+        raise ValueError(f"expected {NQ} joints, got {tuple(q.shape)}")
+    if kinematics == "fr3":
+        from rtp.control import fr3_kinematics
+        return fr3_kinematics.fk(q)
+    if kinematics != "toy":
+        raise ValueError(f"kinematics must be 'fr3' or 'toy', got {kinematics!r}")
+    b = q.shape[0]
     T = _eye(4, q.dtype, q.device, b)
     L = q.new_tensor(_LINK_LENGTH)
     for i, axis in enumerate(_AXES):
@@ -226,12 +248,12 @@ def forward_kinematics(q: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
     return T[:, :3, 3], T[:, :3, :3]
 
 
-def _task_from_q(q: torch.Tensor) -> torch.Tensor:
-    p, R = forward_kinematics(q)
+def _task_from_q(q: torch.Tensor, kinematics: str = "fr3") -> torch.Tensor:
+    p, R = forward_kinematics(q, kinematics)
     return torch.cat((p, _rotvec(R)), dim=1)  # (B,6)
 
 
-def jacobian_fd(q: torch.Tensor, h: float = 1e-6) -> torch.Tensor:
+def jacobian_fd(q: torch.Tensor, h: float = 1e-6, kinematics: str = "fr3") -> torch.Tensor:
     """Central-difference task Jacobian ``d[p; rotvec]/dq``, shape (B,6,7)."""
     q = torch.as_tensor(q)
     b, nq = q.shape
@@ -239,18 +261,18 @@ def jacobian_fd(q: torch.Tensor, h: float = 1e-6) -> torch.Tensor:
     for j in range(nq):
         dq = torch.zeros_like(q)
         dq[:, j] = h
-        J[:, :, j] = (_task_from_q(q + dq) - _task_from_q(q - dq)) / (2.0 * h)
+        J[:, :, j] = (_task_from_q(q + dq, kinematics) - _task_from_q(q - dq, kinematics)) / (2.0 * h)
     return J
 
 
-def jacobian_autograd(q_row: torch.Tensor) -> torch.Tensor:
+def jacobian_autograd(q_row: torch.Tensor, kinematics: str = "fr3") -> torch.Tensor:
     """Autograd Jacobian for a single sample (q: (7,)) -> (6,7).
 
     Provided as an independent cross-check of :func:`jacobian_fd`; not used by
     the controller itself.
     """
     x = q_row.detach().clone().requires_grad_(True)
-    y = _task_from_q(x.unsqueeze(0)).squeeze(0)
+    y = _task_from_q(x.unsqueeze(0), kinematics).squeeze(0)
     rows = []
     for i in range(y.numel()):
         grad = torch.autograd.grad(y[i], x, retain_graph=True, allow_unused=True)[0]
@@ -322,7 +344,7 @@ class CartesianImpedance:
         target = torch.as_tensor(target, dtype=self.cfg.dtype)
         b = q.shape[0]
         if J is None:
-            J = jacobian_fd(q).to(self.cfg.dtype)
+            J = jacobian_fd(q, kinematics=self.cfg.kinematics).to(self.cfg.dtype)
         J = torch.as_tensor(J, dtype=self.cfg.dtype)
         if J.shape != (b, NTASK, NQ):
             raise ValueError(f"J must have shape {(b, NTASK, NQ)}, got {tuple(J.shape)}")
@@ -339,7 +361,7 @@ class CartesianImpedance:
             filt = self._filt_target
 
         # Cartesian error e and Cartesian velocity v = J dq.
-        err = _task_from_q(q) - filt                      # (B,6)
+        err = _task_from_q(q, self.cfg.kinematics) - filt  # (B,6)
         v = torch.bmm(J, dq.unsqueeze(2)).squeeze(2)      # (B,6)
         F = -self.K * err - self.D * v                    # (B,6)
 

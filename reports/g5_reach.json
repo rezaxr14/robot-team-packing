@@ -1,0 +1,104 @@
+{
+  "step": "A1",
+  "gate": "G-5 kinematics half",
+  "evidence_class": "SIM-POSE",
+  "model": "assets/cache/menagerie/franka_fr3_v2/fr3v2.xml",
+  "flange_body": "fr3v2/worldbody/base/fr3v2_link0/fr3v2_link1/fr3v2_link2/fr3v2_link3/fr3v2_link4/fr3v2_link5/fr3v2_link6/fr3v2_link7/fr3v2_link8",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp": "1.17.0",
+    "numpy": "2.5.1"
+  },
+  "joint_limits": {
+    "lower": [
+      -2.900700092315674,
+      -1.8360999822616577,
+      -2.900700092315674,
+      -3.0769999027252197,
+      -2.876300096511841,
+      0.4397999942302704,
+      -3.050800085067749
+    ],
+    "upper": [
+      2.900700092315674,
+      1.8360999822616577,
+      2.900700092315674,
+      -0.1168999969959259,
+      2.876300096511841,
+      4.621600151062012,
+      3.050800085067749
+    ],
+    "match_embedded": true
+  },
+  "total_mass_kg": 17.3122,
+  "samples": 102,
+  "max_pos_err_mm": 0.00224,
+  "max_rot_err_deg": 0.0,
+  "zero_pose_flange_m": [
+    0.088001,
+    0.0,
+    0.926001
+  ],
+  "zero_pose_reach_m": 0.930173,
+  "example_rows": [
+    {
+      "case": "zero",
+      "q": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "newton_pos_m": [
+        0.088001,
+        0.0,
+        0.926001
+      ],
+      "ours_pos_m": [
+        0.088,
+        0.0,
+        0.926
+      ],
+      "pos_err_mm": 0.001171,
+      "rot_err_deg": 0.0
+    },
+    {
+      "case": "home",
+      "q": [
+        0.0,
+        -0.785,
+        0.0,
+        -2.356,
+        0.0,
+        1.571,
+        0.785
+      ],
+      "newton_pos_m": [
+        0.307021,
+        0.0,
+        0.59027
+      ],
+      "ours_pos_m": [
+        0.30702,
+        0.0,
+        0.59027
+      ],
+      "pos_err_mm": 0.00145,
+      "rot_err_deg": 0.0
+    }
+  ],
+  "checks": {
+    "pos_within_1mm": true,
+    "rot_within_0p05deg": true,
+    "limits_match_model": true
+  },
+  "pending": [
+    "Mass/inertia vs the FR3 datasheet within 2% (needs the datasheet as a recorded source).",
+    "Franka official URDF/USD vs Menagerie kinematics within 1 mm (G-5 full)."
+  ],
+  "result": "PASS"
+}
