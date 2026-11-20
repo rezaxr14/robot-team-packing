@@ -87,7 +87,7 @@ def execute(model, url, api_key, *, repo_dir=None, work=WORK, post=None, harness
     return manifest
 
 
-@kbench.task(name=SPEC["task_name"], description="Multi-turn frontier episodes on the RTP harness")
+@kbench.task(name=__TASK_NAME__, description="Multi-turn frontier episodes on the RTP harness")
 def rtp_multiturn(llm) -> dict:
     base = os.environ["MODEL_PROXY_URL"].rstrip("/")
     if not base.endswith("/openapi"):
@@ -111,7 +111,8 @@ def build(*, seeds: str, condition: str, mode: str, iteration: int, shard: str, 
             "condition": condition, "mode": mode, "iteration": iteration, "shard": shard, "max_turns": max_turns,
             "max_tokens": max_tokens, "memory_notes": memory_notes, "arm_model": arm_model}
     spec["spec_hash"] = hashlib.sha256(json.dumps(spec, sort_keys=True).encode()).hexdigest()[:16]
-    dest.write_text(TASK_TEMPLATE.replace("__SPEC_JSON__", repr(json.dumps(spec, ensure_ascii=False))), encoding="utf-8")
+    dest.write_text(TASK_TEMPLATE.replace("__SPEC_JSON__", repr(json.dumps(spec, ensure_ascii=False)))
+                    .replace("__TASK_NAME__", repr(spec["task_name"])), encoding="utf-8")
     return spec
 
 

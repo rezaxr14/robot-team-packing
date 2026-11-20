@@ -12,6 +12,7 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -50,6 +51,10 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     child_env = os.environ.copy()
+    # Keep the API token for the SDK's access-token auth; also expose legacy key so
+    # commands that do not use the proxy can still fall back to username/key.
+    child_env["KAGGLE_KEY"] = key
+    child_env["KAGGLE_USERNAME"] = user
     child_env.update({
         "PYTHONPATH": str(TOOLS) + os.pathsep + child_env.get("PYTHONPATH", ""),
         "HTTP_PROXY": PROXY, "HTTPS_PROXY": PROXY,
@@ -58,7 +63,21 @@ def main(argv: list[str] | None = None) -> int:
         "TMPDIR": str(ROOT / ".tmp"),
     })
     (ROOT / ".tmp").mkdir(exist_ok=True)
-    return subprocess.run([sys.executable, "-m", module, *argv], env=child_env, cwd=ROOT).returncode
+    cmd = [sys.executable, "-m", module, *argv]
+    # The proxy occasionally drops TLS on the first attempt; retry only those errors.
+    for attempt in range(5):
+        result = subprocess.run(cmd, env=child_env, cwd=ROOT, capture_output=True, text=True)
+        if result.stdout:
+            print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
+        if result.returncode == 0:
+            return 0
+        if result.stderr:
+            print(result.stderr, file=sys.stderr)
+        transient = any(s in result.stderr for s in ("SSLError", "EOF occurred", "Max retries", "Temporary failure"))
+        if attempt == 4 or not transient:
+            return result.returncode
+        time.sleep(2 + 2 * attempt)
+    return 1
 
 
 if __name__ == "__main__":

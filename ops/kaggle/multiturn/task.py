@@ -59,7 +59,7 @@ def execute(model, url, api_key, *, repo_dir=None, work=WORK, post=None, harness
     return manifest
 
 
-@kbench.task(name=SPEC["task_name"], description="Multi-turn frontier episodes on the RTP harness")
+@kbench.task(name='rtp-multiturn-haiku-it0', description="Multi-turn frontier episodes on the RTP harness")
 def rtp_multiturn(llm) -> dict:
     base = os.environ["MODEL_PROXY_URL"].rstrip("/")
     if not base.endswith("/openapi"):
