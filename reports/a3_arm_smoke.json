@@ -1,0 +1,59 @@
+{
+  "step": "A3",
+  "evidence_class": "SIM",
+  "scope": "Newton FR3 v2 articulation, static pose hold (position-actuator ladder L1); no contact/manipulation",
+  "mode": "L1",
+  "model": "assets/cache/menagerie/franka_fr3_v2/fr3v2.xml",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp": "1.17.0",
+    "numpy": "2.5.1"
+  },
+  "params": {
+    "seconds": 5.0,
+    "dt": 0.001,
+    "substeps_per_frame": 1,
+    "ke_scale": 4.0,
+    "target": "fr3v2_joint1..7 = Q_HOME",
+    "q_home": [
+      0.0,
+      -0.785,
+      0.0,
+      -2.356,
+      0.0,
+      1.571,
+      0.785
+    ]
+  },
+  "steps": 5000,
+  "wall_s": 31.312,
+  "steps_per_s": 159.7,
+  "final_flange_pos_m": [
+    0.306989,
+    8e-06,
+    0.589578
+  ],
+  "target_flange_pos_m": [
+    0.30702,
+    0.0,
+    0.59027
+  ],
+  "final_pos_err_mm": 0.692417,
+  "max_pos_err_mm": 0.692417,
+  "max_joint_err_rad": 0.001359701,
+  "peak_abs_joint_force": 0.0,
+  "joint_force_observable_in_L1": false,
+  "joint_force_note": "The MJCF position actuators drive through joint_target_q/joint_target_ke; control.joint_f stays zero in L1, so the 0.0 above is 'not observable', NOT zero actuator effort. Effort-mode torque is measured in A5.",
+  "checks": {
+    "drift_lt_1mm": true,
+    "max_drift_lt_5mm": true,
+    "finite": true
+  },
+  "not_done": [
+    "L2 effort mode with gravity compensation (A2 question 4 unresolved).",
+    "Newton articulation inside an Isaac Lab Articulation wrapper (MJCF conversion needs isaacsim).",
+    "Any manipulation, external push or hardware result."
+  ],
+  "result": "PASS"
+}

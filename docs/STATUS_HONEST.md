@@ -29,8 +29,9 @@ Updated: 2026-11-19 (will be amended as each gate actually passes).
 | Applied patch `robot-team-packing-update.patch` (`git am --3way`), patch file removed | GATE | plan v3, A1-A10 runbook, multi-turn datagen loop, compliance supervisor, eye study are now in the tree; patch deleted after applying |
 | Full test suite before A1 | FIXTURE/MODEL | `428 passed, 10 skipped` on the training venv (`python -m pytest -q`) |
 | A1 FR3 flange kinematics vs Newton `eval_fk` | SIM-POSE | **PASS**: 102 configurations, max position error 0.00224 mm, rotation error 0.0 deg, joint limits match; `reports/g5_reach.json`; 6 tests in `tests/test_fr3_kinematics.py` |
-| A2 Newton arm API findings | — | **not done** (in progress) |
-| A3-A10 (arm smoke, wrench, articulation compliance, scene, skills, distillation, push robustness, certification) | — | **not run**; no reports exist |
+| A2 Newton arm API findings | SOURCE READ + VERIFIED SNIPPETS | `docs/findings/newton_arm_api.md`: all 8 questions answered with local file paths/line numbers; effort mode, state reads, gravity comp, Jacobians, wrenches, envs/substeps and contact forces verified by running snippets; MJCF->USD runtime conversion UNRESOLVED (`isaacsim` absent) |
+| A3 one FR3 steps in Newton, holds a pose | SIM | **PASS** (`reports/a3_arm_smoke.json`): native Newton MJCF articulation, position-actuator L1, 5 s / 5000 steps at 1 kHz, flange drift 0.692 mm (<1 mm), 159.7 steps/s; MJCF stiffness x4 was required (default gains sagged 2.78 mm). NOT effort mode, manipulation, push or hardware |
+| A4-A10 (wrench, articulation compliance, scene, skills, distillation, push robustness, certification) | — | **not run**; no reports exist |
 | R3 cheap-model Kaggle bring-up | — | **not run** (allowed before A10; its records are excluded from SFT) |
 | R4-R9 (scale datagen, SFT, GRPO, M1-M8 matrix) | — | **not run** |
 
