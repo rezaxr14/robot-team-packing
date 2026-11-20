@@ -15,6 +15,15 @@ ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_ROOT = Path.home() / "Projects" / "robot_team"
 
 
+def test_agent_rules_file_exists_with_hard_rules():
+    rules = (ROOT / ".agent" / "RULES.md")
+    assert rules.is_file(), "authoritative rules must live in .agent/RULES.md"
+    text = rules.read_text()
+    for phrase in ("Work only from `~/Projects/robot_team`", "single venv folder `~/venvs`",
+                   "Do NOT download or copy model weights", "verbatim"):
+        assert phrase in text, f"missing rule: {phrase}"
+
+
 def test_project_root_is_the_only_workspace():
     assert ROOT.resolve() == EXPECTED_ROOT.resolve(), (
         f"tests are running from {ROOT}, expected {EXPECTED_ROOT}"
@@ -39,10 +48,10 @@ def test_env_points_only_inside_project_or_the_single_venvs_folder():
 
 
 def test_no_tracked_file_still_points_at_the_deleted_tree():
-    # AGENT.md states the rule and this test enforces it; both must name the forbidden
+    # .agent/RULES.md states the rule and this test enforces it; both must name the forbidden
     # path to do their job, so neither counts as a file that depends on the old tree.
     out = subprocess.run(
-        ["git", "grep", "-l", "rtp_work", "--", ":!AGENT.md",
+        ["git", "grep", "-l", "rtp_work", "--", ":!.agent/RULES.md",
          ":!tests/test_workspace_boundary.py", ":!docs/USER_PROMPTS_VERBATIM.md"],
         cwd=ROOT, capture_output=True, text=True, check=False,
     )
