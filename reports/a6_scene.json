@@ -1,0 +1,44 @@
+{
+  "step": "A6 (scene half)",
+  "evidence_class": "SIM",
+  "scope": "two FR3 articulations + table + bag + 10 objects, static scene; skills not implemented",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp": "1.17.0"
+  },
+  "seed": 7,
+  "checks": {
+    "two_arms_14_dof": true,
+    "finite_state": true,
+    "deterministic_at_1mm": true
+  },
+  "bodies": 37,
+  "joints": 37,
+  "dof": 74,
+  "shapes": 89,
+  "arm_q_offsets": [
+    0,
+    7
+  ],
+  "objects": [
+    "item_0_0",
+    "item_0_1",
+    "item_1_0",
+    "item_1_1",
+    "item_2_0",
+    "item_2_1",
+    "item_3_0",
+    "item_3_1",
+    "item_4_0",
+    "item_4_1"
+  ],
+  "steps": 200,
+  "wall_s": 2.15,
+  "steps_per_s": 93.0,
+  "state_hash_mm_quantised": "918b96e5cc330bc3",
+  "state_hash_replay": "918b96e5cc330bc3",
+  "raw_max_abs_diff": 0.00085648,
+  "determinism_note": "MuJoCo-Warp on this GPU is not bitwise deterministic; hashes use 1 mm quantisation and the check also requires max abs diff <= 1 mm.",
+  "result": "PASS"
+}
