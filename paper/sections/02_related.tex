@@ -4,17 +4,22 @@
 VIKI-R \citep{kang2025vikir} introduces VIKI-Bench, a hierarchical benchmark for embodied multi-agent cooperation with vision-language models, and a two-stage recipe of supervised fine-tuning followed by reinforcement learning; it is our starting point, and \cref{sec:track-a} reuses its released data and checkpoints.
 RoCo \citep{mandi2024roco} has language-model agents, one per robot arm, discuss and agree a plan that is grounded by motion planning.
 CoELA \citep{zhang2024coela} builds embodied agents from separate perception, memory, communication, planning and execution modules around a language model.
-Our work differs in emphasis: we fix the roles by interface, so that a failure has an owner, and we treat the team's own failures as the source of training signal.
-\todo{Related work to read and add before submission: further multi-agent embodied and robot-team papers (the plan names CHORUS, D-VLC, MAAP, C3/CCPO and others by name only; none has been opened yet, so none is cited or compared).}
+InteractGen \citep{sun2026interactgen} decomposes a human-robot team into specialised perception, planning, decision, verification and reflection components; RoboTwin~2.0 \citep{chen2025robotwin2} generates bimanual manipulation data with domain randomisation and a VLA trained on it.
+NSDL \citep{tan2026nsdl} is the closest published analogue to our division of labour: a small VLM writes a plan sketch and a deterministic solver expands it, with detector and solver exposed as tools.
+Our work differs in emphasis: we fix the roles by a typed, replayable message bus, so that a failure has an owner, and we treat the team's own failures as the source of training signal.
+We do not claim superiority over these systems: no head-to-head matrix exists between them and our Brain yet (\cref{sec:matrix}), and the reported scores in those papers are their benchmarks, not ours.
+\todo{CHORUS, D-VLC, MAAP and C3/CCPO remain named only in the plan; their full texts have not been opened, so they are neither cited nor compared. External claims here were checked at metadata/abstract level only (2026-11-20; \texttt{docs/findings/prior\_work.md}).}
 
 \paragraph{Credit assignment and hindsight.}
 Hindsight experience replay \citep{andrychowicz2017her} relabels a failed attempt with the goal it did reach; our team hindsight relabeling applies the idea to instructions and adds a replay check (\cref{sec:signals}).
 Counterfactual baselines for multi-agent credit \citep{foerster2018coma} replace one agent's action and compare returns; our Eye credit replaces one Eye's \emph{report} and replays the whole episode.
-\todo{Confirm and cite the difference-rewards literature if it is kept in the final text.}
+Difference rewards \citep{castellini2022difference} obtain per-agent credit by differencing a known reward function, an alternative to learning a critic; counterfactual report substitution is our interface-level instantiation of that idea.
+Automated attribution on LLM agent logs remains weak: the Who\&When benchmark reports 53.5\,\% agent and 14.2\,\% step accuracy for its best method \citep{zhang2025whowhen}.
+\todo{These are external benchmark numbers (metadata/abstract opened 2026-11-20; \texttt{docs/findings/prior\_work.md}), not measurements of our team; do not pool them with our evidence classes.}
 
 \paragraph{Training signals and simulation.}
 We use group-relative policy optimization \citep{shao2024deepseekmath} for the Brain, flow matching \citep{lipman2023flowmatching} for the Arm policy, low-rank adaptation \citep{hu2022lora} for the Brain's text and vision-merger blocks (the Eyes are conventional detectors), and Isaac Lab 3.0 with Newton \citep{mittal2025isaaclab} for physics --- without Isaac Sim or PhysX. \todo{Citations marked TODO-verify in \texttt{refs.bib}: confirm each against its source before submission.}
 
 \paragraph{Benchmark scoring.}
 A level-2 plan is scored by a simulator-free checker in the upstream VIKI-R repository; we read that code and report an audit in \cref{sec:scorer}.
-\todo{LOCUS-Bench, a derived benchmark, was only available as an anonymized review artifact marked not for redistribution; it is neither cited nor compared. Revisit if it becomes public.}
+NSDL also introduces LOCUS-Bench, which was previously an anonymised review artefact but is now public with the NSDL code release; it is still **not** cited with a score here because we have not run it (\texttt{docs/findings/prior\_work.md}, 2026-11-20).

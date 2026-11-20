@@ -37,6 +37,10 @@ VERIFIED_FACTS = {
     # A1 (SIM-POSE, kinematics only): reports/g5_reach.json, ops/g5_reach.py
     "0.00224": "max FR3 flange position error in mm over 102 configurations (reports/g5_reach.json, A1)",
     "102": "configurations compared in the A1 FK reach test (reports/g5_reach.json)",
+    # external related-work numbers, not our results (docs/findings/prior_work.md S12)
+    "53.5": "Who&When best agent attribution accuracy, external benchmark (docs/findings/prior_work.md S12)",
+    "14.2": "Who&When best step attribution accuracy, external benchmark (docs/findings/prior_work.md S12)",
+    "2.0": "RoboTwin 2.0 name (docs/findings/prior_work.md S7)",
 }
 # year-like and ordinal tokens are exempt
 EXEMPT = re.compile(r"^(19|20)\d\d$")

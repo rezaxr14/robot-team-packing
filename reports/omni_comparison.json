@@ -1,6 +1,6 @@
 {
-  "created_utc": "2026-11-18T20:53:35.955468+00:00",
-  "git_sha": "8dd2520d9e6ebeb9cbdb32305523914b166705ec",
+  "created_utc": "2026-11-20T11:48:51.776473+00:00",
+  "git_sha": "a37153606b1fa5f7382423a9efe306b3d2800c05",
   "profile": "local_4050",
   "config_hash": "86187b4e72a73769",
   "config": "full",
@@ -132,6 +132,42 @@
       "paired_vs_ours": null,
       "how_run": "Kaggle-hosted teacher as Brain via rtp.llm_client (needs skill + CLI auth)",
       "note": ""
+    },
+    {
+      "model": "X-VLA 0.9B (LeRobot)",
+      "status": "not run",
+      "n": null,
+      "success": null,
+      "plan_pass": null,
+      "mean_msg_tokens": null,
+      "kind": null,
+      "paired_vs_ours": null,
+      "how_run": "0.9B Apache-2.0 cross-embodiment flow VLA; fine-tune on our sim demos through the bounded-delta interface",
+      "note": "external source, not reproduced here; adapter not set up"
+    },
+    {
+      "model": "pi0-FAST (LeRobot)",
+      "status": "not run",
+      "n": null,
+      "success": null,
+      "plan_pass": null,
+      "mean_msg_tokens": null,
+      "kind": null,
+      "paired_vs_ours": null,
+      "how_run": "3B FAST-token VLA; discrete-action baseline beside the flow-matching pi0/pi0.5 rows",
+      "note": "external source, not reproduced here; adapter not set up"
+    },
+    {
+      "model": "NSDL 3B (VIKI-SFT)",
+      "status": "not run",
+      "n": null,
+      "success": null,
+      "plan_pass": null,
+      "mean_msg_tokens": null,
+      "kind": null,
+      "paired_vs_ours": null,
+      "how_run": "open-weight neuro-symbolic planner with detect/schedule tools on VIKI-L2; rerun with our seeded scorer",
+      "note": "external source, not reproduced here; adapter not set up"
     }
   ]
 }

@@ -13,3 +13,6 @@ This table uses the fixed test seeds and the same symbolic CPU fixture for every
 | DP (diffusion policy) | not run | — | — | — | — | not run | fine-tune on our own sim demos (adapter not set up) |
 | DP3 | not run | — | — | — | — | not run | symbolic-skill / RoboTwin adapter (not set up) |
 | Frontier model as zero-shot Brain | not run | — | — | — | — | not run | Kaggle-hosted teacher as Brain via rtp.llm_client (needs skill + CLI auth) |
+| X-VLA 0.9B (LeRobot) | not run | — | — | — | — | not run | 0.9B Apache-2.0 cross-embodiment flow VLA; fine-tune on our sim demos through the bounded-delta interface; external source, not reproduced here; adapter not set up |
+| pi0-FAST (LeRobot) | not run | — | — | — | — | not run | 3B FAST-token VLA; discrete-action baseline beside the flow-matching pi0/pi0.5 rows; external source, not reproduced here; adapter not set up |
+| NSDL 3B (VIKI-SFT) | not run | — | — | — | — | not run | open-weight neuro-symbolic planner with detect/schedule tools on VIKI-L2; rerun with our seeded scorer; external source, not reproduced here; adapter not set up |

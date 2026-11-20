@@ -54,6 +54,17 @@ COMPARISON_ROSTER = (
     ("DP3", "symbolic-skill / RoboTwin adapter (not set up)", ""),
     ("Frontier model as zero-shot Brain",
      "Kaggle-hosted teacher as Brain via rtp.llm_client (needs skill + CLI auth)", ""),
+    # Added from docs/findings/omni_models.md (2026-11-20):
+    # feasible image+language robot models that complement the original roster.
+    ("X-VLA 0.9B (LeRobot)",
+     "0.9B Apache-2.0 cross-embodiment flow VLA; fine-tune on our sim demos through the bounded-delta interface",
+     "external source, not reproduced here; adapter not set up"),
+    ("pi0-FAST (LeRobot)",
+     "3B FAST-token VLA; discrete-action baseline beside the flow-matching pi0/pi0.5 rows",
+     "external source, not reproduced here; adapter not set up"),
+    ("NSDL 3B (VIKI-SFT)",
+     "open-weight neuro-symbolic planner with detect/schedule tools on VIKI-L2; rerun with our seeded scorer",
+     "external source, not reproduced here; adapter not set up"),
 )
 
 PREDICTION_REQUIRED = ("model", "seed", "success", "plan")
