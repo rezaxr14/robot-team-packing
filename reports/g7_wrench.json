@@ -1,0 +1,244 @@
+{
+  "gate": "G-7",
+  "step": "A4",
+  "evidence_class": "SIM",
+  "scope": "external wrench on a free body and on an Isaac Lab USD articulation; no FR3, no push test, no safety claim",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp-lang": "1.17.0",
+    "isaaclab": "28.0.0",
+    "isaaclab-newton": "9.1.4",
+    "torch": "2.11.0+cu130",
+    "numpy": "2.5.1"
+  },
+  "backport": "Isaac Lab commit 5608601d4 (PR #8269) re-applies wrenches on every solver substep; confirmed present by A2",
+  "direct_rows": [
+    {
+      "force_n": 5.0,
+      "substeps": 1,
+      "duration_s": 0.5,
+      "dt_frame_s": 0.01,
+      "force_every_substep": true,
+      "mass_kg": 8.0,
+      "final_velocity_m_s": [
+        0.3125,
+        0.0,
+        0.0
+      ],
+      "momentum_change": [
+        2.499999,
+        0.0,
+        0.0
+      ],
+      "expected_impulse": 2.5,
+      "rel_error": 0.0
+    },
+    {
+      "force_n": 10.0,
+      "substeps": 1,
+      "duration_s": 0.5,
+      "dt_frame_s": 0.01,
+      "force_every_substep": true,
+      "mass_kg": 8.0,
+      "final_velocity_m_s": [
+        0.625,
+        0.0,
+        0.0
+      ],
+      "momentum_change": [
+        4.999998,
+        0.0,
+        0.0
+      ],
+      "expected_impulse": 5.0,
+      "rel_error": 0.0
+    },
+    {
+      "force_n": 20.0,
+      "substeps": 1,
+      "duration_s": 0.5,
+      "dt_frame_s": 0.01,
+      "force_every_substep": true,
+      "mass_kg": 8.0,
+      "final_velocity_m_s": [
+        1.249999,
+        0.0,
+        0.0
+      ],
+      "momentum_change": [
+        9.999995,
+        0.0,
+        0.0
+      ],
+      "expected_impulse": 10.0,
+      "rel_error": 0.0
+    },
+    {
+      "force_n": 30.0,
+      "substeps": 1,
+      "duration_s": 0.5,
+      "dt_frame_s": 0.01,
+      "force_every_substep": true,
+      "mass_kg": 8.0,
+      "final_velocity_m_s": [
+        1.875001,
+        0.0,
+        0.0
+      ],
+      "momentum_change": [
+        15.000007,
+        0.0,
+        0.0
+      ],
+      "expected_impulse": 15.0,
+      "rel_error": 0.0
+    },
+    {
+      "force_n": 5.0,
+      "substeps": 4,
+      "duration_s": 0.5,
+      "dt_frame_s": 0.01,
+      "force_every_substep": true,
+      "mass_kg": 8.0,
+      "final_velocity_m_s": [
+        0.312501,
+        0.0,
+        0.0
+      ],
+      "momentum_change": [
+        2.500005,
+        0.0,
+        0.0
+      ],
+      "expected_impulse": 2.5,
+      "rel_error": 2e-06
+    },
+    {
+      "force_n": 10.0,
+      "substeps": 4,
+      "duration_s": 0.5,
+      "dt_frame_s": 0.01,
+      "force_every_substep": true,
+      "mass_kg": 8.0,
+      "final_velocity_m_s": [
+        0.625001,
+        0.0,
+        0.0
+      ],
+      "momentum_change": [
+        5.00001,
+        0.0,
+        0.0
+      ],
+      "expected_impulse": 5.0,
+      "rel_error": 2e-06
+    },
+    {
+      "force_n": 20.0,
+      "substeps": 4,
+      "duration_s": 0.5,
+      "dt_frame_s": 0.01,
+      "force_every_substep": true,
+      "mass_kg": 8.0,
+      "final_velocity_m_s": [
+        1.250003,
+        0.0,
+        0.0
+      ],
+      "momentum_change": [
+        10.00002,
+        0.0,
+        0.0
+      ],
+      "expected_impulse": 10.0,
+      "rel_error": 2e-06
+    },
+    {
+      "force_n": 30.0,
+      "substeps": 4,
+      "duration_s": 0.5,
+      "dt_frame_s": 0.01,
+      "force_every_substep": true,
+      "mass_kg": 8.0,
+      "final_velocity_m_s": [
+        1.874997,
+        0.0,
+        0.0
+      ],
+      "momentum_change": [
+        14.999974,
+        0.0,
+        0.0
+      ],
+      "expected_impulse": 15.0,
+      "rel_error": 2e-06
+    }
+  ],
+  "first_substep_only_control": {
+    "force_n": 10.0,
+    "substeps": 4,
+    "duration_s": 0.5,
+    "dt_frame_s": 0.01,
+    "force_every_substep": false,
+    "mass_kg": 8.0,
+    "final_velocity_m_s": [
+      0.625001,
+      0.0,
+      0.0
+    ],
+    "momentum_change": [
+      5.00001,
+      0.0,
+      0.0
+    ],
+    "expected_impulse": 5.0,
+    "rel_error": 2e-06
+  },
+  "composer_row": {
+    "force_n": 10.0,
+    "substeps": 4,
+    "duration_s": 0.5,
+    "dt_frame_s": 0.01,
+    "body_id": 2,
+    "velocity_m_s": [
+      0.0,
+      0.999999,
+      -4.905002
+    ],
+    "velocity_along_force": 0.999999,
+    "body_mass_kg": 1.0,
+    "expected_velocity_if_free_m_s": 5.0,
+    "note": "articulated body: momentum is shared with the chain, so the free-mass velocity is a reference, not a pass criterion. The direct free-body rows are authoritative for |dp - F t| <= 2%.",
+    "substeps_4_vs_1_velocity_ratio": 1.0,
+    "substeps_1_row": {
+      "force_n": 10.0,
+      "substeps": 1,
+      "duration_s": 0.5,
+      "dt_frame_s": 0.01,
+      "body_id": 2,
+      "velocity_m_s": [
+        0.0,
+        1.0,
+        -4.905002
+      ],
+      "velocity_along_force": 1.0,
+      "body_mass_kg": 1.0,
+      "expected_velocity_if_free_m_s": 5.0,
+      "note": "articulated body: momentum is shared with the chain, so the free-mass velocity is a reference, not a pass criterion. The direct free-body rows are authoritative for |dp - F t| <= 2%."
+    }
+  },
+  "checks": {
+    "newton_direct_all_rows_le_2pct": true,
+    "substeps_4_full_impulse": true,
+    "substeps_1_full_impulse": true,
+    "composer_path_ran": true,
+    "composer_substeps4_matches_substeps1": true
+  },
+  "not_done": [
+    "FR3 end-effector/elbow deflection under push (A5)",
+    "human-hand proxy contact",
+    "hardware"
+  ],
+  "result": "PASS"
+}
