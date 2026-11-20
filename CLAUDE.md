@@ -13,6 +13,13 @@ These rules come from explicit user instructions. They override generic "helpful
    The old `~/rtp_work` tree was removed on 2026-11-20 after moving `IsaacLab` into
    `.isaac/` inside this repo and the Newton venv into `~/venvs/isaac_newton`. Do not recreate it.
 
+## 0b. Verbatim prompt log (explicit user instruction, 2026-11-20)
+
+* **Append every user message verbatim to `docs/USER_PROMPTS_VERBATIM.md` before acting on it** —
+  typos, spelling, profanity and line breaks preserved. Never summarise, reorder or edit old entries.
+* Harness continuation messages and subagent reports are not user prompts; skip them.
+* This log is how the user measures faithfulness to his instructions.
+
 ## Git
 
 1. **NEVER push to git without explicit, per-instance user approval.** "Push the commit" / "push it" means: show the exact commit(s) and remote, then wait for an explicit yes. A previous push approval does not cover the next push. The only exception already given was the one-time push of commit `75e2344` on 2026-11-20.

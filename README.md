@@ -21,6 +21,7 @@ reward source, not a physics result**.
 **Authoritative** (follow these where anything else differs):
 - [`docs/STATUS_HONEST.md`](docs/STATUS_HONEST.md) — claim-by-claim status and evidence classes; no result without a report.
 - [`docs/USER_PLAN_VERBATIM.md`](docs/USER_PLAN_VERBATIM.md) — the user's instruction, verbatim.
+- [`docs/USER_PROMPTS_VERBATIM.md`](docs/USER_PROMPTS_VERBATIM.md) — every user message verbatim, for faithfulness checks.
 - [`DECISIONS.md`](DECISIONS.md) — every user decision and constraint (D-nn).
 - [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) — plan v3 and the exact M1–M8 benchmark matrix (§10).
 - [`docs/AGENT_RUNBOOK.md`](docs/AGENT_RUNBOOK.md) — execution order: arms first (A1–A10), then R4–R9.
