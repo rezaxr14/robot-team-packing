@@ -64,7 +64,7 @@ def build(seed: int):
         rng = np.random.default_rng(seed)
         items = []
         obj_bodies = []
-        xs = np.linspace(-0.72, 0.72, 5)
+        xs = np.linspace(-0.5, 0.5, 5)
         for i, x in enumerate(xs):
             for j in range(2):
                 y = -0.22 + 0.11 * j
@@ -110,7 +110,7 @@ def main() -> int:
               "seed": 7, "checks": {}}
     try:
         model, state, control, items, offsets, obj_bodies = build(7)
-        solver = newton.solvers.SolverMuJoCo(model, njmax=256, nconmax=256)
+        solver = newton.solvers.SolverMuJoCo(model, njmax=512, nconmax=512)
         cp = newton.CollisionPipeline(model)
         contacts = cp.contacts()
         t0 = time.perf_counter()
@@ -124,7 +124,7 @@ def main() -> int:
         digest = hashlib.sha256(np.round(bq, 3).tobytes()).hexdigest()[:16]
         # determinism: rebuild and replay the same seed, compare state hash
         m2, s2, c2, _, _, _ = build(7)
-        solver2 = newton.solvers.SolverMuJoCo(m2, njmax=256, nconmax=256)
+        solver2 = newton.solvers.SolverMuJoCo(m2, njmax=512, nconmax=512)
         cp2 = newton.CollisionPipeline(m2)
         ct2 = cp2.contacts()
         for _ in range(nsteps):

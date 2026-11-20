@@ -31,7 +31,7 @@ class NewtonPackingSim:
         self.layout = layout or LAYOUT
         self.arm_zones = {"L": {"table_left", "table_center", "bag"},
                           "R": {"table_right", "table_center", "bag"}}
-        self.payload = {"L": 3.0, "R": 3.0}
+        self.payload = {"L": 2.5, "R": 2.5}  # 3 kg FR3 rating minus gripper
         self.force_limit = {"L": 40.0, "R": 40.0}
         self._model = self._state = self._control = None
         self._items = []
@@ -40,6 +40,7 @@ class NewtonPackingSim:
 
     # -- SimBackend -------------------------------------------------------------------
     def reset(self, seed: int) -> None:
+        self._seed = int(seed)
         import newton
         from ops.a6_scene import build
 
@@ -66,34 +67,64 @@ class NewtonPackingSim:
         return [ObjState(**s.__dict__) for s in self._states]
 
     def run_skill(self, arm: str, skill: str, obj: str | None, params: dict) -> SkillReport:
+        # Reuse the canonical, already-tested skill rules instead of re-implementing them.
+        # The scripted IK path (rtp.control.scripted_ik) is checked for every physical skill;
+        # an unreachable target is reported as out_of_reach before the symbolic outcome.
+        from rtp.skills import CATEGORIES
+        from rtp.world import Obj, World, crush_limit, required_force
+        from rtp.control.scripted_ik import solve_ik
+        from rtp.control.fr3_kinematics import Q_HOME
+
         pre = self.object_states()
         by_name = {s.name: s for s in self._states}
         target = by_name.get(obj or "")
-        touch = {}
-        if target is not None:
-            target.touched = True
-            if skill == "grasp":
-                target.held_by = arm
-                touch["grasp_force_N"] = float(params.get("force", 5.0))
-            elif skill in ("place", "push_aside"):
-                target.held_by = None
-                if skill == "place":
-                    target.pos = (self.layout.bag_center[0], self.layout.bag_center[1],
-                                  self.layout.bag_floor_z + target.size / 2)
-                else:
-                    target.pos = (target.pos[0] + 0.05, target.pos[1], target.pos[2])
-            elif skill == "release":
-                target.held_by = None
-        elif skill == "handover":
-            holder = next((s for s in self._states if s.held_by == arm), None)
-            if holder is not None:
-                holder.held_by = "R" if arm == "L" else "L"
-        post = self.object_states()
-        category, derived_touch = report_from_states(
-            arm, skill, obj, params, pre, post, self.layout,
-            self.arm_zones, self.payload,
-            getattr(self, "lock_holder", None),
-        )
-        touch.update(derived_touch)
-        return SkillReport(category=category, touch=touch,
-                           detail="sim_pose_standin (A6); not physical skill evidence")
+        if target is not None and skill in ("grasp", "weigh", "push_aside", "place"):
+            if target.held_by is None:
+                ik = solve_ik(Q_HOME, (target.pos[0], target.pos[1], target.pos[2]),
+                              max_iters=120, pos_tol=5e-3)
+                if not ik.converged:
+                    return SkillReport(category="out_of_reach", touch={},
+                                       detail="scripted IK could not reach target (SIM-POSE stand-in)")
+
+        if skill == "grasp" and target is not None:
+            if target.mass > self.payload.get(arm, 2.5):
+                return SkillReport(category="overload", touch={}, detail="mass above payload")
+            force = float(params.get("force", 10.0))
+            probe = Obj(name=target.name, cls=target.cls, mass=target.mass,
+                        fragility=target.fragility, size=target.size,
+                        friction=target.friction, region=target.init_region)
+            if force > crush_limit(probe):
+                return SkillReport(category="crush", touch={"peak_force": force},
+                                   detail="commanded force above crush limit")
+            if force < required_force(probe):
+                return SkillReport(category="slip", touch={"peak_force": force},
+                                   detail="commanded force below slip threshold")
+
+        objs = []
+        for s in self._states:
+            region = ("held:" + s.held_by) if s.held_by else s.init_region
+            objs.append(Obj(name=s.name, cls=s.cls, mass=s.mass, fragility=s.fragility,
+                            size=s.size, region=region, friction=s.friction,
+                            is_distractor=s.is_distractor, init_region=s.init_region))
+        w = World(objs, seed=self._seed, deterministic=True)
+        w.holding = {a: next((s.name for s in self._states if s.held_by == a), None)
+                     for a in ("L", "R")}
+        w.lock_holder = getattr(self, "lock_holder", None)
+        w.bag = {c: [] for c in ("main", "front", "laptop")}
+        for s in self._states:
+            if s.init_region.startswith("bag:"):
+                w.bag[s.init_region.split(":", 1)[1]].append(s.name)
+        res = w.execute(arm, skill, obj, params)
+        # sync state
+        world_by = w.objs
+        for s in self._states:
+            o = world_by[s.name]
+            s.init_region = o.region
+            s.held_by = o.region.split(":", 1)[1] if o.region.startswith("held:") else None
+            s.touched = s.touched or o.moved
+            if o.region.startswith("bag:"):
+                s.pos = (self.layout.bag_center[0], self.layout.bag_center[1],
+                         self.layout.bag_floor_z + s.size / 2)
+        category = "success" if res.ok else (res.cause if res.cause in CATEGORIES else "other_failure")
+        return SkillReport(category=category, touch=dict(res.touch),
+                           detail="sim_pose_standin with canonical rules; not physical skill evidence")

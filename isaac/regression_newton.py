@@ -51,11 +51,14 @@ class NewtonSkillExecutor:
         return self.backend.run_skill(arm, skill, obj, params).category
 
     def state(self):
+        bag = {c: [] for c in ("main", "front", "laptop")}
+        for s in self.backend._states:
+            if s.init_region.startswith("bag:"):
+                bag[s.init_region.split(":", 1)[1]].append(s.name)
         return {
             "holding": {a: next((s.name for s in self.backend._states if s.held_by == a), None)
                         for a in ("L", "R")},
-            "bag": {"main": [s.name for s in self.backend._states
-                             if abs(s.pos[0] - 0.0) < 0.22 and abs(s.pos[1] - 0.25) < 0.14]},
+            "bag": bag,
         }
 
 
