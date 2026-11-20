@@ -1,0 +1,49 @@
+# A7/A10 pre-registered arm certification thresholds.
+# Written BEFORE looking at any arm result (docs/AGENT_RUNBOOK.md A7 step 3).
+# Do not raise a threshold or loosen a tolerance after seeing measurements; a failing
+# skill is fixed in the controller/skill, not by editing this file.
+version: 1
+date: 2026-11-20
+evidence_class_required: SIM   # Newton articulation; SIM-POSE/SIM-ABSTRACT are not enough
+
+thresholds:
+  nominal_success_min: 0.90      # per skill, per condition grid cell aggregate
+  push_perturbed_success_min: 0.80
+  clamp_violations_max: 0
+  leash_violations_max: 0
+  torque_rate_violations_max: 0
+  min_trials_a7: 200             # per skill, seeded
+  min_trials_a10: 500            # per skill, per condition sample
+
+# Wilson 95% intervals and paired bootstrap over seeds for all reported rates.
+intervals:
+  method: wilson
+  confidence: 0.95
+
+# Skill vocabulary must match rtp/skills.py and rtp/datagen_memory.FIX.
+skills:
+  - grasp
+  - place
+  - release
+  - retreat
+  - weigh
+  - handover
+  - push_aside
+
+# Condition grid for A10 (a fixed sample of this grid is allowed if the full product is too slow;
+# the sample and its hash must be written into every certification card).
+conditions:
+  mass_kg: [0.1, 0.5, 1.0, 2.0, 3.0]
+  friction: [0.3, 0.6, 0.9]
+  fragility: [0.0, 0.5, 1.0]
+  grasp_force_factor: [0.7, 1.0, 1.3]
+  position_noise_mm: [0.0, 5.0, 10.0]
+  push_perturbed: [false, true]
+
+# Placeholders until ISO 10218-2:2025 is read and hardware sign-off happens (D-22).
+# These are NOT safety limits and must never be presented as such.
+placeholder_caps:
+  note: "placeholder; not a safety certification"
+  force_n: 40.0
+  moment_nm: 4.0
+  speed_m_s: 0.5

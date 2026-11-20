@@ -247,3 +247,28 @@ we dont use claude.md idiot we use agent.md
 ```
 make a proper rule inside .agent folder 
 ```
+
+### U047
+```
+status update
+```
+
+### U048
+```
+Continue working toward the active goal.
+```
+
+### U049
+```
+stupid moron my credintails are in .env
+```
+
+### U050
+```
+stop fuking with kaggle and train the arms you shit head 
+```
+
+### U051
+```
+dont change my instructions and plan
+```
