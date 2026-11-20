@@ -1,5 +1,14 @@
 \section{Introduction}\label{sec:intro}
 
+\paragraph{The objective: arms first.}
+We study a two-arm kitchen-packing team built around one ordering constraint: the arms are trained and certified \emph{before} any language-model data generation (decision D-62).
+Two Franka Research 3 arms run a 1\,kHz Cartesian impedance controller with a compliance supervisor that turns an external push into a bounded sequence --- push, yield, return, resume --- pausing the plan clock while the arm yields.
+The single vision-language Brain emits skill calls and eye commands only; it never emits joints, stiffness, speeds or torque limits.
+Around that substrate the design places a scene bundle of NVIDIA SimReady USD assets and \emph{measured} arm outcome tables, multi-turn episodes with hosted frontier models on CPU-only Kaggle tasks, capture of every turn, and replay-verified ingest into a success/failure memory and a per-model ledger.
+Only records made under a certified arm model are eligible for supervised fine-tuning, after which the Brain is trained with GRPO at $k=4$ and $k=8$ and evaluated on the held-out matrix M1--M8.
+This is the system we describe; its ordering, gates and evidence classes are stated explicitly below.
+\todo{The certification gates A1--A10 and the data-generation gates DG-1--DG-5 have not run; no frontier model has been called, and no training or benchmark result exists.}
+
 A team of language-model agents that packs a bag with two robot arms can fail for at least three different reasons.
 A computer-vision Eye may misjudge what is on the table, a planner may order the packing wrongly, or an arm may drop or crush an item.
 When the only recorded outcome is \emph{the bag is wrong}, these causes are indistinguishable, and so is the training signal that follows: a reward for the whole team cannot say which agent to improve.
@@ -20,24 +29,28 @@ Both are cheap to state and easy to test in a symbolic world, which is why we bu
 \label{fig:mechanism}
 \end{figure*}
 
-We design the team so that this tracing is possible by construction (\cref{fig:overview}).
+We design the team so that this tracing is possible by construction (\cref{fig:overview,sec:arch}).
 \emph{Roles are separated by interface}: only the Eyes receive pixels, only the Brain plans, and the Arms are blind executors that report force and touch.
 All communication is a typed, budgeted message (\cref{sec:bus}), so every claim an agent makes about the scene can be compared with what another agent later observes.
 The Brain works from a small file-based harness and can check a plan with a deterministic dry run before anything moves (\cref{sec:harness,sec:tools}).
 Because the roles are separate, two training signals become natural: replaying an episode with one Eye's report replaced estimates how much that Eye cost the team, and finished episodes, including failed ones, can be relabeled with what the team actually achieved (\cref{sec:signals}).
-A single success checker scores the symbolic world and a pose-level simulator and is designed to extend to Isaac Lab (\cref{sec:bridge}), so that a claim made in the cheap world can eventually be re-tested under physics \todo{only the Newton rgb/depth stepping gate G-3 is measured; the manipulation scene and its checker do not exist}.
+A single success checker scores the symbolic world and a pose-level simulator and is designed to extend to Isaac Lab~3.0 with Newton (\cref{sec:bridge}); only the Newton rgb/depth stepping gate G-3 is measured, and the manipulation scene and its checker do not exist \todo{no Isaac Lab manipulation result}.
 
 \paragraph{Contributions.}
 \begin{enumerate}[leftmargin=*,itemsep=1pt]
-\item A role-separated team design with typed messages, a harness and verification tools in which each failure has an interface to blame (\cref{sec:method}).
-\item Two learning signals, counterfactual Eye credit under common random numbers and team hindsight relabeling with a replay check, specified with their assumptions (\cref{sec:signals}).
-\item One success definition shared by a symbolic world and a pose-level simulator, designed to extend to Isaac Lab, so plan validity and physical success can be compared \todo{only the gate is measured; no Isaac Lab manipulation result} (\cref{sec:bridge}).
-\item An audit of the upstream VIKI-Bench level-2 scorer with a synthetic demonstration, and an evaluation protocol that separates evidence classes (\cref{sec:experiments}).
+\item An arms-first architecture: compliant FR3 arms under an impedance plus compliance supervisor (push $\to$ yield $\to$ return $\to$ resume), a hard responsibility split in which the Brain emits skills and never low-level control, and certification gates placed ahead of data generation \todo{arm certification A1--A10 is not done; A1 kinematics is a SIM-POSE measurement only} (\cref{sec:arch}).
+\item A scene bundle that pairs SimReady USD assets with measured arm outcome tables, and two movable eyes on a ring exposing a rendered view library and a tool surface \todo{asset ingestion is partial; the bundle and view library are not built} (\cref{sec:arch,sec:bridge}).
+\item A hosted multi-turn data-generation loop that captures every turn of frontier-model episodes, replay-verifies them, and maintains a success/failure memory and a per-model ledger, with SFT eligibility restricted to certified arm models \todo{built and fixture-tested on SIM-POSE; not run on Kaggle} (\cref{sec:arch}).
+\item A training and evaluation protocol: SFT followed by GRPO at $k=4$ and $k=8$ under a KL budget, scored on held-out seeds through the exact M1--M8 matrix, with evidence classes never pooled \todo{protocol only; no trained model or benchmark row exists} (\cref{sec:matrix,sec:experiments}).
+\item Interface-level attribution mechanisms --- counterfactual Eye credit and team hindsight relabeling with a replay check --- specified on a symbolic fixture, together with an audit of the upstream VIKI-Bench level-2 scorer \todo{FIXTURE evidence only} (\cref{sec:signals,sec:experiments}).
 \end{enumerate}
 
 \paragraph{Status of the evidence.}
-This version contains no reportable task-success, benchmark or comparison result.
-The system is implemented and its wiring is tested. Gates G-1, G-2, G-3 and G-14 record \emph{engineering} measurements on the real stack --- the Qwen3.5 module map, the DeltaNet fast path, Newton-only rgb/depth stepping on both an RTX 4050 and a Kaggle T4 (a falling cube, stepped on one of the two available devices at a time), and a four-step QLoRA run that resumes mid-epoch from a checkpoint fetched from our private repository; the last is a smoke test, not a trained model. Gate G-6 adds a \emph{simulation-only} impedance cross-check (analytic step error 0.27\,\%, with a push and return measured), not a safety certification. These gates establish that the pipeline runs; they are not evidence about packing performance.
-The mechanism figures and appendix~F come from a symbolic fixture with a scripted Brain and parametric Eyes (evidence class FIXTURE), which checks that mechanisms work and says nothing about trained agents.
-\todo{Pending, with no report: SimReady asset ingestion and an asset-based kitchen scene; frontier-model CoT (\texttt{RTP\_SERVE\_URL} unset, scripted teacher traces only); training on environment episodes; a fixed held-out test set; omni-model scores; and impedance control on hardware. G-14 is a smoke, not a model-quality result.}
+This version contains no reportable task-success, benchmark, comparison or hardware-safety result.
+Every claim carries an evidence class (FIXTURE, SIM-POSE, SIM-ABSTRACT, SIM, MODEL, HARDWARE), and classes are never pooled into one number.
+The following gates are measured: G-1 and G-2 (the Qwen3.5 module map and the DeltaNet fast path), G-3 (Newton-only rgb/depth stepping on an RTX~4050 and a Kaggle T4 --- a falling cube, one device at a time), G-14 (a four-step QLoRA run that resumes mid-epoch from our private repository --- a smoke, not a model), G-6 (a \emph{simulation-only} impedance cross-check: analytic step error 0.27\,\%, with a push and return measured) and G-6b (the compliance supervisor on a SIM-ABSTRACT point mass, 8 of 8 rows).
+Step A1 adds a SIM-POSE, kinematics-only measurement: our FR3 flange forward kinematics agrees with Newton to within 0.00224\,mm over 102 configurations (\texttt{reports/g5\_reach.json}); it is not a manipulation or safety result.
+Gates G-5, G-7 and G-13 are not run; steps A2--A10 and the data-generation gates DG-1--DG-5 have no reports.
+The mechanism figures and appendix~F come from a symbolic fixture with a scripted Brain and parametric Eyes (FIXTURE); the asset-backed traces and memory are SIM-POSE.
+\todo{Pending with no report: frontier-model CoT (\texttt{RTP\_SERVE\_URL} unset, scripted-teacher traces only); a fixed held-out test set; omni-model scores; the Newton manipulation scene; arm certification; and all hardware results. We make no claim that the arms are safe around people: hardware safety sign-off is assigned to a separate future track (D-22).}
 Every unfilled number is a red flag and a row in a machine-readable pending list; \cref{tab:evidence} states the status of each evidence class.

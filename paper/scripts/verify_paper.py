@@ -34,6 +34,9 @@ VERIFIED_FACTS = {
     "137": "tests passed on CPU, measured in this build", "13_tests": "tests skipped", "5.x": "Isaac Sim pairing (planned)", "2.3": "Isaac Lab pairing (planned)",
     "95": "confidence level of Wilson / bootstrap intervals (convention)", "0.4": "fixture omission probability (scripts/collect_fixture.py)",
     "11": "python 3.11 mention", "3.11": "python version (planned)", "16_gb": "T4 memory", "45": "weights count", "50": "x",
+    # A1 (SIM-POSE, kinematics only): reports/g5_reach.json, ops/g5_reach.py
+    "0.00224": "max FR3 flange position error in mm over 102 configurations (reports/g5_reach.json, A1)",
+    "102": "configurations compared in the A1 FK reach test (reports/g5_reach.json)",
 }
 # year-like and ordinal tokens are exempt
 EXEMPT = re.compile(r"^(19|20)\d\d$")

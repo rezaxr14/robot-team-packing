@@ -1,6 +1,7 @@
 \section{Conclusion}\label{sec:conclusion}
-We described a language-coordinated robot team whose roles are separated by interface, so that a failure has an owner, and two training signals that follow from the separation: counterfactual Eye credit and team hindsight relabeling with a replay check.
-One success definition scores a symbolic world, a pose-level simulator and Isaac Lab, so plan validity and physical success can be compared.
+We described a two-arm kitchen-packing team whose ordering constraint is to certify the compliant arms before any language-model data generation: an impedance and compliance supervisor provides push, yield, return and resume behaviour, and the Brain emits only skills and eye commands, never joints, gains or speeds.
+Around that substrate we placed two movable eyes with a rendered view library and tool surface, a scene bundle of SimReady USD assets and measured arm outcome tables, a hosted multi-turn data loop that captures every frontier-model turn and replay-verifies it into a success/failure memory and a per-model ledger, and a training path of SFT and GRPO at $k=4$ and $k=8$ scored on the held-out M1--M8 matrix.
+The interface separation also makes failures attributable, and we specified two training signals that follow from it: counterfactual Eye credit and team hindsight relabeling with a replay check.
 An audit of the upstream level-2 scorer shows, on a synthetic case, how random start positions can make scores depend on luck.
-The system is implemented and its mechanisms are checked on a fixture; the evaluation protocol is fixed and every trained-model, benchmark and physics result is pending.
-The next step is to fill \cref{tab:trackA,tab:main,tab:ablations,tab:credit,tab:attribution}, and to report them under their evidence classes.
+The system architecture and evaluation protocol are fixed, and engineering gates and evidence classes are reported separately; every arm-certification, data-generation, trained-model, benchmark and hardware result is pending, and we make no safety claim about the arms (D-22).
+The next step is to run the arms-first runbook and the Kaggle data gates, then to fill \cref{tab:trackA,tab:main,tab:ablations,tab:credit,tab:attribution} and the matrix of \cref{sec:matrix}, reporting each row under its own evidence class.

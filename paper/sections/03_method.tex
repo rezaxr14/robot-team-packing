@@ -8,13 +8,35 @@
 \stalefig{the roles in the lower band are from the old design: the Eye is drawn as ``LoRA fine-tuning'' and the Brain as a text-only planner. The Eyes are conventional computer vision --- a detector plus OpenCV geometry, never a language model --- and the Brain is one Qwen3.5-4B vision-language model that receives typed claims only (no pixels) and commands both arms and both Eyes (D-05, D-06, D-52). Redraw the Eye box as detector training plus credit-weighted selection among candidate readings, label the Brain ``Qwen3.5-4B'' (typed claims in, plan out), and label the Arms FR3 + Franka Hand. Keep the typed-bus, message-stream and force-window panels.}
 \end{figure*}
 
+\subsection{System architecture and ordering}\label{sec:arch}
+The corrected system is a four-layer stack with one hard ordering rule.
+At L0, hardware safety is independent of software; at L1 a 1\,kHz Cartesian impedance controller tracks a reference pose as a spring-damper and yields to external force; at L2 the planner, skills and bounded learned deltas select stiffness \emph{profiles} from an allow-list; at L3 one Brain emits skill calls and eye commands.
+The Brain may never emit joints, waypoints, gains, stiffness, speeds or torques, and may not bypass the verifier; learned policies may only modulate bounded deltas inside the impedance clamps.
+This split is the interface contract that makes the later attribution possible.
+
+\paragraph{Arms first, before any language-model data.}
+The two arms are Franka Research 3 manipulators with Franka Hands.
+Their defining behaviour is compliance: a push on any part of an arm produces a spring-like deflection, the plan clock pauses, the arm returns smoothly at bounded speed on release, and the plan resumes.
+The compliance supervisor implements a plan-clock gate, a force-dependent leash, force and torque clamps and a torque-rate limit, and exposes \textsc{pushed}, \textsc{yielded} and \textsc{resumed} events to the loop; the Brain cannot override a pause and may only replan after \textsc{resumed} or time out into a retreat.
+The ordering rule D-62 is that these skills are trained and certified in Newton \emph{before} large-scale frontier data generation: records carry an \texttt{arm\_model}, and only records made under a certified arm model are admitted to SFT.
+Cheap-model harness and chain-of-thought bring-up may run earlier under a stand-in pose model, but those records are excluded from training.
+\todo{The certification gates A1--A10 (kinematics, arm API findings, single-arm smoke, wrench injection, compliant control on the articulation, two-arm scene, scripted skills, distillation, push-perturbed evaluation, certification cards and outcome tables) have not run; only the A1 kinematics half of G-5 is measured, as SIM-POSE. Compliance is a measured control behaviour on an abstract plant (G-6b, SIM-ABSTRACT), not a safety result. Hardware safety sign-off belongs to a separate future track (D-22); we do not claim the arms are safe around people.}
+
+\paragraph{Eyes, the scene bundle and the hosted data loop.}
+Two movable eyes sit on a ring (radius 1.6\,m, height 2.2\,m, opposed and perpendicular to the arm axis), each with pan, tilt and zoom tools; they are detectors plus OpenCV geometry, never language models.
+In the design, rendering the scene across eye stations, zoom levels and pan/tilt settings produces a view library with a tool surface, packaged together with the SimReady USD assets and the measured arm outcome tables into a hashable scene bundle.
+Because hosted Kaggle tasks are CPU-only and run one model per run, episodes execute against the bundle on the CPU: the frontier model sees the cached views and sampled certified outcomes through the same skill and tool schemas, and the scene cannot itself run inside a hosted task.
+Every turn (completion, usage, latency, finish reason, tool calls, plans and outcome) is captured, replay-verified through the same code path, quarantined on mismatch, written to a per-model ledger, and used to rebuild a success/failure memory for the next iteration; evaluation-mode records never feed memory or training.
+The trained Brain is then obtained by SFT on the curated corpus and GRPO at $k=4$ and $k=8$ against the frozen SFT reference with a hard KL budget, with yield compliance in the reward; scoring uses the held-out matrix of \cref{sec:matrix}.
+\todo{The scene bundle and view library are not built (G-13 asset ingestion is partial); the hosted data loop is built and fixture-tested on SIM-POSE but never run on Kaggle; DG-1--DG-5 have no reports; no SFT or GRPO model and no benchmark row exists.}
+
 \subsection{Task, roles and failure model}\label{sec:task}
 The task is to pack a backpack from a table: given a short natural-language instruction (for example which items to pack and which rules to respect), two arms must place the requested items into the bag's compartments.
 The six rules are in \cref{tab:rules}: heavier items go first so that they sit at the bottom of the main compartment, the laptop goes in its slot, the bottle stays upright and apart from the laptop, the lunchbox goes in last, distractor items are left alone, and only one arm may be at the bag at a time.
-The team has three kinds of agents (\cref{fig:overview}).
-Each \emph{Eye} is a conventional computer-vision pipeline --- a detector plus OpenCV geometry --- that sees an image and emits a typed SCENE claim listing each object's class, region, estimated mass and fragility; an Eye is never a language model.
-The \emph{Brain} is one Qwen3.5-4B vision-language model that commands both arms and both Eyes; in this design it is given no pixels, only typed claims, and plans a directed acyclic graph of grasp and place tasks.
-Each \emph{Arm} is blind: it has proprioception, force sensing and a skill interface, and reports what it feels.
+The team has three kinds of agents (\cref{fig:overview}, \cref{sec:arch}).
+Each \emph{Eye} is a conventional computer-vision pipeline --- a detector plus OpenCV geometry --- mounted on a movable ring station; it sees an image and emits a typed SCENE claim listing each object's class, region, estimated mass and fragility, and is never a language model.
+The \emph{Brain} is one Qwen3.5-4B vision-language model that commands both arms and both Eyes; in this design it is given no pixels, only typed claims, and plans a directed acyclic graph of grasp and place tasks as skill calls with declared parameters.
+Each \emph{Arm} is a Franka Research 3 with a Franka Hand: blind to pixels, with proprioception, force sensing and a skill interface, tracking references through the compliant L1 layer and reporting what it feels, including push and yield events.
 Failures are charged to an agent by the loop's attribution rules (\cref{sec:success}); these are heuristic labels, which we validate in \cref{sec:experiments}.
 
 \begin{table}[tbp]
@@ -106,6 +128,8 @@ These are heuristics; \cref{tab:attribution} is the hand-labelled check we owe t
 \Cref{fig:signals} lists what trains what.
 Each Eye's detector is trained on rendered images with SCENE-JSON targets and then improved by reward-weighted selection among its candidate readings: $K=8$ reports per image, scored by field accuracy or by counterfactual credit. There is no language model in the Eyes. \todo{Detector training and reward-weighted selection are specified here, not measured; no trained Eye is reported.}
 The Brain is fine-tuned on teacher plans that were validated by closed-loop success and then optimized with GRPO using a plan-level reward $R = 0.1\,r_{\text{format}} + 0.2\,r_{\text{feasible}} + 0.6\,r_{\text{rules}} + 0.1\,r_{\text{length}}$, optionally plus a closed-loop rollout term; the components are defined in \cref{fig:signals}.
+In the arms-first design (\cref{sec:arch}) the supervised corpus is restricted to certified-arm records, and GRPO is run at $k=4$ and $k=8$ with a rollout that is a full multi-turn episode and a group of $k$ samples of the same seed; reward adds closed-loop success, rule satisfaction and plan validity and subtracts eye cost and length, a plan that resumes while \textsc{yielded} is a violation, and KL to the frozen merged SFT model is logged with a hard stop.
+\todo{These GRPO stages and the certified-arm corpus are a protocol, not a measured result; GRPO has not been run.}
 The Arms are a small transformer trained by distillation of scripted differential-IK demonstrations with a flow-matching action head: with $x_t=(1-t)x_0+t\,x_1$, noise $x_0$ and action chunk $x_1$, the network predicts $x_1-x_0$; sampling uses eight Euler steps, a chunk of 16 actions of dimension 8, and executes the first four before replanning.
 There is no learned stop signal, so a skill ends by a scripted completion test.
 
@@ -144,9 +168,10 @@ The relabeled instruction is weaker than the original, so relabeled data teaches
 \end{figure*}
 
 \subsection{One success definition across three worlds}\label{sec:bridge}
-The same team runs in three worlds (\cref{fig:bridge}): the symbolic world, in which the loop is developed; a pose-level fake simulator that takes poses, maps them to regions and compartments through a bridge and reproduces the symbolic world's loop outcomes in tests; and Isaac Lab, where skill outcomes (success, slip, crush, out of reach, wrong slot, no space, locked, overload, not holding, hand full) are derived from the state before and after a skill.
-Because \texttt{rules.check\_final} scores all three, the difference between a plan that is valid in the symbolic world and one that succeeds under physics can be measured instead of assumed.
+The same team is designed to run in three worlds (\cref{fig:bridge}): the symbolic world, in which the loop is developed; a pose-level, CPU-only simulator that takes poses, maps them to regions and compartments through a bridge and reproduces the symbolic world's loop outcomes in tests (evidence class SIM-POSE); and Isaac Lab~3.0 with Newton, the only physics stack (D-25), where skill outcomes (success, slip, crush, out of reach, wrong slot, no space, locked, overload, not holding, hand full) are derived from the state before and after a skill and human pushes are injected on the articulation.
+Because \texttt{rules.check\_final} is intended to score all three, the difference between a plan that is valid in the symbolic world and one that succeeds under physics could be measured instead of assumed.
 The pose-level test validates the integration, not the physics.
+\todo{Only the Newton rgb/depth stepping gate G-3 is measured (a falling cube); the two-arm manipulation scene, its checker and the push tests G-7/G-6 on the articulation do not exist. The A1 kinematics agreement (0.00224\,mm over 102 configurations, \texttt{reports/g5\_reach.json}) is SIM-POSE and kinematics only.}
 
 \begin{figure*}[tbp]
 \centering
