@@ -14,6 +14,13 @@ These rules come from explicit user instructions. They override generic "helpful
    `.isaac/` inside this repo and merging all venvs into the single `~/venvs/rtp`. Do not
    recreate it, do not make a second venv, and do not install packages at project level.
 
+0a. **Do NOT download or copy model weights into a repo-root `models/` folder.** The only
+   model store is `~/models` (already contains `Qwen3.5-4B`, hard-linked/symlinked where needed into
+   any cache). `ops/env.sh` sets `MODELS=$HOME/models`. Never run `download_model.sh` or any
+   HF/Kaggle fetch that writes to `$RTP_ROOT/models`, never recreate that directory, and never
+   spend bandwidth re-downloading weights we already have. Verified by
+   `tests/test_workspace_boundary.py::test_models_live_outside_the_repo`.
+
 ## 0b. Verbatim prompt log (explicit user instruction, 2026-11-20)
 
 * **Append every user message verbatim to `docs/USER_PROMPTS_VERBATIM.md` before acting on it** —

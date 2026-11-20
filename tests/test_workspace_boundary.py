@@ -56,6 +56,13 @@ def test_vendored_isaac_lab_lives_inside_the_project():
     assert isaac.is_dir(), "Isaac Lab source must be inside the project (.isaac/IsaacLab)"
 
 
+def test_models_live_outside_the_repo():
+    env = (ROOT / "ops" / "env.sh").read_text()
+    m = re.search(r'^export MODELS="([^"]+)"', env, re.M)
+    assert m and "$HOME/models" in m.group(1), "MODELS must point to ~/models"
+    assert not (ROOT / "models").exists(), "a repo-root models/ folder was recreated"
+
+
 def test_no_python_cache_escaped_to_home_root():
     # A common failure mode is `pip install --user` or running python from $HOME.
     assert not list(Path.home().glob("robot_team*.egg-info"))

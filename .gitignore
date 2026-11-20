@@ -25,5 +25,4 @@ assets/cache/
 .tools/
 .tmp/
 .pip_cache/
-ops/kaggle/multiturn/task.py
 
