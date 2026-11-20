@@ -63,6 +63,7 @@ def build(seed: int):
         # objects: name, x, y, hx, hy, hz, mass
         rng = np.random.default_rng(seed)
         items = []
+        obj_bodies = []
         xs = np.linspace(-0.72, 0.72, 5)
         for i, x in enumerate(xs):
             for j in range(2):
@@ -72,6 +73,7 @@ def build(seed: int):
                 py = float(y + rng.uniform(-0.006, 0.006))
                 items.append((f"item_{i}_{j}", px, py, hx, hy, hz))
                 bb = builder.add_body(mass=0.1 + 0.05 * i)
+                obj_bodies.append(bb)
                 builder.add_shape_box(body=bb,
                                       xform=wp.transform(wp.vec3(px, py, TABLE_TOP + hz + 0.001), wp.quat_identity()),
                                       hx=hx, hy=hy, hz=hz, color=(0.7, 0.45, 0.25))
@@ -94,7 +96,7 @@ def build(seed: int):
     state.joint_q = wp.array(q.astype(np.float32), dtype=state.joint_q.dtype, device=model.device)
     control.joint_target_q = wp.array(q.astype(np.float32), dtype=control.joint_target_q.dtype,
                                       device=model.device)
-    return model, state, control, items, offsets
+    return model, state, control, items, offsets, obj_bodies
 
 
 def main() -> int:
@@ -107,7 +109,7 @@ def main() -> int:
                            "warp": wp.__version__},
               "seed": 7, "checks": {}}
     try:
-        model, state, control, items, offsets = build(7)
+        model, state, control, items, offsets, obj_bodies = build(7)
         solver = newton.solvers.SolverMuJoCo(model, njmax=256, nconmax=256)
         cp = newton.CollisionPipeline(model)
         contacts = cp.contacts()
@@ -121,7 +123,7 @@ def main() -> int:
         bq = np.asarray(state.body_q.numpy())
         digest = hashlib.sha256(np.round(bq, 3).tobytes()).hexdigest()[:16]
         # determinism: rebuild and replay the same seed, compare state hash
-        m2, s2, c2, _, _ = build(7)
+        m2, s2, c2, _, _, _ = build(7)
         solver2 = newton.solvers.SolverMuJoCo(m2, njmax=256, nconmax=256)
         cp2 = newton.CollisionPipeline(m2)
         ct2 = cp2.contacts()

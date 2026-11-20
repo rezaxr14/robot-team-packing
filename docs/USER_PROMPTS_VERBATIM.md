@@ -253,11 +253,6 @@ make a proper rule inside .agent folder
 status update
 ```
 
-### U048
-```
-Continue working toward the active goal.
-```
-
 ### U049
 ```
 stupid moron my credintails are in .env
