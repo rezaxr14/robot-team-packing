@@ -5,7 +5,7 @@ is appended **verbatim** (typos, spelling and profanity preserved) before any wo
 Harness/system messages and subagent reports are not user prompts; they are excluded.
 Earlier turns that reached this session only as a conversation summary are marked as such.
 
-Rule owner: `CLAUDE.md` §0b. Do not edit, "clean up", summarise or reorder past entries. Append only.
+Rule owner: `AGENT.md` §0b. Do not edit, "clean up", summarise or reorder past entries. Append only.
 
 ## 2026-11-20 — session (earliest messages available verbatim)
 

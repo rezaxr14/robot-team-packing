@@ -113,6 +113,21 @@ def test_k_null_is_bounded():
     assert NewtonArmConfig(k_null=20.0).k_null == 20.0
 
 
+def test_real_fr3_kinematics_wiring_on_cpu():
+    """Controller runs with the A1-calibrated torch FK/Jacobian on CPU."""
+    torch = pytest.importorskip("torch")
+    del torch
+    from rtp.control import fr3_kinematics
+    arm = NewtonCompliantArm(kinematics=fr3_kinematics)
+    q = np.asarray(Q_HOME, dtype=float)
+    tau, info = arm.step(q, np.zeros(7), np.zeros(6))
+    assert tau.shape == (7,) and np.all(np.isfinite(tau))
+    assert info["J"].shape == (6, 7)
+    pos, _ = fr3_kinematics.fk_numpy(q)
+    assert np.allclose(info["x"][:3], pos, atol=1e-9)
+    assert info["state"] == State.TRACK
+
+
 def test_rotation_error_is_relative_rrT():
     """x[3:] must be rotvec(R @ R_ref^T), never an absolute/difference-of-quat."""
     arm, kin = _arm()

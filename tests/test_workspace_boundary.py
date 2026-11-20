@@ -39,10 +39,10 @@ def test_env_points_only_inside_project_or_the_single_venvs_folder():
 
 
 def test_no_tracked_file_still_points_at_the_deleted_tree():
-    # CLAUDE.md states the rule and this test enforces it; both must name the forbidden
+    # AGENT.md states the rule and this test enforces it; both must name the forbidden
     # path to do their job, so neither counts as a file that depends on the old tree.
     out = subprocess.run(
-        ["git", "grep", "-l", "rtp_work", "--", ":!CLAUDE.md",
+        ["git", "grep", "-l", "rtp_work", "--", ":!AGENT.md",
          ":!tests/test_workspace_boundary.py", ":!docs/USER_PROMPTS_VERBATIM.md"],
         cwd=ROOT, capture_output=True, text=True, check=False,
     )

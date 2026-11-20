@@ -11,7 +11,8 @@ These rules come from explicit user instructions. They override generic "helpful
    Kaggle/HF are remote and are governed by their own rules below.
    Enforced by `tests/test_workspace_boundary.py`; a failure must stop all work.
    The old `~/rtp_work` tree was removed on 2026-11-20 after moving `IsaacLab` into
-   `.isaac/` inside this repo and the Newton venv into `~/venvs/isaac_newton`. Do not recreate it.
+   `.isaac/` inside this repo and merging all venvs into the single `~/venvs/rtp`. Do not
+   recreate it, do not make a second venv, and do not install packages at project level.
 
 ## 0b. Verbatim prompt log (explicit user instruction, 2026-11-20)
 
