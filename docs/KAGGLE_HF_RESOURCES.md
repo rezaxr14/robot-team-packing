@@ -4,6 +4,9 @@ This document records every external account, dataset, model and credential the 
 collaborator knows what exists and what is still missing. No token values are stored here — only
 which `.env` keys hold them.
 
+Authoritative context: claim status `docs/STATUS_HONEST.md`; the multi-turn datagen loop and gates
+`docs/DATAGEN_KAGGLE.md`; execution order `docs/AGENT_RUNBOOK.md` (arms first, A1–A10 then R4–R9).
+
 ## 1. Credentials (in `.env`, never committed)
 
 | Key | Used for |
@@ -29,10 +32,15 @@ Via Kaggle Benchmarks (`kaggle-benchmarks`, CLI `kaggle benchmarks ...`). Two ro
    `tasks download`. The worker gets proxy vars injected (~12 h). This route **works** and is what
    we use. One model per run; Kaggle Secrets do not work inside tasks.
 
-Models available on this account (from `docs/KAGGLE_MODELS.md` / `KAGGLE_SKILL.md`, shortlist):
-- Anthropic: Claude Opus, Sonnet, **Haiku 3.5 / 4.5** (Haiku is cost-effective — test target).
-- Google: Gemini 3.8, 3.5, 3.5 Flash, Flash Lite, **Gemini 3.8 Flash** (used for CoT traces).
-- OpenAI: Astra 6.2, Sol 6.2, **Luna** (cost-effective — test target).
+Models in the user's plan (`docs/USER_PLAN_VERBATIM.md`) and the bring-up ladder
+(`docs/DATAGEN_KAGGLE.md` §5), with the CLI slugs used there (resolve against the live catalogue at
+run time):
+- Cheap test targets first: **Claude Haiku 5.5** (`claude-haiku-5-5`), **Luna** (`gpt-5.6-luna`).
+- Then strong models: Claude Opus / Sonnet 5.5 (`claude-opus-5-5-default`, `claude-sonnet-5-5-default`),
+  Gemini Argon / 3.8 (`gemini-4-argon`, `gemini-3.8-flash`), OpenAI Astra / Sol 6.2
+  (`gpt-6-astra`, `gpt-6.1-sol`).
+- Hosted-only roster: Haiku 5.5, Luna, Opus, Astra; the interactive key reaches a 6-vision-model
+  subset. `docs/KAGGLE_MODELS.md` / `KAGGLE_SKILL.md` hold the full catalogue and calling details.
 
 Quota is billed to the Kaggle account (`kaggle benchmarks quota`); last observed spend $0.09/day,
 $0.27/month. Check before large runs.
@@ -40,11 +48,16 @@ $0.27/month. Check before large runs.
 ### What has actually been run on Kaggle
 - Hosted task `rtp-cot-frontier-fullplan` on `google/gemini-3.8-flash`: 8/8 real model traces, all
   `finish_reason: stop`, with reasoning prefix + parseable Plan JSON from our harness prompts.
-  Files: `data/local_4050/cot_frontier_traces.jsonl`, `reports/cot_frontier.json`.
+  Files: `data/local_4050/cot_frontier_traces.jsonl`, `reports/cot_frontier.json`. These are
+  verbatim transport records; the plans were **not replayed or scored** in that run.
 - The earlier Qwen-based CoT teacher was **cancelled and deleted** — no Qwen-generated CoT exists.
-- Plans were **not replayed or scored** yet. `ops/score_frontier.py` exists but still has an invalid
-  placeholder import line (`from rtp.brain import ReplayBrain if False else None`) and has not been run.
+- `ops/score_frontier.py` replays those traces on the held-out seeds into the strict prediction
+  format; its earlier syntax error is fixed (D-67), but **no replay report has been produced**.
 - Interactive proxy from this machine is geo-blocked; use hosted tasks.
+- Scope note (two different CoT paths): `docs/STATUS_HONEST.md` / `reports/cot_trace.json` record
+  **0** frontier traces for the separate `ops/cot_trace.py` path because `RTP_SERVE_URL` is unset;
+  that path is not the Kaggle-benchmarks hosted-task route above. Neither path is the multi-turn
+  datagen loop (`docs/DATAGEN_KAGGLE.md`), which is built/fixture-tested but not run on Kaggle.
 
 ## 4. HuggingFace — datasets (assets)
 
@@ -73,11 +86,15 @@ Other HF repos in the account are untouched and out of scope.
 
 ## 6. What is NOT done (so nobody mistakes stubs for results)
 
-- Frontier CoT plans not replayed/scored; `ops/score_frontier.py` broken (invalid import line).
+- Frontier CoT plans not replayed/scored; `ops/score_frontier.py` is fixed but has no replay report.
 - Trained adapter and all omni competitors are `not run` in `reports/omni_comparison.json`.
-- No multi-turn frontier data generation yet (the main user request).
-- No GRPO, no full benchmark matrix, no impedance safety validation (D-22: Claude must decide).
-- Scene is rendered only — not stepped, no manipulation, no arm policy.
+- Multi-turn datagen is **built and fixture-tested on SIM-POSE but not run on Kaggle**
+  (`docs/DATAGEN_KAGGLE.md`); no certified arm model feeds SFT yet (arms first, D-62).
+- No GRPO, no M1–M8 benchmark matrix (`IMPLEMENTATION_PLAN.md` §10), no impedance safety
+  validation — G-6b is a SIM-ABSTRACT supervisor on a point mass, hardware/L0/L1 sign-off is
+  Claude's (D-22, D-66).
+- Scene bundle, view library and GPU replay gate are not built; the assembled SimReady scene
+  (`reports/scene_manifest.json`) is not stepped or rendered; no certified arm skills.
 
 ## 7. Useful commands
 

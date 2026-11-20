@@ -16,8 +16,41 @@ the simulator is **Isaac Lab 3.0 + Newton** and nothing else.
 `rtp` = **Robot Team Protocol** (typed bus + harness). The symbolic world is a **test fixture and
 reward source, not a physics result**.
 
-## Current status (P2)
+## Doc index
 
+**Authoritative** (follow these where anything else differs):
+- [`docs/STATUS_HONEST.md`](docs/STATUS_HONEST.md) — claim-by-claim status and evidence classes; no result without a report.
+- [`docs/USER_PLAN_VERBATIM.md`](docs/USER_PLAN_VERBATIM.md) — the user's instruction, verbatim.
+- [`DECISIONS.md`](DECISIONS.md) — every user decision and constraint (D-nn).
+- [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) — plan v3 and the exact M1–M8 benchmark matrix (§10).
+- [`docs/AGENT_RUNBOOK.md`](docs/AGENT_RUNBOOK.md) — execution order: arms first (A1–A10), then R4–R9.
+- [`docs/AGENT_BUILD_SPEC.md`](docs/AGENT_BUILD_SPEC.md) — work packages and interfaces.
+- [`docs/DATAGEN_KAGGLE.md`](docs/DATAGEN_KAGGLE.md) — multi-turn Kaggle datagen loop, gates, cost model.
+- [`docs/SCENE_DESIGN.md`](docs/SCENE_DESIGN.md) — two-arm, two-eye kitchen layout (D-65, DESIGN).
+- [`docs/IMPEDANCE_SPEC.md`](docs/IMPEDANCE_SPEC.md) — compliance/impedance spec and status.
+- [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md) — version constraints, profile matrix, isolation.
+
+**Design / reference:**
+- [`docs/ARCHITECTURE_V2.md`](docs/ARCHITECTURE_V2.md) — V2 design contract (eyes, schemas, Qwen structure, retrieval, training).
+- [`docs/KAGGLE_HF_RESOURCES.md`](docs/KAGGLE_HF_RESOURCES.md) — accounts, credentials, model roster, what has run on Kaggle/HF.
+- [`docs/PAPER_FIGURE_STATUS.md`](docs/PAPER_FIGURE_STATUS.md) — stale-figure red-note inventory and remake requests (`paper/` frozen).
+- [`docs/NOTEBOOK_API.md`](docs/NOTEBOOK_API.md) — what a notebook may call and must mark `SKIPPED`.
+- `docs/{SIMULATION,HARDWARE,SCHEMAS,ASSETS,SOURCE_REGISTER,KAGGLE_MODELS}.md` — focused specs.
+
+## Current status (plan v3, arms first)
+
+* **Arms first (D-62):** [`docs/AGENT_RUNBOOK.md`](docs/AGENT_RUNBOOK.md) runs A1–A10 (certify arm
+  skills in Newton) before R4–R9 (SFT/GRPO/eval). Only cheap-model Kaggle bring-up (R3) may run
+  early, and its records are excluded from SFT.
+* **Multi-turn datagen (D-63):** GPU scene bundle → hosted CPU episodes → replay-verified ingest +
+  memory rebuild → GPU replay gate; built and fixture-tested on SIM-POSE, **not run on Kaggle**
+  ([`docs/DATAGEN_KAGGLE.md`](docs/DATAGEN_KAGGLE.md)).
+* **Compliance supervisor (D-66):** push → yield → bounded return → resume with plan-clock gate,
+  leash and clamps; G-6b PASS on a SIM-ABSTRACT point mass (`reports/g6b_compliance.json`), not on
+  the Newton articulation, hardware or a safety result.
+* **Two-arm, two-eye kitchen (D-65):** island 1.8 × 0.9 m, arms at x = ±0.35 m, eyes R 1.6 m /
+  H 2.2 m opposed ([`docs/SCENE_DESIGN.md`](docs/SCENE_DESIGN.md); DESIGN from assumed room sizes).
+* **Benchmark matrix (D-64):** exactly M1–M8 in `IMPLEMENTATION_PLAN.md` §10, held-out seeds < 100000.
 * `pytest tests -q` -> **323 passed, 10 skipped, ~45 s** on the 4050 laptop (2026-11-18). The 10
   skips are all "VIKI-R clone not available" (inert Track-A scorer).
 * The legacy 2.3-era Isaac launcher stack is purged (D-35): no `ops/12_env_isaac.sh`, no EULA export,
@@ -41,15 +74,18 @@ reward source, not a physics result**.
 * **G-6 simulation-only impedance cross-check** (D-58): `reports/g6_impedance.json` — analytic step
   response error **0.27 %** (limit 5 %), 10 N push and return measured. Not Phase 3 acceptance, not
   hardware, **not a safety certification**; hardware/L0/L1 sign-off is Claude's (D-22).
-* **SimReady assets are in flight, not ingested** (D-54): `ops/fetch_simready.py` is in progress;
-  there is no catalogue, no validated import and no asset-based scene. An FR3 MJCF from Menagerie
-  was downloaded (`reports/robot_assets.json`), but G-5 has not run.
+* **SimReady assets: catalogue + subset present, G-13 PARTIAL**: 4,239-package catalogue, a
+  14-package texture-free subset (47.18 MB), 9/14 USD packages import into Newton; an FR3 Duo +
+  13 SimReady object scene was **assembled and measured** (`reports/scene_manifest.json`, 83 bodies),
+  not stepped or rendered. The A1 FR3 kinematics check passed (`reports/g5_reach.json`, SIM-POSE).
 * **Compute scope** (D-50, D-56): both T4s are visible in the Kaggle kernel, but the trainer and the
   G-3 scene step **one device at a time**; no DDP training or two-GPU simulation exists.
-* **Explicitly pending** (D-53, `docs/STATUS_HONEST.md`): the asset-based kitchen scene,
-  frontier-model CoT (`RTP_SERVE_URL` unset; scripted teacher traces only), training on environment
-  episodes, a fixed test set, omni-model scores, and impedance control on hardware. None has a
-  report; do not present them as done.
+* **Explicitly pending** (`docs/STATUS_HONEST.md`): a *stepped* asset-based kitchen scene, arm
+  certification (A1–A10), the multi-turn loop run on Kaggle, a fixed held-out test set, the M1–M8
+  matrix, omni-model scores, GRPO and impedance control on hardware. Asset-environment training is a
+  SIM-POSE smoke only (`reports/asset_train.json`); `ops/cot_trace.py` recorded 0 frontier traces
+  (`RTP_SERVE_URL` unset), while a separate Kaggle hosted task produced 8 unverified gemini-3.8-flash
+  traces (`reports/cot_frontier.json`). None is a reportable result; do not present them as done.
 * **Training resumes mid-epoch** (D-41): checkpoints carry optimizer + RNG + batch cursor, batch order
   is a pure function of `(seed, epoch)`, and `rtp/checkpoints.py` pushes every N steps to HF and prunes
   older steps. Resumed-at-step-3-of-8 runs finish at step 8 with the same losses. A checkpoint also

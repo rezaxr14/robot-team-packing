@@ -4,6 +4,10 @@ Every notebook is generated from a builder script in `notebooks/src/<name>.py` u
 `ops/nbbuild.py`, and the `.ipynb` is committed next to it. One notebook = one part of the paper.
 No notebook may invent a function: if something below does not exist, the notebook does not call it.
 
+Authoritative context: claim status `docs/STATUS_HONEST.md`; execution order `docs/AGENT_RUNBOOK.md`
+(arms first, A1–A10 then R4–R9); multi-turn loop `docs/DATAGEN_KAGGLE.md`; benchmark matrix M1–M8
+`IMPLEMENTATION_PLAN.md` §10. A notebook that needs an unbuilt stage prints `SKIPPED` (rule 1).
+
 ## Hard rules
 
 1. **No fabricated results.** A cell that needs a GPU, a T4 session, Isaac Lab, an asset-based
@@ -119,8 +123,16 @@ from rtp.vlm_eye import VLMEye, eye_messages  # legacy VLM-Eye prototype; Eyes a
 * `rtp.control.impedance` — the L1 impedance law exercised by the **simulation-only** G-6 cross-check
   (`reports/g6_impedance.json`: 0.27 % step error, push/return measured). Not a hardware controller
   and not a safety sign-off; hardware/L0/L1 sign-off is Claude's (D-22, D-58).
-* `ops/fetch_simready.py` — SimReady ingestion is **in progress**; no asset catalogue and no
-  asset-based scene exist yet (D-54). A notebook needing that scene must print `SKIPPED`.
+* `rtp.control.compliance` — the compliance supervisor (push → yield → bounded return → resume,
+  plan-clock gate, leash, clamps); G-6b PASS on a **SIM-ABSTRACT** point mass only
+  (`reports/g6b_compliance.json`), not the Newton articulation or hardware (D-66).
+* `rtp.kaggle_chat`, `rtp.datagen_run`, `rtp.datagen_ingest`, `rtp.datagen_memory`,
+  `ops.datagen_iterate` — the multi-turn datagen loop, built and fixture-tested on SIM-POSE but
+  **not run on Kaggle** (`docs/DATAGEN_KAGGLE.md`). A notebook needing a real hosted run prints
+  `SKIPPED`; bring-up on cheap models may run under `sim_pose_v0` and is excluded from SFT (D-62).
+* `ops/fetch_simready.py` — 4,239-package catalogue and a texture-free 14-package subset exist;
+  an FR3 Duo + SimReady scene was **assembled and measured** (`reports/scene_manifest.json`), not
+  stepped/rendered (G-13 PARTIAL). A notebook needing a stepped asset-based scene prints `SKIPPED`.
 
 ## Training stack that is already verified here
 
@@ -139,16 +151,23 @@ from rtp.vlm_eye import VLMEye, eye_messages  # legacy VLM-Eye prototype; Eyes a
 
 ## What is *not* true yet (say so, do not paper over it)
 
-* No Isaac Lab scene with two FR3 arms + PTZ eyes exists; `ops/g3_sim.py` is a cube-fall render test.
-  Simulation episodes for the paper come from `rtp/simworld.py` + `rtp/fakesim.py` (symbolic/pose),
-  and that must be labelled as such.
+* No stepped/rendered Isaac Lab scene with two FR3 arms + PTZ eyes exists. An FR3 Duo + SimReady
+  scene was **assembled and measured** (`reports/scene_manifest.json`, 83 bodies), but not stepped;
+  `ops/g3_sim.py` is only a cube-fall rgb/depth gate. Paper simulation episodes currently come from
+  `rtp/simworld.py` + `rtp/fakesim.py` (symbolic/pose), and must be labelled as such (arms first,
+  D-62: certified Newton arm skills come before SFT data).
 * The Kaggle T4 half of G-3 **is** now recorded (`reports/g3_sim_t4.json`, D-51), but it steps one
   of the two T4s at a time (D-50); no two-GPU training or simulation number exists.
 * GRPO has not been run on this box; TRL 1.18 + Qwen3.5 support must be verified at run time, and the
   notebook must print the resolved TRL config instead of promising results.
 * "Comparison with other omni models" can only be a *harness for* the comparison unless another model
   is actually run; label unrun rows `not run`. There is no fixed test set or model score.
-* There is no SimReady asset catalogue or asset-based kitchen scene, no frontier-model CoT
-  (`RTP_SERVE_URL` unset; scripted traces only), no training on environment episodes, and no
-  hardware/safety sign-off for impedance (G-6 is simulation-only). All must be `SKIPPED`/pending,
-  not filled in. See `docs/STATUS_HONEST.md` for the authoritative claim-by-claim status.
+* Claim-by-claim truth (see `docs/STATUS_HONEST.md`): a 4,239-package SimReady catalogue and a
+  14-package subset exist, but G-13 is only PARTIAL (9/14 USD imports, no drop/grasp/texture tests)
+  and the assembled scene is not stepped. Asset-environment training is a **SIM-POSE smoke only**
+  (`reports/asset_train.json`: 45 rows, 2 steps, loss 1.081 → 0.742), not a reportable model.
+  Frontier CoT has two paths: `ops/cot_trace.py` recorded 0 frontier traces (`RTP_SERVE_URL` unset;
+  scripted only), while a separate Kaggle hosted task produced 8 real gemini-3.8-flash traces
+  (`reports/cot_frontier.json`) that are **not replayed/scored**. No M1–M8 matrix run, no GRPO,
+  no hardware/L0/L1 impedance sign-off (G-6/G-6b are simulation and SIM-ABSTRACT only). All pending
+  work must be `SKIPPED`/`not run`, never filled in.

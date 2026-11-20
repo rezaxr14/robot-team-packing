@@ -1,5 +1,9 @@
 # Software compatibility and hardware profiles
 
+This file is **authoritative for version constraints, the profile capability matrix and the
+per-profile isolation tree** (`IMPLEMENTATION_PLAN.md` §8). Claim status is in
+`docs/STATUS_HONEST.md`; execution order is in `docs/AGENT_RUNBOOK.md` (arms first).
+
 ## 1. Versions
 | component | constraint | evidence |
 |---|---|---|
@@ -23,6 +27,12 @@ Keep the sim environment separate from the VLM-training environment if their Tor
 | `kaggle_t4x2` (Turing 2×16 GB, no bf16) | fp16 LoRA, SDPA, DDP | fp16 eager | cc 7.5 meets floor; driver R580+ or Warp 1.17.0 **[G: G-3]**; no display → EGL/Rerun/recorded video | **[G]** | Kaggle headline |
 | `pro6000` | LoRA → full-FT candidate, bf16+FA2 | bf16 | ✓ | **[G]** | reserved |
 | `tpu_v5e8`, `tpu_v6e1`, `tpu_v5e1` | stub (`supported=False`) | — | — | — | G-12 |
+Training defaults (`rtp/profiles.py`): LoRA r32 (`pro6000` r64), micro-batch × grad-accum
+1×16 / 4×4 / 2×8 / 8×4 for `local_4050` / `local_4090` / `kaggle_t4x2` / `pro6000`, gradient
+checkpointing on for `local_4050` and `kaggle_t4x2` only. bf16 is unavailable on T4 (Ampere+ only)
+→ fp16 + SDPA. G-3 is PASS on the 4050 and a Kaggle T4, but only a cube-fall rgb/depth gate, one
+device at a time (`reports/g3_sim.json`, `reports/g3_sim_t4.json`).
+
 A GPU that trains the VLM is not automatically sized for many-env Newton training with cameras; `reports/sim_scaling_<profile>.json` (P2) is the authority.
 
 ## 3. Isolation (D-10/D-11)

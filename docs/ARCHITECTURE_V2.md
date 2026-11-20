@@ -4,6 +4,11 @@ Status: **design + verified model/platform facts**. Implementation status is mar
 This document is the contract we build against; `DECISIONS.md` records who decided what.
 Nothing here is a result. Every table cell in the paper stays `\todo` until a reportable run exists.
 
+**Authoritative docs, read these first:** claim status `docs/STATUS_HONEST.md`; execution order
+`docs/AGENT_RUNBOOK.md` (arms first, A1–A10 then R4–R9) and `IMPLEMENTATION_PLAN.md`; multi-turn
+datagen `docs/DATAGEN_KAGGLE.md`; physical layout `docs/SCENE_DESIGN.md`. This file is the design
+contract, not a status or plan doc — where it restates those docs, they win.
+
 Everything labelled **[V]** was read out of a real file or an upstream source at the date given.
 Everything labelled **[U]** is unverified and must not be quoted as fact.
 
@@ -19,11 +24,17 @@ Brain can spend part of its budget asking an Eye to move, rotate, zoom, apply a 
 back a crop.
 
 The Arms never see. They receive one symbolic skill at a time (`grasp`, `place`, `handover`,
-`weigh`, `release`, `retreat`, `push_aside`) and report `TOUCH`/`BLOCKED` only.
+`weigh`, `release`, `retreat`, `push_aside`) and report `TOUCH`/`BLOCKED` plus the compliance
+events `PUSHED`/`YIELDED`/`RESUMED` (push → yield → bounded return → resume, D-66). The Brain
+never overrides a yield; it may only replan after `RESUMED` (spec: `docs/IMPEDANCE_SPEC.md`).
 
 The scientific claim is **attribution**: when the team fails, which component caused it
 (Eye missed / Brain did not ask / Arm executed badly), and how much active eye work is worth.
 See §12.
+
+Execution order is **arms first** (D-62): arm skills are certified in Newton (steps A1–A10)
+before SFT data generation at scale (R4–R9); see `docs/AGENT_RUNBOOK.md`. The physical system is
+the two-arm, two-eye kitchen chosen in `docs/SCENE_DESIGN.md` (D-65).
 
 ```
             harness .md  ──BM25 + dense (Qdrant)──┐
@@ -47,6 +58,11 @@ See §12.
 ## 2. Eyes: mount model, geometry, occlusion
 
 Implementation target: `rtp/eyes/mount.py`, `rtp/eyes/visibility.py`. **Not implemented yet.**
+
+The chosen layout is in `docs/SCENE_DESIGN.md` / `reports/eye_placement.json` (D-65, DESIGN):
+island 1.8 x 0.9 m, arms on the centre line at x = ±0.35 m, eyes on an R 1.6 m / H 2.2 m ring,
+opposed and perpendicular to the arm axis. The ranges below are design defaults; the measured
+study supersedes them for the built scene.
 
 Design defaults (ours, all in one dataclass in `rtp/eyes/mount.py`):
 
@@ -208,36 +224,16 @@ card", which cannot fit 4.66 B parameters plus activations.
 
 ## 8. Hardware profiles (one dict, no notebook edits)
 
-Single source of truth: `rtp/profiles.py` (to be written). Notebooks set only
+Single source of truth: `rtp/profiles.py`. Notebooks set only `ACTIVE = "<profile>"`; everything
+else (dtype, attention, tuning, batch, grad-accum, checkpointing, paths, serving, seeds) is derived.
+CLI equivalent: `RTP_PROFILE=<profile>`.
 
-```python
-ACTIVE = "kaggle_t4x2"        # or "local_4050" | "local_4090" | "pro6000" | "tpu_v5e8" | ...
-```
-
-and everything else (dtype, attention impl, tuning mode, batch, grad-accum, checkpointing, output
-dirs, resume file, serving flags, eval seeds) is derived. CLI equivalent: `RTP_PROFILE=local_4050`.
-
-| profile | accel | VRAM | tuning | dtype | attention | LoRA | batch × accum | grad ckpt | serve | class |
-|---|---|---|---|---|---|---|---|---|---|---|
-| `local_4050` | 1× RTX 4050 Laptop | 6 GB | **qlora** (NF4) | bf16 compute | `flash_attention_2` if importable else `sdpa` | r32 | 1 × 16 | on | 4-bit | dev only |
-| `local_4090` | 1× RTX 4090 | 24 GB | lora | bf16 | `flash_attention_2` | r32 | 4 × 4 | off | bf16 | reportable |
-| `kaggle_t4x2` | 2× T4 (DDP) | 2×16 GB | lora | **fp16** | `sdpa` | r32 | 2 × 8 | on | vLLM fp16, `enforce_eager`, tp=2 | reportable (headline) |
-| `pro6000` | 1× RTX Pro 6000 | 96 GB | lora → full | bf16 | `flash_attention_2` | r64 | 8 × 4 | off | bf16 | reserved |
-| `tpu_v5e8` / `tpu_v6e1` / `tpu_v5e1` | XLA | — | stub | bf16 | `sdpa` | — | — | — | — | **stub, `supported=False`** |
-
-bf16 on T4: **not available** (bf16 requires Ampere+), hence fp16 + SDPA on `kaggle_t4x2` — **[V]**
-FA2 README; and `torch.cuda.is_bf16_supported()` is the runtime guard.
-
-Per-profile isolation (a profile may never write into another's tree):
-
-```
-runs/<profile>/{ckpt,logs,reports,state.json}     adapters + optimizer state + resume cursors
-data/<profile>/                                   generated datasets, caches, episode captures
-models/<profile>/hf                               HF_HOME pinned per profile
-```
-
-`state.json` = `{stage: {status, last_step, config_hash}}`; a stage whose `config_hash` is unchanged
-is skipped, so each profile resumes its own pipeline independently and reproducibly.
+The version constraints, the profile capability matrix (dtype/attention, batch×accum, grad-ckpt,
+serving class, Newton/OVRTX support) and the per-profile isolation tree
+(`runs/<profile>/…`, `data/<profile>/`, `models/<profile>/hf`, `state.json`'s
+skip-on-unchanged-`config_hash` rule) are **authoritative in `docs/COMPATIBILITY.md`** and are not
+restated here. T4 has no bf16 → fp16 + SDPA on `kaggle_t4x2`; claim status per profile is in
+`docs/STATUS_HONEST.md`.
 
 ## 9. Retrieval: Qdrant + BM25 hybrid
 
@@ -291,9 +287,11 @@ positive SFT set.
 4. **Ablations**: one-eye, static prompt, no verification, no challenge, no look (budget 0), and
    learned-eye-policy vs Brain-driven calls. All share the same eval seeds per profile.
 
-Benchmark: the existing reproducible suite (fixed seeds, Wilson intervals, paired bootstrap) against
-omni-model baselines on the same task and metrics — **[U]** exact baseline list until the model
-servers exist; any omni comparison is a future run, not a claim.
+Benchmark: the exact matrix is **M1–M8 as decided in D-64** (`IMPLEMENTATION_PLAN.md` §10) — base
+4B / base 9B zero-shot, 4B SFT, 4B SFT+GRPO k=4 / k=8, frontier zero-shot, frontier in harness,
+base 4B in harness — on held-out seeds < 100000, ≥ 30 episodes per family. Use the existing
+reproducible suite (`rtp/benchmark.py`, `rtp/stats.py`: Wilson, paired bootstrap). No cell is filled
+in until its run exists; `docs/STATUS_HONEST.md` is authoritative for what is measured.
 
 ## 12. What the paper claims
 
@@ -307,29 +305,32 @@ servers exist; any omni comparison is a future run, not a claim.
 5. **Block-coverage ablation**: which Qwen3.5-4B block types (full attention vs DeltaNet vs merger)
    must be adapted for tool use — adapter-coverage grid, one profile at a time.
 
-## 13. Kaggle Frontier AI — **UNVERIFIED**
+## 13. Kaggle Frontier AI and hosted data generation
 
-`https://www.kaggle.com/docs/frontier-ai` and `https://www.kaggle.com/docs/api` both return
-**HTTP 403** to unauthenticated fetches (checked 2026-11-16). We therefore do **not** know its
-endpoints, available models, quotas, rate limits or whether it accepts images.
+Now covered by authoritative docs; not restated here:
 
-Intended use (design, not fact): generate task-grounded CoT traces for the Brain, one trace per
-(scene, instruction) with the eye-call and arm-skill reasoning made explicit, then filter by
-verifier + replay before any trace enters SFT. This service is orthogonal to the hardware profiles:
-it produces data for every profile, and no cloud job is launched until the user authorises
-authentication. Blocked on: (a) user authorisation to authenticate, or (b) a session with access to
-the docs.
+- Access, accounts, credentials, model roster and what has actually run on Kaggle:
+  `docs/KAGGLE_HF_RESOURCES.md` (the interactive proxy is geo-blocked from this machine; hosted
+  tasks work; local access via `localhost:10808`).
+- The HARD-REQUIREMENT multi-turn loop — GPU scene bundle → hosted CPU episodes (skills, rules,
+  memory, tools) → local replay-verified ingest + memory rebuild → GPU replay gate — its gates
+  DG-1…DG-6 and the cost model: `docs/DATAGEN_KAGGLE.md`.
+- Live Kaggle CLI/skill details: `KAGGLE_SKILL.md`.
+
+Evidence classes and what is measured (`FIXTURE` / `SIM-POSE` / `SIM` / `SIM-ABSTRACT` / `GATE` /
+`MODEL` / `HARDWARE`) are in `docs/STATUS_HONEST.md`. The multi-turn loop is built and
+fixture-tested on SIM-POSE but **not yet run on Kaggle** at scale, per that file.
 
 ## 14. Open items
 
-| # | item | needs |
+| # | item | needs / where |
 |---|---|---|
-| 1 | Kaggle Frontier AI API surface/limits | authorisation or doc access (§13) |
-| 2 | Claude's implementation plan | file in repo root (not present yet) |
+| 1 | Kaggle API, roster, limits, what has run | `docs/KAGGLE_HF_RESOURCES.md`, `docs/DATAGEN_KAGGLE.md`, `KAGGLE_SKILL.md` |
+| 2 | Implementation plan and step order | `IMPLEMENTATION_PLAN.md`, `docs/AGENT_RUNBOOK.md` (arms first) |
 | 3 | YOLO licence (AGPL) vs BSD fallback | user call |
-| 4 | Eye ring radius/height/station counts | user call, defaults in §2 |
-| 5 | Isaac Lab 3.0 + Newton on this laptop | 6 GB 4050: scene size is the binding limit, not Newton (cc 8.9); gate G-3 records pass/fail |
-| 6 | Isaac Lab 3.0 + Newton on a dual-T4 session | cc 7.5 is exactly Newton's floor; gate G-3 records pass/fail on Kaggle T4 (no stack fallback exists, D-25) |
+| 4 | Eye ring radius/height/stations | chosen by measurement in `docs/SCENE_DESIGN.md` (D-65), not a user call |
+| 5 | Newton on the 4050 / on a T4 | G-3 PASS on both, cube-fall rgb/depth only; `docs/STATUS_HONEST.md` |
+| 6 | Arm certification, scene bundle, view library, GPU replay gate | `docs/AGENT_RUNBOOK.md` A1–A10 then R1–R4; **not built** per `docs/STATUS_HONEST.md` |
 
 ## 15. Newton / Isaac Lab platform facts
 
@@ -348,17 +349,15 @@ deprecated `warp.sim`).
 
 Practical reading: an RTX 4050 (cc 8.9) and 4090 (cc 8.9) satisfy Newton's floor; the 4050's 6 GB is
 the binding limit for scene size, not for Newton itself. A T4 is cc 7.5 — exactly on Newton's
-boundary; whether Isaac Lab 3.0 + Newton runs there is settled by gate G-3 on a Kaggle T4 session,
-never assumed, and D-25 leaves no second simulator stack to fall back to.
+boundary; **G-3 has PASSed on both the 4050 and a Kaggle T4** (cube-fall rgb/depth, one device at a
+time: `reports/g3_sim.json`, `reports/g3_sim_t4.json`), so this is measured, not assumed. D-25
+leaves no second simulator stack to fall back to. See `docs/STATUS_HONEST.md`.
 
 ## 16. Evidence classes
 
-| class | what it proves | where |
-|---|---|---|
-| `FIXTURE` | mechanics only (scripted Brain, parametric Eyes) | `rtp/world.py`, `tests/` |
-| `ISAAC_NEWTON` | physics results, reportable (Isaac Lab 3.0 + Newton is the only simulator, D-25) | `isaac/` (port to 3.0 in P2) |
-| `LLM-SYMBOLIC` | claims scoped to the symbolic task | `rtp/loop.py` + real model server |
-| `MODEL` | training/eval of Qwen3.5-4B adapters | `train/`, `runs/<profile>/` |
-
-Fixture results never become physics claims. Paper cells stay `\todo` until the corresponding class
-has a real run.
+The authoritative taxonomy and the claim-by-claim status are in **`docs/STATUS_HONEST.md`**:
+`FIXTURE` (symbolic), `SIM-POSE` (CPU, asset-backed pose world), `SIM` (Newton),
+`SIM-ABSTRACT` (numpy plant, e.g. G-6b), `GATE` (engineering), `MODEL` (trained weights),
+`HARDWARE` (real robot). Classes are never pooled into one paper number. The older
+`ISAAC_NEWTON` / `LLM-SYMBOLIC` labels used here are retired; fixture results never become physics
+claims, and paper cells stay `\todo` until the corresponding class has a real run.

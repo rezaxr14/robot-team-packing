@@ -7,6 +7,12 @@ be removed once the figure is redrawn. Current inventory (2026-11-19): **four** 
 one: the remaining figures either are explicitly labelled FIXTURE/synthetic/pending or show no
 stale role/stack claim.
 
+When a figure is redrawn, align it with the current design: arms-first order and the two-arm,
+two-eye kitchen (`docs/AGENT_RUNBOOK.md`, `docs/SCENE_DESIGN.md` D-65), the compliance supervisor
+(`docs/IMPEDANCE_SPEC.md`, D-66), and the exact M1–M8 benchmark matrix (`IMPLEMENTATION_PLAN.md` §10,
+D-64). Evidence classes are authoritative in `docs/STATUS_HONEST.md`; no class may be pooled into a
+paper number.
+
 ## `fig_signals.svg` — stale
 
 The Eye row says **"Eye (VLM)"** and **"LoRA fine-tuning"**. That was the old design. The Eyes are
@@ -50,13 +56,17 @@ Keep the typed-bus, message-stream and force-window panels; they match the text.
 ## `fig_design.svg` — stale (new note, 2026-11-19)
 
 The evidence-class column still uses the pre-measurement classes: the **ISAAC** row is drawn as if
-Isaac Lab manipulation episodes exist. The only measured Newton evidence is the falling-cube
-rgb/depth gate G-3 (`reports/g3_sim.json`, `reports/g3_sim_t4.json`) and the simulation-only
-impedance cross-check G-6 (`reports/g6_impedance.json`); there is no asset-based scene.
+Isaac Lab manipulation episodes exist. The measured items are the falling-cube rgb/depth gate G-3
+(`reports/g3_sim.json`, `reports/g3_sim_t4.json`), the simulation-only impedance cross-check G-6
+(`reports/g6_impedance.json`), the numpy compliance supervisor G-6b (SIM-ABSTRACT,
+`reports/g6b_compliance.json`), the A1 FR3 kinematics check (SIM-POSE, `reports/g5_reach.json`)
+and G-14's four-step SFT smoke (`reports/sft_smoke.json`). There is no stepped asset-based scene.
 
-Remake the evidence classes as a **GATE** class (G-1/G-2/G-3/G-6/G-14, with what each does and does
-not show) and a **SIM/MODEL** class (planned, not run); mark the asset-based scene as not built.
-Keep "every outcome is pending" and "evidence classes are never pooled".
+Remake the evidence classes using the authoritative classes in `docs/STATUS_HONEST.md` —
+`FIXTURE` / `SIM-POSE` / `SIM` / `SIM-ABSTRACT` / `GATE` / `MODEL` / `HARDWARE` — with the measured
+gates (G-1/G-2/G-3/G-6/G-6b/G-14 and the A1 kinematics check) and what each does **not** show, plus
+a **SIM/MODEL** class (planned, not run). Mark the asset-based scene and arm certification as not
+built. Keep "every outcome is pending" and "evidence classes are never pooled".
 
 ## Prose corrected in this pass (no figure work needed)
 
