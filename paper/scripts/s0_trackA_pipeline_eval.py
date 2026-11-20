@@ -1,7 +1,7 @@
 """Track A decomposition: Eye->Brain on VIKI L2 with real-Eye, oracle-Eye and no-Eye conditions.
 
   # text-only Brain served on :8001, optional VLM Eye on :8000
-  python scripts/s0_trackA_pipeline_eval.py --repo ~/VIKI-R --data <L2 test .parquet> --label L2_A \
+  python scripts/s0_trackA_pipeline_eval.py --repo "$VIKI_R_REPO" --data <L2 test .parquet> --label L2_A \
       --brain-endpoint http://localhost:8001/v1 --brain-model brain \
       --eye-endpoint http://localhost:8000/v1 --eye-model eye --conditions oracle,none,eye
 Paste back: reports/trackA_pipeline/<label>_pipeline_summary.json

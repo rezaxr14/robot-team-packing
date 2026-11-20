@@ -4,10 +4,10 @@
 P1 promises a Kaggle run with caches attached performs **zero downloads**. The other half of that is
 a directory of wheels that were resolved once, on a box with network, for the target's tags:
 
-    ops/build_wheelhouse.py --profile kaggle_t4x2 --out ~/wheelhouses         # tags from this box
-    ops/build_wheelhouse.py --profile kaggle_t4x2 --out ~/wheelhouses \\
+    ops/build_wheelhouse.py --profile kaggle_t4x2 --out $RTP_ROOT/.tmp/wheelhouses         # tags from this box
+    ops/build_wheelhouse.py --profile kaggle_t4x2 --out $RTP_ROOT/.tmp/wheelhouses \\
         --python 3.12 --platform manylinux2014_x86_64 --cuda 12.8 --sm 75     # cross-build for a T4
-    ops/build_wheelhouse.py --check ~/wheelhouses/rtp-wheels-py3.12-torch2.15.0-cu12.8-sm75
+    ops/build_wheelhouse.py --check $RTP_ROOT/.tmp/wheelhouses/rtp-wheels-py3.12-torch2.15.0-cu12.8-sm75
 
 The package list is not repeated here: it is read from `ops/install.sh --print-packages`, so the
 installer and the wheelhouse cannot drift. `--only-binary=:all:` is deliberate — an sdist in an

@@ -8,7 +8,7 @@
     "python": "3.12.16",
     "newton": "1.6.1",
     "warp": "1.17.0",
-    "numpy": "2.5.1"
+    "numpy": "2.5.4"
   },
   "params": {
     "seconds": 5.0,
@@ -27,8 +27,8 @@
     ]
   },
   "steps": 5000,
-  "wall_s": 31.312,
-  "steps_per_s": 159.7,
+  "wall_s": 31.124,
+  "steps_per_s": 160.6,
   "final_flange_pos_m": [
     0.306989,
     8e-06,

@@ -107,7 +107,7 @@ def test_report_serialize_offline_names_model_and_api(rows):
                 "endpoint": "https://mp-staging.kaggle.net/models/openapi/chat/completions",
                 "api": "POST /openapi/chat/completions (OpenAI-compatible Model Proxy)",
                 "errors": [], "total_usage": {"prompt_tokens": 10, "completion_tokens": 5}}
-    report = run._report(trace_rows, manifest, [], "completed", 0, "", Path("/tmp/x.jsonl"),
+    report = run._report(trace_rows, manifest, [], "completed", 0, "", Path("x.jsonl"),
                          "local_4050", [])
     assert report["model"] == "google/gemini-3-flash-preview"
     assert report["api_call"]["method"] == "POST" and "chat/completions" in report["api_call"]["url"]
@@ -116,6 +116,6 @@ def test_report_serialize_offline_names_model_and_api(rows):
     assert report["success"] is True and report["error_summary"]["count"] == 0
 
     failed = run._report([], {"model": "m", "errors": [{"id": "cot-0", "error": "HTTP 403: blocked"}]},
-                         [], "failed", 0, "", Path("/tmp/x.jsonl"), "local_4050", [])
+                         [], "failed", 0, "", Path("x.jsonl"), "local_4050", [])
     assert failed["counts"]["total"] == 0 and failed["success"] is False
     assert any("HTTP 403: blocked" in e for e in failed["error_summary"]["errors"])

@@ -359,7 +359,7 @@ Record the dataset hash and write `docs/DATASET_CARD.md` `[internal: docs/AGENT_
 2. CPU fixture tests: `pytest tests/test_sft_masks.py tests/test_grpo_rewards.py tests/test_curate.py`.
    Assert labels `-100` on user/tool/image tokens, non-`-100` on assistant tokens, group advantage
    formula on toy rewards for both k=4 and k=8, format gate zeros bad plans, and no `<100000` seed.
-3. SFT smoke on `local_4050`: `python train/sft_brain.py --model /home/reza/models/Qwen3.5-4B --data data/sft/<hash>/train.jsonl --out runs/local_4050/sft_smoke --smoke` → finite loss, checkpoint,
+3. SFT smoke on `local_4050`: `python train/sft_brain.py --model $HOME/models/Qwen3.5-4B --data data/sft/<hash>/train.jsonl --out runs/local_4050/sft_smoke --smoke` → finite loss, checkpoint,
    mid-epoch resume, peak VRAM logged (mirror G-14).
 4. GRPO wiring smoke on CPU: `python train/grpo_brain.py --smoke --num-generations 4` then `... 8` → 3
    steps each; group math and format gate exercised; no real reward claims.

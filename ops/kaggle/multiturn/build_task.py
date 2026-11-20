@@ -51,7 +51,7 @@ def prepare(repo_dir=None, work=WORK):
     """clone (default branch) + numpy; returns (repo_path, steps)."""
     steps = []
     if repo_dir is None:
-        repo_dir = Path("/tmp/rtp_repo")
+        repo_dir = WORK / "rtp_repo"
         if not repo_dir.exists() and not _sh(["git", "clone", "--depth", "1", SPEC["repo_url"], str(repo_dir)], steps):
             raise RuntimeError("git clone failed: " + json.dumps(steps))
     try:
@@ -62,7 +62,7 @@ def prepare(repo_dir=None, work=WORK):
     return Path(repo_dir), steps
 
 
-def execute(model, url, api_key, *, repo_dir=None, work=WORK, post=None, harness_tmp="/tmp/rtp_harness"):
+def execute(model, url, api_key, *, repo_dir=None, work=WORK, post=None, harness_tmp=str(WORK / "rtp_harness")):
     import shutil
     repo, steps = prepare(repo_dir, work)
     from rtp.datagen_memory import write_memory_docs

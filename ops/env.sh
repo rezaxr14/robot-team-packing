@@ -3,14 +3,14 @@
 # Everything for this project lives under the project root or ~/venvs (the single venv folder).
 export RTP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export RTP_HOME="${RTP_HOME:-$RTP_ROOT}"
-export VENVS="${VENVS:-$HOME/venvs}"
-export MODELS="$RTP_HOME/models"
+export VENVS="${VENVS:-$HOME/venvs}"  # single venv folder; one env inside: $VENVS/rtp
+export MODELS="${RTP_MODELS:-$HOME/models}"   # Qwen3.5-4B lives here already; no repo-root model copy
 export DATA="$RTP_HOME/data"
 export RUNS="$RTP_HOME/runs"
 export HF_HOME="${HF_HOME:-$RTP_ROOT/.hf_cache}"
 export ISAACLAB_DIR="$RTP_ROOT/.isaac/IsaacLab"
 export ISAACLAB_REF="${ISAACLAB_REF:-v3.0.0}"   # Isaac Lab 3.0 GA (D-25); Python 3.12, Newton backend
-export ISAAC_PY="${ISAAC_PY:-$VENVS/isaac_newton/bin/python}"   # the Newton-only venv (ops/install.sh --isaac)
+export ISAAC_PY="${ISAAC_PY:-$VENVS/rtp/bin/python}"   # the single merged venv: training + Isaac Lab + Newton
 export PATH="$HOME/.local/bin:$PATH"
 mkdir -p "$VENVS" "$MODELS" "$DATA" "$RUNS" "$HF_HOME"
 activate() { # shellcheck disable=SC1090

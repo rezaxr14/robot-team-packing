@@ -43,7 +43,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=["push", "status", "output"])
     ap.add_argument("target", help="kernel directory for push, owner/slug for status/output")
-    ap.add_argument("--out", default="/tmp/opencode/kaggle_output", help="download dir for output")
+    ap.add_argument("--out", default=str(ROOT / ".tmp" / "kaggle_output"), help="download dir for output")
     a = ap.parse_args(argv)
     if a.cmd == "push":
         print(kaggle("kernels", "push", "-p", str(Path(a.target).resolve())).stdout.strip())

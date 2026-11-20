@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-VIKI = os.environ.get("VIKI_R_REPO", "/home/claude/VIKI-R")
-pytestmark = pytest.mark.skipif(not Path(VIKI).exists(), reason="VIKI-R clone not available")
+VIKI = os.environ.get("VIKI_R_REPO", "")
+pytestmark = pytest.mark.skipif(not VIKI or not Path(VIKI).exists(), reason="VIKI-R clone not available")
 
 from rtp.trackA import load_upstream, build_messages, evaluate_rows, summarize_items, score_l2, score_l1  # noqa: E402
 

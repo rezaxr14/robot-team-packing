@@ -69,7 +69,7 @@ def test_the_isaac_path_uses_the_tag_lock_not_a_hand_picked_newton(tmp_path, mon
     assert "checkout v3.0.0" in r.stdout
     assert "pip install --python" not in r.stdout, "a hand-picked newton diverges from the tag's lock"
     assert "newton==1.8" not in r.stdout and "warp-lang==1.19" not in r.stdout
-    assert str(tmp_path / "venvs" / "isaac_newton") in r.stdout
+    assert str(tmp_path / "venvs" / "rtp") in r.stdout
 
 
 def test_profiles_get_separate_plans_and_venvs(tmp_path):

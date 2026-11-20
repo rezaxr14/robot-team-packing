@@ -76,8 +76,10 @@ def main(argv=None) -> int:
         return 0
 
     # verify
-    r = kaggle("datasets", "metadata", DATASET_SLUG, "-p", "/tmp/opencode/kaggle_meta", check=False)
-    meta_path = Path("/tmp/opencode/kaggle_meta/dataset-metadata.json")
+    meta_dir = ROOT / ".tmp" / "kaggle_meta"
+    meta_dir.mkdir(parents=True, exist_ok=True)
+    r = kaggle("datasets", "metadata", DATASET_SLUG, "-p", str(meta_dir), check=False)
+    meta_path = meta_dir / "dataset-metadata.json"
     if meta_path.exists():
         meta = json.loads(meta_path.read_text())
         # `kaggle datasets metadata` wraps the fields under "info"; a local dataset-metadata.json

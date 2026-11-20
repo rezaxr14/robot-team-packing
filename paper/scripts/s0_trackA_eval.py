@@ -5,7 +5,7 @@ position-robust L2 metrics. Reports BOTH the upstream-style single-draw number a
 
 Example:
   vllm serve <checkpoint> --served-model-name viki-r-7b --port 8000
-  python scripts/s0_trackA_eval.py --repo ~/VIKI-R --level 2 --data <path>/test.parquet \
+  python scripts/s0_trackA_eval.py --repo "$VIKI_R_REPO" --level 2 --data <path>/test.parquet \
       --model viki-r-7b --label L2_id --out-dir reports/trackA --upstream-truncation
 Paste back: reports/trackA/<label>_summary.json (small). Per-item results stay in <label>_items.jsonl.
 """

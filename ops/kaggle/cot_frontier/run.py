@@ -31,7 +31,7 @@ from rtp.remotes import configure_kaggle_proxy, load_env  # noqa: E402
 
 TASK_NAME = "rtp-cot-frontier-fullplan"
 TASK_FILE = ROOT / "ops" / "kaggle" / "cot_frontier" / "task.py"
-DOWNLOAD_DIR = Path("/tmp/opencode/cot_frontier_out")
+DOWNLOAD_DIR = ROOT / ".tmp" / "cot_frontier_out"
 TRACE_NAME = "cot_frontier_traces.jsonl"
 MANIFEST_NAME = "cot_frontier_manifest.json"
 EXPECTED_SOURCE = "kaggle-benchmarks-proxy"

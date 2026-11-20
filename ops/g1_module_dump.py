@@ -1,6 +1,6 @@
 """G-1: dump the module tree that the downloaded Qwen3.5-4B checkpoint really defines.
 
-  python ops/g1_module_dump.py --model ~/models/Qwen3.5-4B --out reports/qwen35_modules.json
+  python ops/g1_module_dump.py --model $HOME/models/Qwen3.5-4B --out reports/qwen35_modules.json
 
 No weights are loaded and no device is touched: the model is built on the meta device from the
 checkpoint's own config, so a 6 GB laptop can run this gate. The JSON is the authority for adapter

@@ -23,5 +23,7 @@ assets/cache/
 .isaac/
 .hf_cache/
 .tools/
+.tmp/
+.pip_cache/
 ops/kaggle/multiturn/task.py
 

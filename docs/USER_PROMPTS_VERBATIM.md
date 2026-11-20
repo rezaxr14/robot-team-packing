@@ -181,3 +181,54 @@ stop fuking my pc, you are scoped to that fuking folder alone
 ```
 continuue your shitty work animmal
 ```
+
+### U034
+```
+commit and push EVERYTHING preodicly 
+dont stop idiot
+```
+
+### U035
+```
+dont stop idiot until we meet our goal
+```
+
+### U036
+```
+use uv not pip idiot
+```
+
+### U037
+```
+dont reinstall shit, merge all of the venv to a single fking venv inside the ~/venv and remove the rest
+```
+
+### U038
+```
+continue until u made everyfuking thing ever
+```
+
+### U039
+```
+fuck head how many model doewnlaod do you need we already have qwen in the ~/model whay do you still have htat in the project root shit head
+```
+
+### U040
+```
+we have two vens in the ~/ moron use one shit head we use ~/venvs/ only add a fuking venv there adn use that shit u idiot 
+```
+
+### U041
+```
+you are a trsh garbage pieace fo shit
+```
+
+### U042
+```
+fuck head dont make model folder in the repo rrot we laready teh fuking qwen in the ~/models
+```
+
+### U043
+```
+remove old shit from the run/ folder it has 8 gb shit in it 
+```

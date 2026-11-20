@@ -255,10 +255,10 @@ def test_datagen_outputs_are_valid(harness, tmp_path):
 
 
 # ---------- Track A scorer (needs a VIKI-R clone) ----------
-VIKI = os.environ.get("VIKI_R_REPO", "/home/claude/VIKI-R")
+VIKI = os.environ.get("VIKI_R_REPO", "")
 
 
-@pytest.mark.skipif(not Path(VIKI).exists(), reason="VIKI-R clone not available")
+@pytest.mark.skipif(not VIKI or not Path(VIKI).exists(), reason="VIKI-R clone not available")
 def test_viki_l2_scorer_position_randomness():
     import random
     from rtp.trackA import load_scorer, score_all_positions, score_seeded

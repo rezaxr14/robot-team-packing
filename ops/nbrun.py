@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Execute a notebook headlessly and print what it produced (a smoke test for a Kaggle session).
 
-    python ops/nbrun.py notebooks/00_setup_cache.ipynb [--timeout 900] [--out /tmp/x.ipynb]
+    python ops/nbrun.py notebooks/00_setup_cache.ipynb [--timeout 900] [--out .tmp/x.ipynb]
 
 ``jupyter nbconvert`` is not installed in this venv (only library stubs), and a readable transcript
 is more useful anyway: every stream line is echoed, and the first failing cell is named and turned

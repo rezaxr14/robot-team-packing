@@ -1,8 +1,8 @@
 """G-2: prove the Qwen3.5 Gated-DeltaNet fast path is really bound on this machine, then (optionally)
 run a finite-loss training smoke and record tokens/s + peak VRAM.
 
-  python ops/g2_fastpath.py --model ~/models/Qwen3.5-4B --out reports/g2_fastpath.json
-  python ops/g2_fastpath.py --model ~/models/Qwen3.5-4B --steps 100 --out reports/g2_fastpath.json
+  python ops/g2_fastpath.py --model $HOME/models/Qwen3.5-4B --out reports/g2_fastpath.json
+  python ops/g2_fastpath.py --model $HOME/models/Qwen3.5-4B --steps 100 --out reports/g2_fastpath.json
 
 What "fast path" means here (verified in `transformers/models/qwen3_5/modeling_qwen3_5.py`): the
 DeltaNet calls `causal_conv1d_fn/update` and fla's `chunk_gated_delta_rule` through

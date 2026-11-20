@@ -35,13 +35,15 @@ def test_env_points_only_inside_project_or_the_single_venvs_folder():
     assert "$HOME/venvs" in default("VENVS")
     assert default("ISAACLAB_DIR").startswith("$RTP_ROOT/")
     assert "$RTP_ROOT/.hf_cache" in default("HF_HOME")
-    assert "$VENVS/isaac_newton/bin/python" in default("ISAAC_PY")
+    assert "$VENVS/" in default("ISAAC_PY") and "/bin/python" in default("ISAAC_PY")
 
 
 def test_no_tracked_file_still_points_at_the_deleted_tree():
-    # CLAUDE.md is the rule itself and is allowed to name the forbidden path.
+    # CLAUDE.md states the rule and this test enforces it; both must name the forbidden
+    # path to do their job, so neither counts as a file that depends on the old tree.
     out = subprocess.run(
-        ["git", "grep", "-l", "rtp_work", "--", ":!CLAUDE.md"],
+        ["git", "grep", "-l", "rtp_work", "--", ":!CLAUDE.md",
+         ":!tests/test_workspace_boundary.py", ":!docs/USER_PROMPTS_VERBATIM.md"],
         cwd=ROOT, capture_output=True, text=True, check=False,
     )
     assert out.returncode == 1 and not out.stdout.strip(), (

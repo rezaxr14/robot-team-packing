@@ -175,7 +175,7 @@ or velocities. Cartesian waypoints and joint targets are produced downstream by 
 
 ## 7. Qwen3.5-4B — verified structure
 
-Read from the downloaded checkpoint (`~/models/Qwen3.5-4B/config.json`,
+Read from the downloaded checkpoint (`$HOME/models/Qwen3.5-4B/config.json`,
 `model.safetensors.index.json`, 2 shards, `total_size = 9 319 737 856` B ≈ 9.32 GB) and from
 `transformers 5.23.0`'s `models/qwen3_5/modeling_qwen3_5.py` in the active venv.
 

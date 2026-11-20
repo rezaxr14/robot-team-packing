@@ -2,7 +2,7 @@
 # Resumable, hash-verified model download (no hf_hub/xet required, survives dropped connections).
 #
 #   ops/download_model.sh Qwen/Qwen3.5-4B                 # -> $RTP_MODELS/Qwen3.5-4B
-#   ops/download_model.sh Qwen/Qwen3.5-4B /data/models/qwen
+#   ops/download_model.sh Qwen/Qwen3.5-4B $HOME/models/qwen
 #   ops/download_model.sh Qwen/Qwen3.5-4B --workers 2
 #
 # Why not `hf download` alone: on a flaky link the CLI process dies mid-shard and a restart can
@@ -13,6 +13,7 @@
 #   * verifies sha256 before moving the file into place, and never re-downloads a verified file.
 # Exit status is non-zero if any file is still unverified.
 set -euo pipefail
+RTP_ROOT="${RTP_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 MODEL=""; DEST=""; WORKERS=1; positional=()
 while [ $# -gt 0 ]; do
   case "$1" in

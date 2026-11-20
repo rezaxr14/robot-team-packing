@@ -16,9 +16,9 @@ quoted as fact, **[!]** blocked on the user.
 | D-03 | Physics is **Isaac Lab + Newton**. Not optional, not "a limitation". | [V] `source/isaaclab_newton` (`isaaclab_newton 17.2.3`, `requires-python >=3.12`) imports `warp` + `newton`; `NewtonManager.backend_name == "newton"` |
 | D-04 | **Two Eyes, two Arms.** Eyes are movable ceiling-mounted sensors, **skewed, not overhead**, placed on circular paths around the workspace, occludable by columns/objects, able to rotate, zoom, reposition, orbit, and run CV kernels. | design in `docs/ARCHITECTURE_V2.md` §2–3 |
 | D-05 | Eyes are **not LLMs**. YOLO-class detectors + classical CV for items/obstacles/edges/features. They send features/images to the Brain and obey its commands. They must be **trained** to detect obstacles and objects. | design §3 |
-| D-06 | **One Brain**: Qwen3.5-4B (vision-capable) commands both Arms and both Eyes. | [V] local checkpoint `~/models/Qwen3.5-4B`, `Qwen3_5ForConditionalGeneration` |
+| D-06 | **One Brain**: Qwen3.5-4B (vision-capable) commands both Arms and both Eyes. | [V] local checkpoint `$RTP_ROOT/models/Qwen3.5-4B`, `Qwen3_5ForConditionalGeneration` |
 | D-07 | Train **all relevant blocks**: full attention, gated DeltaNet, vision merger, and the up/down projections — not just language layers. Verify which modules exist and are trainable. | [V] module names in `docs/ARCHITECTURE_V2.md` §7; implemented as adapter coverage (D-15) |
-| D-08 | **Download and inspect the real Qwen config/model files before training.** Never guess the architecture. | [V] config + index + tokenizer downloaded to `~/models/Qwen3.5-4B`; structure table in §7 |
+| D-08 | **Download and inspect the real Qwen config/model files before training.** Never guess the architecture. | [V] config + index + tokenizer downloaded to `$RTP_ROOT/models/Qwen3.5-4B`; structure table in §7 |
 | D-09 | Hardware profiles: **RTX 4050 (QLoRA)**, **RTX 4090 (LoRA bf16 + FlashAttention)**, **dual T4 (LoRA fp16 + SDPA)**, plus future **NVIDIA Pro 6000** and **TPU v5e-8 / v6e-1 / v5e-1**. FlashAttention and bf16 only where genuinely supported, with fallbacks. | [V] FA2 README: Ampere/Ada/Hopper mainline, bf16 requires Ampere+, head_dim ≤256; Turing needs a separate fork; no bf16 on T4 |
 | D-10 | **One config dict/selector in the notebooks.** Selecting a profile configures the whole run; no digging through code. | `rtp/profiles.py` (to write); notebook sets `ACTIVE` only |
 | D-11 | Profiles are **fully isolated**: own derived folders, adapters, checkpoints, optimizer state, logs, resume cursors. They never touch each other and resume independently. | layout in §8 |
@@ -137,7 +137,7 @@ quoted as fact, **[!]** blocked on the user.
 
 ## F. P0 gate record (2026-11-17)
 
-* **G-1 PASS** — `ops/g1_module_dump.py --model ~/models/Qwen3.5-4B --out reports/qwen35_modules.json`
+* **G-1 PASS** — `ops/g1_module_dump.py --model $RTP_ROOT/models/Qwen3.5-4B --out reports/qwen35_modules.json`
   builds the model on the meta device (no weights) and checks the adapter map against the real graph:
   `Qwen3_5Attention{q,k,v,o_proj}`, `Qwen3_5GatedDeltaNet{in_proj_qkv,in_proj_z,in_proj_b,in_proj_a,out_proj}`
   (+`A_log`,`dt_bias`, no `D`), `Qwen3_5MLP{gate,up,down}`, `Qwen3_5VisionAttention{qkv,proj}`,

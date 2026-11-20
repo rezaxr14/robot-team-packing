@@ -211,7 +211,7 @@ fi
 
 # ---------------------------------------------------------------- optional: Isaac Lab 3.0 + Newton (D-25)
 if [ "$ISAAC" = 1 ] && [ "$CHECK" = 0 ]; then
-  IVENV="${RTP_ISAAC_VENV:-$VENVS_ROOT/isaac_newton}"
+  IVENV="${RTP_ISAAC_VENV:-$VENVS_ROOT/rtp}"
   say "Isaac Lab ${ISAACLAB_REF} + Newton venv ($IVENV)  [D-25: the only simulator stack]"
   echo "  NOTE: Python 3.12 is required by Isaac Lab 3.0 [V:S-15]; Isaac Lab's own requirement files"
   echo "        at the tag pin the rest (docs/SIMULATION.md §2). There is no isaacsim[all] pip step here"

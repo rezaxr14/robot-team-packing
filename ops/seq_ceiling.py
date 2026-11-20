@@ -5,7 +5,7 @@ Those numbers were chosen before anything ran, so this script measures them: one
 forward + backward at each requested length with the chunked LM loss (D-37), recording peak VRAM and
 stopping at the first out-of-memory instead of crashing.
 
-    python ops/seq_ceiling.py --model ~/models/Qwen3.5-4B --lengths 512,1024,2048,4096,8192
+    python ops/seq_ceiling.py --model $HOME/models/Qwen3.5-4B --lengths 512,1024,2048,4096,8192
     python ops/seq_ceiling.py --model ... --batch 2 --out reports/seq_ceiling_local_4050.json
 
 The answer is a property of the profile (VRAM, dtype, tuning), so it is recorded per profile and

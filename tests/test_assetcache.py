@@ -30,7 +30,7 @@ def test_slugs_match_the_plan():
     assert ac.model_spec("x", revision="", name="Qwen 3.5").slug == "rtp-model-qwen-3.5-local"
     wheels = ac.wheelhouse_spec(python="3.12", torch="2.15.0", cuda="13.2", sm="89")
     assert wheels.slug == "rtp-wheels-py3.12-torch2.15.0-cu13.2-sm89"
-    p = prof(Path("/tmp/unused"))
+    p = prof(Path("unused"))
     assert ac.adapters_spec(p, "sft", "deadbeefcafe1234").slug == "rtp-adapters-local_4050-sft-deadbeef"
     assert ac.data_spec(p, "sft", "0123456789abcdef").slug == "rtp-data-local_4050-sft-01234567"
 

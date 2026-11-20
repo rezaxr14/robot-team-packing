@@ -9,8 +9,8 @@
     "warp-lang": "1.17.0",
     "isaaclab": "28.0.0",
     "isaaclab-newton": "9.1.4",
-    "torch": "2.11.0+cu130",
-    "numpy": "2.5.1"
+    "torch": "2.15.0",
+    "numpy": "2.5.4"
   },
   "backport": "Isaac Lab commit 5608601d4 (PR #8269) re-applies wrenches on every solver substep; confirmed present by A2",
   "direct_rows": [

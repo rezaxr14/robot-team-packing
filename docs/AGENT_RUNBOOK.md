@@ -5,7 +5,7 @@ You are a coding agent working in this repository on the user's machine. Follow 
 ## 0. Rules you must obey every single time
 
 1. **Arms first (decision D-62, the user's order).** Steps A1–A10 train and certify the arms. Steps R1–R9 (data generation with frontier models, SFT, GRPO, evaluation) come AFTER A10. The only R-step you may run earlier is the Kaggle bring-up on cheap models (R3), and its output is never used for training.
-2. **Simulation is Isaac Lab 3.0 + Newton only** (D-25). Use the Newton-only environment: `source ops/env.sh` then `$ISAAC_PY` (it points to the `isaac_newton` venv). Do not install or call any other simulator or renderer.
+2. **Simulation is Isaac Lab 3.0 + Newton only** (D-25). Use the Newton-only environment: `source ops/env.sh` then `$ISAAC_PY` (it points to the single merged venv `$VENVS/rtp`). Do not install or call any other simulator or renderer.
 3. **Never claim more than you measured.** Every script you write must write a JSON report to `reports/` containing: `evidence_class` (`SIM` for Newton runs, `SIM-ABSTRACT` for numpy, `HARDWARE` for the real robot), library versions, seeds, the raw numbers, and `checks` with true/false for each acceptance row, and `result: PASS|FAIL`. Copy the pattern of `ops/g3_sim.py`, `ops/g5_fr3_load.py`, `ops/g6_impedance.py`.
 4. **If a step fails, do not weaken the test.** Write the failure into the report, write what you tried into `docs/STATUS_HONEST.md` ("not done: …"), and stop. Never raise a clamp, loosen a tolerance or delete a test to make a check pass.
 5. **The Brain (language model) never sets stiffness, speed, force limits or joint values.** Only the skill layer picks a stiffness profile from `rtp/control/compliance.py::PROFILES`.

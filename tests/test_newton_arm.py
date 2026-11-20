@@ -1,0 +1,200 @@
+"""CPU-lightweight tests for :mod:`rtp.control.newton_arm` (no GPU, no Newton).
+
+The controller's math and wiring are exercised with an injected fake FK/Jacobian
+provider; the Newton/Warp bridges are covered by the A5 harness
+``ops/a5_newton_push.py`` (evidence class SIM).  These tests are FIXTURE/MODEL:
+they verify the law, not any hardware or safety property.
+"""
+from __future__ import annotations
+
+import subprocess
+import sys
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from rtp.control.compliance import State
+from rtp.control.newton_arm import (
+    FLANGE_BODY,
+    FOREARM_BODY,
+    ELBOW_BODY,
+    Q_HOME,
+    NewtonArmConfig,
+    NewtonCompliantArm,
+    matrix_from_rotvec,
+    rate_limit_numpy,
+    rotvec_from_matrix,
+)
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+# --------------------------------------------------------------------------- #
+# Fake kinematics provider (numpy only): p = p0 + 0.1*q[:3], R = rotvec(q[3:6]).
+# --------------------------------------------------------------------------- #
+class FakeKinematics:
+    def __init__(self, jac: np.ndarray | None = None) -> None:
+        self.p0 = np.array([0.3, 0.0, 0.6])
+        self.J = np.asarray(jac if jac is not None else np.eye(6, 7), dtype=float)
+
+    def fk(self, q):
+        q = np.asarray(q, dtype=float)
+        return self.p0 + 0.1 * q[:3], matrix_from_rotvec(0.1 * q[3:6])
+
+    def jacobian(self, q):
+        return self.J
+
+
+def _arm(jac=None, **cfgkw):
+    kin = FakeKinematics(jac)
+    cfg = NewtonArmConfig(**cfgkw)
+    return NewtonCompliantArm(cfg, kinematics=kin), kin
+
+
+# --------------------------------------------------------------------------- #
+def test_module_imports_without_torch():
+    """Import must succeed with torch blocked (mirrors rtp/control/__init__.py)."""
+    code = """
+import sys
+class BlockTorch:
+    def find_spec(self, fullname, path, target=None):
+        if fullname == 'torch' or fullname.startswith('torch.'):
+            raise ModuleNotFoundError("No module named 'torch'", name='torch')
+        return None
+sys.meta_path.insert(0, BlockTorch())
+import rtp.control.newton_arm as m
+print('OK', m.Q_HOME, m.FLANGE_BODY)
+"""
+    r = subprocess.run([sys.executable, "-c", code], cwd=str(ROOT),
+                       capture_output=True, text=True, timeout=60)
+    assert r.returncode == 0, r.stderr
+    assert "OK" in r.stdout
+
+
+def test_constants_match_calibrated_kinematics():
+    from rtp.control.fr3_kinematics import Q_HOME as FK_Q_HOME
+    assert Q_HOME == FK_Q_HOME
+    assert (FLANGE_BODY, ELBOW_BODY, FOREARM_BODY) == (9, 5, 7)
+
+
+def test_rotation_helpers_roundtrip():
+    rng = np.random.default_rng(123)
+    for _ in range(20):
+        v = rng.normal(size=3) * 0.4
+        R = matrix_from_rotvec(v)
+        assert np.allclose(R.T @ R, np.eye(3), atol=1e-12)
+        assert np.linalg.det(R) == pytest.approx(1.0, abs=1e-12)
+        assert np.allclose(rotvec_from_matrix(R), v, atol=1e-12)
+    assert np.allclose(rotvec_from_matrix(np.eye(3)), np.zeros(3), atol=1e-15)
+
+
+def test_rate_limit_numpy_matches_impedance_torch():
+    torch = pytest.importorskip("torch")
+    from rtp.control.impedance import ImpedanceConfig, rate_limit
+    cfg = ImpedanceConfig()
+    md = cfg.torque_rate_nm_per_ms * cfg.dt_ms()
+    rng = np.random.default_rng(7)
+    for _ in range(50):
+        prev, val = rng.uniform(-5, 5, size=2)
+        got = rate_limit_numpy(np.array([val]), np.array([prev]), md)
+        want = rate_limit(torch.tensor([val], dtype=torch.float64),
+                          torch.tensor([prev], dtype=torch.float64), cfg)
+        assert np.allclose(got, want.numpy(), atol=1e-12)
+    # first command passes through unclamped
+    assert rate_limit_numpy(np.array([99.0]), None, 1.0)[0] == 99.0
+
+
+def test_k_null_is_bounded():
+    with pytest.raises(ValueError):
+        NewtonArmConfig(k_null=20.1)
+    with pytest.raises(ValueError):
+        NewtonArmConfig(k_null=-1.0)
+    assert NewtonArmConfig(k_null=20.0).k_null == 20.0
+
+
+def test_rotation_error_is_relative_rrT():
+    """x[3:] must be rotvec(R @ R_ref^T), never an absolute/difference-of-quat."""
+    arm, kin = _arm()
+    qh = np.asarray(Q_HOME, dtype=float)
+    ref = arm._reference()
+    q = qh.copy()
+    q[3] += 0.4                       # rotate about the fake's local x axis
+    x, xdot, J = arm.task_state(q, np.zeros(7))
+    _, R_ref = kin.fk(qh)
+    _, R = kin.fk(q)
+    expected = rotvec_from_matrix(np.asarray(R) @ np.asarray(R_ref).T)
+    assert np.allclose(x[3:], expected, atol=1e-12)
+    assert ref.shape == (6,)
+    assert xdot.shape == (6,) and J.shape == (6, 7)
+
+
+def test_nullspace_projector_annihilates_task_torques():
+    rng = np.random.default_rng(11)
+    J = rng.normal(size=(6, 7))
+    pinv = np.linalg.pinv(J, rcond=1e-3)
+    N = np.eye(7) - J.T @ pinv.T
+    assert np.allclose(N @ J.T, np.zeros((7, 6)), atol=1e-10)
+
+
+def test_torque_is_jtf_plus_nullspace_plus_gravity_with_clamps():
+    rng = np.random.default_rng(5)
+    J = rng.normal(size=(6, 7))
+    arm, kin = _arm(jac=J, tau_max=8.0, torque_rate_nm_per_ms=1000.0)
+    q = np.asarray(Q_HOME, dtype=float) + 0.01
+    dq = rng.normal(size=7) * 0.01
+    g = rng.normal(size=7)
+    fext = rng.normal(size=6)
+    tau, info = arm.step(q, dq, fext, gravity_comp=g)
+    assert np.allclose(info["tau_task"], J.T @ info["force"], atol=1e-12)
+    kn = arm.cfg.k_null
+    pinv = np.linalg.pinv(J, rcond=1e-3)
+    N = np.eye(7) - J.T @ pinv.T
+    want_null = N @ (kn * (arm.q_home - q) - 2.0 * np.sqrt(kn) * dq)
+    assert np.allclose(info["tau_null"], want_null, atol=1e-10)
+    assert np.allclose(info["tau_raw"], info["tau_task"] + info["tau_null"] + g, atol=1e-12)
+    assert np.all(np.abs(tau) <= 8.0 + 1e-12)
+    assert info["torque_clamped"] == bool(np.any(np.abs(info["tau_raw"]) > 8.0))
+
+
+def test_torque_rate_limit_is_applied_per_tick():
+    arm, _ = _arm(tau_max=1e6, torque_rate_nm_per_ms=1.0)
+    q = np.asarray(Q_HOME, dtype=float)
+    # first command unclamped (previous is None), then at most 1 Nm per tick.
+    # Move the (fake) plant 1 rad on joint 0 -> task error 0.1 m -> large torque.
+    t0, _ = arm.step(q, np.zeros(7), np.zeros(6))
+    q2 = q.copy()
+    q2[0] += 1.0
+    t1, info1 = arm.step(q2, np.zeros(7), np.zeros(6))
+    assert info1["rate_limited"] is True
+    assert np.all(np.abs(t1 - t0) <= 1.0 + 1e-12)
+    t2, _ = arm.step(q2, np.zeros(7), np.zeros(6))
+    assert np.all(np.abs(t2 - t1) <= 1.0 + 1e-12)
+
+
+def test_plan_clock_freezes_on_push_and_resumes():
+    """The supervisor's plan clock and state machine are wired into the arm."""
+    arm, _ = _arm()
+    q = np.asarray(Q_HOME, dtype=float)
+    home_pos = arm._reference()[:3]
+
+    def plan(s):
+        return np.concatenate([home_pos + np.array([0.05 * s, 0, 0]), np.zeros(3)])
+
+    states = []
+    s_push = []
+    for k in range(500):
+        _, info = arm.step(q, np.zeros(7), np.array([20.0, 0, 0, 0, 0, 0]), plan)
+        states.append(info["state"])
+        s_push.append(info["s"])
+    assert all(s == State.YIELD for s in states)
+    assert max(s_push) - min(s_push) < 1e-12      # exactly frozen in YIELD
+
+    seen = set()
+    for k in range(4000):
+        _, info = arm.step(q, np.zeros(7), np.zeros(6), plan)
+        seen.add(info["state"])
+        if k > 2500:
+            break
+    assert State.RETURN in seen
+    assert State.TRACK in seen   # TRACK resumes after the return settles

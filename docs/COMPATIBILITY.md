@@ -37,6 +37,6 @@ A GPU that trains the VLM is not automatically sized for many-env Newton trainin
 
 ## 3. Isolation (D-10/D-11)
 ```
-runs/<profile>/{ckpt,logs,reports,state.json}   data/<profile>/   models/<profile>/hf
+runs/<profile>/{ckpt,logs,reports,state.json}   data/<profile>/   $MODELS/<profile>/hf
 ```
 `state.json = {stage:{status,last_step,config_hash}}`; unchanged hash ⇒ skip; no path escapes the profile tree.

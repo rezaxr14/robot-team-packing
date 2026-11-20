@@ -147,9 +147,9 @@ reward source, not a physics result**.
 ```bash
 ops/install.sh --profile local_4050 --dry-run     # what would be installed, per profile
 ops/install.sh --profile local_4050               # torch + training/retrieval/agents/eyes venv
-ops/build_wheelhouse.py --profile kaggle_t4x2 --out ~/wheelhouses  # once, on a networked box
+ops/build_wheelhouse.py --profile kaggle_t4x2 --out $RTP_ROOT/.tmp/wheelhouses  # once, on a networked box
 ops/install.sh --profile kaggle_t4x2 --wheelhouse /kaggle/input/rtp-wheels-...   # offline, no index
-ops/download_model.sh Qwen/Qwen3.5-4B ~/models/Qwen3.5-4B
+ops/download_model.sh Qwen/Qwen3.5-4B $HOME/models/Qwen3.5-4B
 source ops/env.sh && python ops/plan.py list      # p0: preflight, model integrity, G-1, G-2
 ops/install.sh --isaac                            # Newton-only Isaac Lab 3.0 venv (uv sync at the tag)
 source ops/env.sh && python ops/plan.py run p2    # G-3: rgb+depth from the Newton Warp renderer

@@ -85,7 +85,7 @@ else:
 
 nb.md('''## Detect the Isaac environment without importing it here
 
-Isaac Lab lives in a **separate venv** (`$ISAAC_PY`, default `~/venvs/isaac_newton/bin/python`) with
+Isaac Lab lives in a **separate venv** (`$ISAAC_PY`, default `$VENVS/rtp/bin/python`) with
 its own Python and its own torch/CUDA build. Nothing in this kernel imports `isaaclab`: a subprocess only asks
 that venv whether the package is discoverable. If the venv is missing or `isaaclab` is not importable there,
 the cell prints `SKIPPED` and everything else still runs on CPU.
@@ -97,7 +97,7 @@ would run is always printed so a re-run is an explicit, recorded action.
 
 nb.code('''import importlib.util, subprocess
 
-ISAAC_PY = os.environ.get("ISAAC_PY") or str(Path.home() / Path.home() / "venvs" / "isaac_newton" / "bin" / "python")
+ISAAC_PY = os.environ.get("ISAAC_PY") or str(Path.home() / "venvs" / "rtp" / "bin" / "python")
 isaac_py = Path(ISAAC_PY).expanduser()
 if not isaac_py.is_file():
     ISAAC_OK = False
