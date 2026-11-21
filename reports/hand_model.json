@@ -1,0 +1,40 @@
+{
+  "step": "A7 prerequisite: derived hand model",
+  "evidence_class": "FIXTURE",
+  "scope": "model derivation + load/step smoke check; no grasp, contact or safety claim",
+  "python": "3.12.16",
+  "source": "assets/cache/menagerie/franka_fr3_v2/fr3v2.xml",
+  "source_sha256": "46f5b86f46d340ec7ba3a1354c659c1828385a465115cb88559850d483e86bd7",
+  "derived": "assets/derived/fr3v2_hand.xml",
+  "derived_sha256": "29f8e3fed5952c9868b17e6991274cb044f8b25e4fdab692d96084f3d9180275",
+  "hand": "simplified parallel-jaw gripper (not the Franka Hand)",
+  "actuator_force_range_N": [
+    -20,
+    20
+  ],
+  "finger_travel_m": 0.035,
+  "open_gap_m": 0.069,
+  "checks": {
+    "total_dof_9_arm7_plus_2_fingers": true,
+    "palm_present": true,
+    "two_fingers": true,
+    "two_slide_joints": true,
+    "finite_after_50_steps": true
+  },
+  "bodies": 13,
+  "shapes": 39,
+  "joints": 13,
+  "dof": 9,
+  "hand_bodies": [
+    "hand_palm",
+    "hand_finger_left",
+    "hand_finger_right"
+  ],
+  "hand_joints": [
+    "hand_palm_joint",
+    "hand_finger_left_joint",
+    "hand_finger_right_joint"
+  ],
+  "finite_after_50_steps": true,
+  "result": "PASS"
+}
