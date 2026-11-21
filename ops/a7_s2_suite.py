@@ -27,10 +27,12 @@ def main() -> int:
     ap.add_argument("--masses", default="0.1,0.5,1.0")
     ap.add_argument("--python", default=sys.executable)
     ap.add_argument("--resume", action="store_true", help="reuse existing PASS trial reports")
+    ap.add_argument("--trial-script", default="ops/a7_s2_lift.py")
+    ap.add_argument("--trials-dir", default="reports/a7_s2_trials")
     ap.add_argument("--out", type=Path, default=ROOT / "reports" / "a7_s2_suite.json")
     a = ap.parse_args()
     masses = [float(x) for x in a.masses.split(",") if x.strip()]
-    trials_dir = ROOT / "reports" / "a7_s2_trials"
+    trials_dir = ROOT / a.trials_dir
     trials_dir.mkdir(parents=True, exist_ok=True)
 
     rows = []
@@ -47,7 +49,7 @@ def main() -> int:
                         continue
                 except Exception:  # noqa: BLE001
                     pass
-            cmd = [a.python, str(ROOT / "ops" / "a7_s2_lift.py"),
+            cmd = [a.python, str(ROOT / a.trial_script),
                    "--seed", str(seed), "--mass", str(mass), "--out", str(out)]
             result = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
             try:
