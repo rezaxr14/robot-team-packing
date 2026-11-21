@@ -92,3 +92,10 @@ A5 FAIL is real Newton torque-mode evidence for the rows that ran; A7 is `SIM-PO
   weights), `HARDWARE` (real robot). Never pool classes in a paper number.
 * "Notebook exists" is not evidence that the stage ran. "Spec exists" is not evidence that the
   behaviour is implemented or measured.
+
+## Update 2026-11-21 — seed namespaces (M3, FIXTURE)
+
+| item | evidence class | state |
+|---|---|---|
+| Seed namespace rule implemented | FIXTURE | `rtp/seeds.py` + 6 tests: training seeds >= 100000, test seeds < 100000; `assert_train`/`assert_test`/`split_bounds` refuse to cross the boundary; `audit_paths` scans `seed` keys without editing files |
+| Audit of existing corpora | FIXTURE | `reports/seed_audit.json` **FAIL**: 310 seed references below 100000 across 8 legacy files in `data/local_4050/` (20 files scanned). These are pre-rule smoke fixtures and are **barred from SFT/GRPO/memory** until regenerated under R5 with seeds >= 100000. Nothing deleted |

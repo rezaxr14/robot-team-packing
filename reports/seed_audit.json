@@ -1,0 +1,1428 @@
+{
+  "step": "M3 seed namespace audit",
+  "evidence_class": "FIXTURE",
+  "python": "3.14.8",
+  "train_min": 100000,
+  "rule": "training seeds >= 100000; test seeds < 100000, never in training data, memory or prompts",
+  "files_scanned": 20,
+  "violations": 310,
+  "by_file": {
+    "/home/reza/Projects/robot_team/data/local_4050/brain_grpo.jsonl": 12,
+    "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl": 64,
+    "/home/reza/Projects/robot_team/data/local_4050/cot_frontier_traces.jsonl": 8,
+    "/home/reza/Projects/robot_team/data/local_4050/cot_prompts.jsonl": 8,
+    "/home/reza/Projects/robot_team/data/local_4050/cot_traces.jsonl": 6,
+    "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl": 20,
+    "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl": 48,
+    "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl": 48,
+    "/home/reza/Projects/robot_team/data/local_4050/grpo_prompts.jsonl": 48,
+    "/home/reza/Projects/robot_team/data/local_4050/hindsight_sft.jsonl": 48
+  },
+  "findings": [
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_grpo.jsonl",
+      "record": 0,
+      "path": "seed",
+      "seed": 0,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_grpo.jsonl",
+      "record": 1,
+      "path": "seed",
+      "seed": 1,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_grpo.jsonl",
+      "record": 2,
+      "path": "seed",
+      "seed": 2,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_grpo.jsonl",
+      "record": 3,
+      "path": "seed",
+      "seed": 3,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_grpo.jsonl",
+      "record": 4,
+      "path": "seed",
+      "seed": 4,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_grpo.jsonl",
+      "record": 5,
+      "path": "seed",
+      "seed": 5,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_grpo.jsonl",
+      "record": 6,
+      "path": "seed",
+      "seed": 6,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_grpo.jsonl",
+      "record": 7,
+      "path": "seed",
+      "seed": 7,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_grpo.jsonl",
+      "record": 8,
+      "path": "seed",
+      "seed": 8,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_grpo.jsonl",
+      "record": 9,
+      "path": "seed",
+      "seed": 9,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_grpo.jsonl",
+      "record": 10,
+      "path": "seed",
+      "seed": 10,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_grpo.jsonl",
+      "record": 11,
+      "path": "seed",
+      "seed": 11,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 0,
+      "path": "meta.seed",
+      "seed": 0,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 1,
+      "path": "meta.seed",
+      "seed": 1,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 2,
+      "path": "meta.seed",
+      "seed": 2,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 3,
+      "path": "meta.seed",
+      "seed": 3,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 4,
+      "path": "meta.seed",
+      "seed": 4,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 5,
+      "path": "meta.seed",
+      "seed": 5,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 6,
+      "path": "meta.seed",
+      "seed": 6,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 7,
+      "path": "meta.seed",
+      "seed": 7,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 8,
+      "path": "meta.seed",
+      "seed": 8,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 9,
+      "path": "meta.seed",
+      "seed": 9,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 10,
+      "path": "meta.seed",
+      "seed": 10,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 11,
+      "path": "meta.seed",
+      "seed": 11,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 12,
+      "path": "meta.seed",
+      "seed": 12,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 13,
+      "path": "meta.seed",
+      "seed": 13,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 14,
+      "path": "meta.seed",
+      "seed": 14,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 15,
+      "path": "meta.seed",
+      "seed": 15,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 16,
+      "path": "meta.seed",
+      "seed": 16,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 17,
+      "path": "meta.seed",
+      "seed": 17,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 18,
+      "path": "meta.seed",
+      "seed": 18,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 19,
+      "path": "meta.seed",
+      "seed": 19,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 20,
+      "path": "meta.seed",
+      "seed": 20,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 21,
+      "path": "meta.seed",
+      "seed": 21,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 22,
+      "path": "meta.seed",
+      "seed": 22,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 23,
+      "path": "meta.seed",
+      "seed": 23,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 24,
+      "path": "meta.seed",
+      "seed": 24,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 25,
+      "path": "meta.seed",
+      "seed": 25,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 26,
+      "path": "meta.seed",
+      "seed": 26,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 27,
+      "path": "meta.seed",
+      "seed": 27,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 28,
+      "path": "meta.seed",
+      "seed": 28,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 29,
+      "path": "meta.seed",
+      "seed": 29,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 30,
+      "path": "meta.seed",
+      "seed": 30,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 31,
+      "path": "meta.seed",
+      "seed": 31,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 32,
+      "path": "meta.seed",
+      "seed": 32,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 33,
+      "path": "meta.seed",
+      "seed": 33,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 34,
+      "path": "meta.seed",
+      "seed": 34,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 35,
+      "path": "meta.seed",
+      "seed": 35,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 36,
+      "path": "meta.seed",
+      "seed": 36,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 37,
+      "path": "meta.seed",
+      "seed": 37,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 38,
+      "path": "meta.seed",
+      "seed": 38,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 39,
+      "path": "meta.seed",
+      "seed": 39,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 40,
+      "path": "meta.seed",
+      "seed": 40,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 41,
+      "path": "meta.seed",
+      "seed": 41,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 42,
+      "path": "meta.seed",
+      "seed": 42,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 43,
+      "path": "meta.seed",
+      "seed": 43,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 44,
+      "path": "meta.seed",
+      "seed": 44,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 45,
+      "path": "meta.seed",
+      "seed": 45,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 46,
+      "path": "meta.seed",
+      "seed": 46,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 47,
+      "path": "meta.seed",
+      "seed": 47,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 48,
+      "path": "meta.seed",
+      "seed": 48,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 49,
+      "path": "meta.seed",
+      "seed": 49,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 50,
+      "path": "meta.seed",
+      "seed": 50,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 51,
+      "path": "meta.seed",
+      "seed": 51,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 52,
+      "path": "meta.seed",
+      "seed": 52,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 53,
+      "path": "meta.seed",
+      "seed": 53,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 54,
+      "path": "meta.seed",
+      "seed": 54,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 55,
+      "path": "meta.seed",
+      "seed": 55,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 56,
+      "path": "meta.seed",
+      "seed": 56,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 57,
+      "path": "meta.seed",
+      "seed": 57,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 58,
+      "path": "meta.seed",
+      "seed": 58,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 59,
+      "path": "meta.seed",
+      "seed": 59,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 60,
+      "path": "meta.seed",
+      "seed": 60,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 61,
+      "path": "meta.seed",
+      "seed": 61,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 62,
+      "path": "meta.seed",
+      "seed": 62,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/brain_sft.jsonl",
+      "record": 63,
+      "path": "meta.seed",
+      "seed": 63,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_frontier_traces.jsonl",
+      "record": 0,
+      "path": "seed",
+      "seed": 0,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_frontier_traces.jsonl",
+      "record": 1,
+      "path": "seed",
+      "seed": 1,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_frontier_traces.jsonl",
+      "record": 2,
+      "path": "seed",
+      "seed": 2,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_frontier_traces.jsonl",
+      "record": 3,
+      "path": "seed",
+      "seed": 3,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_frontier_traces.jsonl",
+      "record": 4,
+      "path": "seed",
+      "seed": 4,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_frontier_traces.jsonl",
+      "record": 5,
+      "path": "seed",
+      "seed": 5,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_frontier_traces.jsonl",
+      "record": 6,
+      "path": "seed",
+      "seed": 6,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_frontier_traces.jsonl",
+      "record": 7,
+      "path": "seed",
+      "seed": 7,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_prompts.jsonl",
+      "record": 0,
+      "path": "seed",
+      "seed": 0,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_prompts.jsonl",
+      "record": 1,
+      "path": "seed",
+      "seed": 1,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_prompts.jsonl",
+      "record": 2,
+      "path": "seed",
+      "seed": 2,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_prompts.jsonl",
+      "record": 3,
+      "path": "seed",
+      "seed": 3,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_prompts.jsonl",
+      "record": 4,
+      "path": "seed",
+      "seed": 4,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_prompts.jsonl",
+      "record": 5,
+      "path": "seed",
+      "seed": 5,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_prompts.jsonl",
+      "record": 6,
+      "path": "seed",
+      "seed": 6,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_prompts.jsonl",
+      "record": 7,
+      "path": "seed",
+      "seed": 7,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_traces.jsonl",
+      "record": 0,
+      "path": "seed",
+      "seed": 0,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_traces.jsonl",
+      "record": 1,
+      "path": "seed",
+      "seed": 1,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_traces.jsonl",
+      "record": 2,
+      "path": "seed",
+      "seed": 2,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_traces.jsonl",
+      "record": 3,
+      "path": "seed",
+      "seed": 3,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_traces.jsonl",
+      "record": 4,
+      "path": "seed",
+      "seed": 4,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/cot_traces.jsonl",
+      "record": 5,
+      "path": "seed",
+      "seed": 5,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 0,
+      "path": "seed",
+      "seed": 100,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 1,
+      "path": "seed",
+      "seed": 101,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 2,
+      "path": "seed",
+      "seed": 102,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 3,
+      "path": "seed",
+      "seed": 103,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 4,
+      "path": "seed",
+      "seed": 104,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 5,
+      "path": "seed",
+      "seed": 105,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 6,
+      "path": "seed",
+      "seed": 106,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 7,
+      "path": "seed",
+      "seed": 107,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 8,
+      "path": "seed",
+      "seed": 108,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 9,
+      "path": "seed",
+      "seed": 109,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 10,
+      "path": "seed",
+      "seed": 110,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 11,
+      "path": "seed",
+      "seed": 111,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 12,
+      "path": "seed",
+      "seed": 112,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 13,
+      "path": "seed",
+      "seed": 113,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 14,
+      "path": "seed",
+      "seed": 114,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 15,
+      "path": "seed",
+      "seed": 115,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 16,
+      "path": "seed",
+      "seed": 116,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 17,
+      "path": "seed",
+      "seed": 117,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 18,
+      "path": "seed",
+      "seed": 118,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/episode_memory.jsonl",
+      "record": 19,
+      "path": "seed",
+      "seed": 119,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 0,
+      "path": "seed",
+      "seed": 10000,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 1,
+      "path": "seed",
+      "seed": 10000,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 2,
+      "path": "seed",
+      "seed": 10001,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 3,
+      "path": "seed",
+      "seed": 10001,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 4,
+      "path": "seed",
+      "seed": 10002,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 5,
+      "path": "seed",
+      "seed": 10002,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 6,
+      "path": "seed",
+      "seed": 10003,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 7,
+      "path": "seed",
+      "seed": 10003,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 8,
+      "path": "seed",
+      "seed": 10004,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 9,
+      "path": "seed",
+      "seed": 10004,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 10,
+      "path": "seed",
+      "seed": 10005,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 11,
+      "path": "seed",
+      "seed": 10005,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 12,
+      "path": "seed",
+      "seed": 10006,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 13,
+      "path": "seed",
+      "seed": 10006,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 14,
+      "path": "seed",
+      "seed": 10007,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 15,
+      "path": "seed",
+      "seed": 10007,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 16,
+      "path": "seed",
+      "seed": 10008,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 17,
+      "path": "seed",
+      "seed": 10008,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 18,
+      "path": "seed",
+      "seed": 10009,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 19,
+      "path": "seed",
+      "seed": 10009,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 20,
+      "path": "seed",
+      "seed": 10010,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 21,
+      "path": "seed",
+      "seed": 10010,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 22,
+      "path": "seed",
+      "seed": 10011,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 23,
+      "path": "seed",
+      "seed": 10011,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 24,
+      "path": "seed",
+      "seed": 10012,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 25,
+      "path": "seed",
+      "seed": 10012,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 26,
+      "path": "seed",
+      "seed": 10013,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 27,
+      "path": "seed",
+      "seed": 10013,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 28,
+      "path": "seed",
+      "seed": 10014,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 29,
+      "path": "seed",
+      "seed": 10014,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 30,
+      "path": "seed",
+      "seed": 10015,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 31,
+      "path": "seed",
+      "seed": 10015,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 32,
+      "path": "seed",
+      "seed": 10016,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 33,
+      "path": "seed",
+      "seed": 10016,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 34,
+      "path": "seed",
+      "seed": 10017,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 35,
+      "path": "seed",
+      "seed": 10017,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 36,
+      "path": "seed",
+      "seed": 10018,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 37,
+      "path": "seed",
+      "seed": 10018,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 38,
+      "path": "seed",
+      "seed": 10019,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 39,
+      "path": "seed",
+      "seed": 10019,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 40,
+      "path": "seed",
+      "seed": 10020,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 41,
+      "path": "seed",
+      "seed": 10020,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 42,
+      "path": "seed",
+      "seed": 10021,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 43,
+      "path": "seed",
+      "seed": 10021,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 44,
+      "path": "seed",
+      "seed": 10022,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 45,
+      "path": "seed",
+      "seed": 10022,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 46,
+      "path": "seed",
+      "seed": 10023,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_grpo_rows.jsonl",
+      "record": 47,
+      "path": "seed",
+      "seed": 10023,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 0,
+      "path": "meta.seed",
+      "seed": 10000,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 1,
+      "path": "meta.seed",
+      "seed": 10000,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 2,
+      "path": "meta.seed",
+      "seed": 10001,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 3,
+      "path": "meta.seed",
+      "seed": 10001,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 4,
+      "path": "meta.seed",
+      "seed": 10002,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 5,
+      "path": "meta.seed",
+      "seed": 10002,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 6,
+      "path": "meta.seed",
+      "seed": 10003,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 7,
+      "path": "meta.seed",
+      "seed": 10003,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 8,
+      "path": "meta.seed",
+      "seed": 10004,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 9,
+      "path": "meta.seed",
+      "seed": 10004,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 10,
+      "path": "meta.seed",
+      "seed": 10005,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 11,
+      "path": "meta.seed",
+      "seed": 10005,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 12,
+      "path": "meta.seed",
+      "seed": 10006,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 13,
+      "path": "meta.seed",
+      "seed": 10006,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 14,
+      "path": "meta.seed",
+      "seed": 10007,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 15,
+      "path": "meta.seed",
+      "seed": 10007,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 16,
+      "path": "meta.seed",
+      "seed": 10008,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 17,
+      "path": "meta.seed",
+      "seed": 10008,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 18,
+      "path": "meta.seed",
+      "seed": 10009,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 19,
+      "path": "meta.seed",
+      "seed": 10009,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 20,
+      "path": "meta.seed",
+      "seed": 10010,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 21,
+      "path": "meta.seed",
+      "seed": 10010,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 22,
+      "path": "meta.seed",
+      "seed": 10011,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 23,
+      "path": "meta.seed",
+      "seed": 10011,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 24,
+      "path": "meta.seed",
+      "seed": 10012,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 25,
+      "path": "meta.seed",
+      "seed": 10012,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 26,
+      "path": "meta.seed",
+      "seed": 10013,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 27,
+      "path": "meta.seed",
+      "seed": 10013,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 28,
+      "path": "meta.seed",
+      "seed": 10014,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 29,
+      "path": "meta.seed",
+      "seed": 10014,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 30,
+      "path": "meta.seed",
+      "seed": 10015,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 31,
+      "path": "meta.seed",
+      "seed": 10015,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 32,
+      "path": "meta.seed",
+      "seed": 10016,
+      "namespace": "test"
+    },
+    {
+      "file": "/home/reza/Projects/robot_team/data/local_4050/eye_sft.jsonl",
+      "record": 33,
+      "path": "meta.seed",
+      "seed": 10016,
+      "namespace": "test"
+    }
+  ],
+  "checks": {
+    "no_test_seed_in_scanned_corpus": false
+  },
+  "result": "FAIL",
+  "note": "A violation means the recorded seed is in the held-out namespace. Such records may not be used for SFT/GRPO/memory; regenerate them with seeds >= 100000. Nothing is deleted here."
+}
