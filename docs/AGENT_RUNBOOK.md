@@ -153,6 +153,8 @@ Questions and where to look (run each grep, open the files, read):
 
 **Physical skills only.** A pose-level state machine on the Newton scene is `SIM-POSE` plumbing and does not count. Climb this ladder, one rung per commit, each with its own report, and do not skip rungs; then run >= 200 seeded trials per skill through `NewtonCompliantArm` with evidence class `SIM`.
 
+Two prerequisites were measured on the way to S1/S2 and must not be rediscovered: (1) the cached Menagerie FR3 v2 / Duo MJCF models are **arm-only** — use the derived `assets/derived/fr3v2_hand.xml` (D-76), a simplified parallel-jaw hand, never call it the Franka Hand; (2) DLS IK targets are in the **arm-base frame**, not world coordinates, and the wrist must be rolled so the finger closing axis is parallel to a box face (D-78).
+
 | rung | build | pass |
 |---|---|---|
 | S1 | hand opens/closes under position control with a force cap; close on a fixed 5 cm box held in a static clamp | finger contact force readable, box does not move |
