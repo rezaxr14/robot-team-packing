@@ -121,3 +121,9 @@ A5 FAIL is real Newton torque-mode evidence for the rows that ran; A7 is `SIM-PO
 | S3 friction control verified | SIM (model attribute) | `ops/a7_s3_trial.py --friction {0.3,0.9}` produces `model.shape_material_mu = 0.300 / 0.900` on the item shape; the grid actually varies contact friction. Force-factor scales the two finger target gains (still clamped at the ±20 N actuator range) |
 | Paper pipeline check | FIXTURE (not evidence) | `PYTHONPATH=$PWD $ISAAC_PY paper/scripts/pipeline_check.py` wrote 12 rows and stated "PIPELINE CHECK ONLY, not evidence"; the CSV was removed rather than committed as a result |
 | A5 elbow probe report | SIM | `reports/g6_elbow_probe.json` (untracked until now) is the pre-D-79 6-subrow elbow measurement: EE 20.6/40.2/60.3 mm (link 4) and 20.7/41.3/71.5 mm (link 6) at 10/20/30 N, K=500 N/m, all `ee_error_le_15mm` false; used as the measured basis for D-79 |
+
+## Update 2026-11-21 — R1 scene bundle + eye view library (code only)
+
+| item | evidence class | state |
+|---|---|---|
+| R1 `ops/render_views.py` + CPU manifest tests | FIXTURE (code, not run) | CLI, deterministic sha256 manifest, tamper detection and the honest MJCF->USD fallback are written; `tests/test_render_views_manifest.py` passes on CPU. **Not run on GPU**: `isaacsim` is absent in the Newton-only venv, so no USD scene builds, no `views/*.jpg` are written and no fps is measured; the >= 10 fps acceptance (G-8) and bundle-hash stability across two runs stay unmeasured. Fallback writes `result: FAIL`, `reason: "MJCF->USD conversion unavailable in Newton-only venv"`, `fps_per_eye: null` |
