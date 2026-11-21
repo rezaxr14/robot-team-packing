@@ -127,3 +127,15 @@ A5 FAIL is real Newton torque-mode evidence for the rows that ran; A7 is `SIM-PO
 | item | evidence class | state |
 |---|---|---|
 | R1 `ops/render_views.py` + CPU manifest tests | FIXTURE (code, not run) | CLI, deterministic sha256 manifest, tamper detection and the honest MJCF->USD fallback are written; `tests/test_render_views_manifest.py` passes on CPU. **Not run on GPU**: `isaacsim` is absent in the Newton-only venv, so no USD scene builds, no `views/*.jpg` are written and no fps is measured; the >= 10 fps acceptance (G-8) and bundle-hash stability across two runs stay unmeasured. Fallback writes `result: FAIL`, `reason: "MJCF->USD conversion unavailable in Newton-only venv"`, `fps_per_eye: null` |
+
+## Update 2026-11-21 — A7 ladder S4/S5/S6 fixtures (code only, NOT run)
+
+| item | evidence class | state |
+|---|---|---|
+| A7 rungs S4/S5/S6 trial fixtures | FIXTURE (code, NOT run) | `ops/a7_s4_place.py`, `ops/a7_s5_weigh.py`, `ops/a7_s6_handover.py` written as single-seeded Newton trials that will write `reports/a7_s4.json` / `a7_s5.json` / `a7_s6.json` when invoked later under `$ISAAC_PY`; `evidence_class: SIM` only after a real solver step, explicit `result: FAIL` + reason on build failure. Pure helpers tested on CPU (`tests/test_a7_ladder_helpers.py`, 16 passed). **NOT run** (GPU reserved for other jobs): no Newton stepping, no place/weigh/handover result and no pass rate exists; no certification claim. Bounds from `configs/arm_cert.yaml` / runbook unchanged |
+
+## Update 2026-11-21 — R5 curation + SFT formatting (code only)
+
+| item | evidence class | state |
+|---|---|---|
+| R5 `rtp/curate.py` + `rtp/sft_format.py` + CPU tests | FIXTURE (code, not run on real data) | `/home/reza/venvs/rtp/bin/python -m pytest tests/test_curate.py -q`: 11 passed. Synthetic records only; covers certified/uncertified arm models, test-seed and replay-failure exclusion, dedupe, per-model cap, failure→replan ranking, deterministic chat rows and canonical-hash tamper detection. No certified skill tables, certified-arm episodes or SFT dataset exist: **no dataset was built**, no train/val jsonl written, no threshold changed |
