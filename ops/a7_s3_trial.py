@@ -36,7 +36,7 @@ CLOSED_CTRL = 0.035
 DT = 0.001
 
 
-def build(seed: int, mass: float, friction: float, force_factor: float):
+def build(seed: int, mass: float, friction: float, force_factor: float, lift_delta: float = 0.12):
     import os
     import newton
     import warp as wp
@@ -92,7 +92,7 @@ def build(seed: int, mass: float, friction: float, force_factor: float):
 
     q_pre = ik(grasp_z + 0.10, fk.Q_HOME)          # 10 cm above the grasp pose
     q_grasp = ik(grasp_z, q_pre[-1])               # pads straddle the box
-    q_lift = ik(grasp_z + 0.10, q_grasp[-1])       # lift target
+    q_lift = ik(grasp_z + lift_delta, q_grasp[-1])  # slip-compensated lift target (D-80)
     return model, (x, y, zc), q_pre, q_grasp, q_lift, Rhome
 
 
@@ -106,6 +106,7 @@ def main() -> int:
     ap.add_argument("--mass", type=float, default=0.3)
     ap.add_argument("--friction", type=float, default=0.6)
     ap.add_argument("--force-factor", type=float, default=1.0)
+    ap.add_argument("--lift-delta", type=float, default=0.12)
     ap.add_argument("--out", type=Path, default=ROOT / "reports" / "a7_s3.json")
     a = ap.parse_args()
 
@@ -115,13 +116,13 @@ def main() -> int:
         "scope": "one seeded Newton grasp attempt with the derived simplified parallel-jaw hand; "
                  "not a certification and not a safety result",
         "seed": a.seed, "mass_kg": a.mass, "friction": a.friction,
-        "force_factor": a.force_factor,
+        "force_factor": a.force_factor, "lift_delta_m": a.lift_delta,
         "hand_model": str(MODEL.relative_to(ROOT)),
         "versions": {"python": platform.python_version(), "newton": metadata.version("newton"),
                      "warp": wp.__version__},
     }
     try:
-        model, box0, q_pre, q_grasp, q_lift, Rhome = build(a.seed, a.mass, a.friction, a.force_factor)
+        model, box0, q_pre, q_grasp, q_lift, Rhome = build(a.seed, a.mass, a.friction, a.force_factor, a.lift_delta)
         state, control = model.state(), model.control()
         labels = [lbl.split("/")[-1] for lbl in model.joint_label]
         offsets = [int(model.joint_q_start.numpy()[i]) for i, lbl in enumerate(labels)
