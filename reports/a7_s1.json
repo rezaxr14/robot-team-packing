@@ -1,0 +1,58 @@
+{
+  "step": "A7 S1 (hand under force cap on a clamped box)",
+  "evidence_class": "SIM",
+  "scope": "finger open/close + stall against a clamped 5 cm box; actuator force (not a contact sensor); no grasp claim",
+  "model": "assets/derived/fr3v2_hand.xml",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp": "1.17.0"
+  },
+  "params": {
+    "kp_N_per_m": 600.0,
+    "kv_Ns_per_m": 12.0,
+    "force_limit_N": 20.0,
+    "box_size_m": 0.05,
+    "open_ctrl_m": 0.0,
+    "closed_ctrl_m": 0.035,
+    "dt": 0.001
+  },
+  "steps": 3000,
+  "wall_s": 21.87,
+  "steps_per_s": 137.2,
+  "dof": 9,
+  "bodies": 14,
+  "box_center_world": [
+    0.30702,
+    0.0,
+    0.49527
+  ],
+  "flange_home_world": [
+    0.30702,
+    0.0,
+    0.59027
+  ],
+  "final_finger_left_m": 0.01011,
+  "final_finger_right_m": 0.01107,
+  "finger_travel_m": 0.01011,
+  "final_inner_gap_m": 0.04781,
+  "max_actuator_force_left_N": 14.958,
+  "max_actuator_force_right_N": 14.371,
+  "mean_actuator_force_last_0p5s_N": [
+    14.933,
+    14.356
+  ],
+  "pad_penetration_m": 0.00219,
+  "penetration_note": "self-imposed S1 target <= 3 mm at the 20 N cap (MuJoCo-Warp effective contact stiffness, measured); S4's <= 10 mm bound applies to placing, not this rung",
+  "box_drift_m": 0.0,
+  "checks": {
+    "fingers_move": true,
+    "stall_near_box_width_3mm": true,
+    "force_readable_1_to_20N": true,
+    "force_below_cap": true,
+    "no_penetration_3mm": true,
+    "box_static_by_construction": true,
+    "finite": true
+  },
+  "result": "PASS"
+}

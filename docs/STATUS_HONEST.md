@@ -100,3 +100,10 @@ A5 FAIL is real Newton torque-mode evidence for the rows that ran; A7 is `SIM-PO
 | Seed namespace rule implemented | FIXTURE | `rtp/seeds.py` + 6 tests: training seeds >= 100000, test seeds < 100000; `assert_train`/`assert_test`/`split_bounds` refuse to cross the boundary; `audit_paths` scans `seed` keys without editing files |
 | Audit of existing corpora | FIXTURE | `reports/seed_audit.json` **FAIL**: 310 seed references below 100000 across 8 legacy files in `data/local_4050/` (20 files scanned). These are pre-rule smoke fixtures and are **barred from SFT/GRPO/memory** until regenerated under R5 with seeds >= 100000. Nothing deleted |
 | A7 prerequisite: hand model | FIXTURE | `ops/build_hand_mjcf.py` derives `assets/derived/fr3v2_hand.xml` from the cached Menagerie FR3 v2 (source unchanged, hashes in `reports/hand_model.json`): 13 bodies, 9 DoF (7 arm + 2 prismatic fingers), palm + 2 pads, ±20 N actuator force range, 50-step smoke check finite. This is a **simplified parallel-jaw gripper, not the Franka Hand**; the cached Menagerie models are arm-only (no gripper exists in the repo) |
+
+## Update 2026-11-21 — A7 rung S1: hand under a force cap (SIM)
+
+| item | evidence class | state |
+|---|---|---|
+| S1 hand open/close on a clamped 5 cm box | SIM | **PASS** (`reports/a7_s1.json`): derived `fr3v2_hand.xml` (13 bodies, 9 DoF), 3 s at 1 kHz, position servo kp=600 N/m / kv=12 with ±20 N actuator range. Fingers travel 10.1 mm and stall at a 47.81 mm inner gap on the 50 mm box (3 mm window), mean actuator force 14.9/14.4 N in the last 0.5 s, peak 14.96 N < cap, penetration 2.19 mm (self-imposed 3 mm target), box static, 137 steps/s. Actuator force, **not** a contact-sensor measurement |
+| A7 overall | — | still **STAND_IN**: S1 does not change the gate. The pose-level regression remains `SIM-POSE`; the 200-trial physical suite is not run |

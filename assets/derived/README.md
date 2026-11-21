@@ -7,4 +7,4 @@ modified. The hand inserted at the bare flange is a **simplified parallel-jaw gr
 (palm box + two prismatic finger pads, +/-20 N actuator force range), not the Franka Hand.
 
 Source sha256: `46f5b86f46d340ec7ba3a1354c659c1828385a465115cb88559850d483e86bd7`
-Derived sha256: `29f8e3fed5952c9868b17e6991274cb044f8b25e4fdab692d96084f3d9180275`
+Derived sha256: `63a2f65d0470c32da899bb7224ad0e4b450ba0c8ce06aa4d7fd783459b4a3e7b`

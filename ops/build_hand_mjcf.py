@@ -32,7 +32,7 @@ REPORT = ROOT / "reports" / "hand_model.json"
 HAND_XML = """    <body name="fr3v2_link8" pos="0 0 0.107">
       <body name="hand_palm" pos="0 0 0.055">
         <inertial pos="0 0 0" mass="0.20" diaginertia="0.00040 0.00040 0.00020"/>
-        <geom name="hand_palm_collision" type="box" size="0.0225 0.0425 0.009"
+        <geom name="hand_palm_collision" type="box" size="0.0225 0.0300 0.009"
               friction="0.9 0.005 0.0001" rgba="0.32 0.34 0.38 1"/>
         <body name="hand_finger_left" pos="0 -0.0425 0.040">
           <joint name="hand_finger_left_joint" type="slide" axis="0 1 0" range="0 0.035"
@@ -66,6 +66,13 @@ def derive() -> str:
     flange = '    <body name="fr3v2_link8" pos="0 0 0.107"/>'
     if flange not in text:
         raise SystemExit(f"unexpected source: flange tag not found in {SRC}")
+    compiler = '<compiler angle="radian" meshdir="assets"/>'
+    if compiler not in text:
+        raise SystemExit(f"unexpected source: compiler tag not found in {SRC}")
+    # Stiffer, elliptic-friction contacts: the MuJoCo defaults penetrate ~4 mm at 14 N, which is
+    # enough to invalidate a 1 mm penetration bound and to weaken grasps in S2/S3.
+    text = text.replace(compiler, compiler + '\n  <option timestep="0.001" solref="0.001 1" '
+                        'solimp="0.95 0.99 0.001" cone="elliptic" impratio="10"/>')
     text = text.replace(flange, HAND_XML)
     if "</actuator>" not in text:
         raise SystemExit(f"unexpected source: no </actuator> in {SRC}")

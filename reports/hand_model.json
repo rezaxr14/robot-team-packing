@@ -6,7 +6,7 @@
   "source": "assets/cache/menagerie/franka_fr3_v2/fr3v2.xml",
   "source_sha256": "46f5b86f46d340ec7ba3a1354c659c1828385a465115cb88559850d483e86bd7",
   "derived": "assets/derived/fr3v2_hand.xml",
-  "derived_sha256": "29f8e3fed5952c9868b17e6991274cb044f8b25e4fdab692d96084f3d9180275",
+  "derived_sha256": "63a2f65d0470c32da899bb7224ad0e4b450ba0c8ce06aa4d7fd783459b4a3e7b",
   "hand": "simplified parallel-jaw gripper (not the Franka Hand)",
   "actuator_force_range_N": [
     -20,
