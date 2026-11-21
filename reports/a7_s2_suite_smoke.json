@@ -1,0 +1,61 @@
+{
+  "step": "A7 S2 suite (free-box grasp and lift, 50 seeds per mass)",
+  "evidence_class": "SIM",
+  "scope": "seeded Newton grasp attempts with the derived simplified parallel-jaw hand; not a certification and not a safety result",
+  "python": "3.12.16",
+  "seeds_per_mass": 3,
+  "masses_kg": [
+    0.3
+  ],
+  "pass": 3,
+  "total": 3,
+  "rate": 1.0,
+  "wilson95": [
+    0.43849391955098227,
+    1.0
+  ],
+  "by_mass": {
+    "0.3": {
+      "pass": 3,
+      "total": 3,
+      "rate": 1.0,
+      "wilson95": [
+        0.43849391955098227,
+        1.0
+      ],
+      "min_height_gain_m": 0.08016
+    }
+  },
+  "checks": {
+    "rate_ge_0p95": true,
+    "all_trials_have_reports": true,
+    "min_gain_ge_8cm": true
+  },
+  "trials": [
+    {
+      "seed": 0,
+      "mass_kg": 0.3,
+      "result": "PASS",
+      "height_gain_m": 0.08016,
+      "box_xy_drift_m": 0.00995,
+      "error": null
+    },
+    {
+      "seed": 1,
+      "mass_kg": 0.3,
+      "result": "PASS",
+      "height_gain_m": 0.09381,
+      "box_xy_drift_m": 0.00333,
+      "error": null
+    },
+    {
+      "seed": 2,
+      "mass_kg": 0.3,
+      "result": "PASS",
+      "height_gain_m": 0.08918,
+      "box_xy_drift_m": 0.00709,
+      "error": null
+    }
+  ],
+  "result": "PASS"
+}
