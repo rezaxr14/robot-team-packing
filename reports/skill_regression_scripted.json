@@ -1,244 +1,141 @@
 {
-  "step": "A7 (plumbing only)",
-  "evidence_class": "SIM-POSE",
-  "kind": "sim_pose_standin",
-  "scope": "regression suite over the A6 state-machine stand-in; NOT physical skill outcomes",
-  "trials": 10,
+  "step": "A7 physical skill regression",
+  "evidence_class": "SIM",
+  "kind": "newton_physical",
+  "scope": "graded per-skill Newton trials; missing/ungraded skills are not counted as PASS",
+  "trials": 0,
+  "passed": 1,
+  "total": 7,
+  "trial_totals": {
+    "all": 200,
+    "pass": 196
+  },
+  "per_skill": {
+    "grasp": {
+      "n": 200,
+      "passed": 196,
+      "rate": 0.98,
+      "wilson95": [
+        0.9497121344948062,
+        0.9921956998236058
+      ],
+      "graded": true
+    },
+    "place": {
+      "n": 0,
+      "passed": 0,
+      "rate": 0.0,
+      "wilson95": [
+        0.0,
+        0.0
+      ],
+      "graded": false
+    },
+    "release": {
+      "n": 0,
+      "passed": 0,
+      "rate": 0.0,
+      "wilson95": [
+        0.0,
+        0.0
+      ],
+      "graded": false
+    },
+    "retreat": {
+      "n": 0,
+      "passed": 0,
+      "rate": 0.0,
+      "wilson95": [
+        0.0,
+        0.0
+      ],
+      "graded": false
+    },
+    "weigh": {
+      "n": 0,
+      "passed": 0,
+      "rate": 0.0,
+      "wilson95": [
+        0.0,
+        0.0
+      ],
+      "graded": false
+    },
+    "handover": {
+      "n": 0,
+      "passed": 0,
+      "rate": 0.0,
+      "wilson95": [
+        0.0,
+        0.0
+      ],
+      "graded": false
+    },
+    "push_aside": {
+      "n": 0,
+      "passed": 0,
+      "rate": 0.0,
+      "wilson95": [
+        0.0,
+        0.0
+      ],
+      "graded": false
+    }
+  },
   "cases": {
-    "grasp_in_window": {
-      "rate": 1.0,
+    "grasp": {
+      "rate": 0.98,
       "passed": true,
-      "example_outcomes": [
-        "success"
-      ],
       "tags": [
         "grasp"
       ]
     },
-    "grasp_slip_low_force": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "slip"
-      ],
+    "place": {
+      "rate": 0.0,
+      "passed": false,
       "tags": [
-        "grasp",
-        "force"
+        "place"
       ]
     },
-    "grasp_crush_high_force": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "crush"
-      ],
+    "release": {
+      "rate": 0.0,
+      "passed": false,
       "tags": [
-        "grasp",
-        "force"
+        "release"
       ]
     },
-    "grasp_out_of_reach": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "out_of_reach"
-      ],
+    "retreat": {
+      "rate": 0.0,
+      "passed": false,
       "tags": [
-        "grasp",
-        "reach"
+        "retreat"
       ]
     },
-    "grasp_center_both_arms": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "success"
-      ],
-      "tags": [
-        "grasp",
-        "reach"
-      ]
-    },
-    "weigh_ok_reports_mass_and_changes_nothing": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "success"
-      ],
+    "weigh": {
+      "rate": 0.0,
+      "passed": false,
       "tags": [
         "weigh"
       ]
     },
-    "weigh_out_of_reach": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "out_of_reach"
-      ],
-      "tags": [
-        "weigh",
-        "reach"
-      ]
-    },
-    "weigh_hand_full": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "success",
-        "hand_full"
-      ],
-      "tags": [
-        "weigh"
-      ]
-    },
-    "grasp_overload": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "overload"
-      ],
-      "tags": [
-        "grasp"
-      ]
-    },
-    "grasp_hand_full": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "success",
-        "hand_full"
-      ],
-      "tags": [
-        "grasp"
-      ]
-    },
-    "pick_place_main": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "success",
-        "success"
-      ],
-      "tags": [
-        "place",
-        "sequence"
-      ]
-    },
-    "place_without_grasp": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "not_holding"
-      ],
-      "tags": [
-        "place"
-      ]
-    },
-    "place_wrong_slot": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "success",
-        "wrong_slot"
-      ],
-      "tags": [
-        "place"
-      ]
-    },
-    "place_laptop_in_slot": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "success",
-        "success"
-      ],
-      "tags": [
-        "place"
-      ]
-    },
-    "place_no_space": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "success",
-        "success",
-        "success",
-        "no_space"
-      ],
-      "tags": [
-        "place"
-      ]
-    },
-    "place_bag_locked_by_other": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "success",
-        "locked"
-      ],
-      "tags": [
-        "place",
-        "lock"
-      ]
-    },
-    "handover_ok": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "success",
-        "success"
-      ],
+    "handover": {
+      "rate": 0.0,
+      "passed": false,
       "tags": [
         "handover"
       ]
     },
-    "handover_hand_full": {
-      "rate": 1.0,
-      "passed": true,
-      "example_outcomes": [
-        "success",
-        "success",
-        "hand_full"
-      ],
+    "push_aside": {
+      "rate": 0.0,
+      "passed": false,
       "tags": [
-        "handover"
+        "push_aside"
       ]
     }
   },
-  "by_tag": {
-    "grasp": [
-      7,
-      7
-    ],
-    "force": [
-      2,
-      2
-    ],
-    "reach": [
-      3,
-      3
-    ],
-    "weigh": [
-      3,
-      3
-    ],
-    "place": [
-      6,
-      6
-    ],
-    "sequence": [
-      1,
-      1
-    ],
-    "lock": [
-      1,
-      1
-    ],
-    "handover": [
-      2,
-      2
-    ]
+  "checks": {
+    "all_skills_graded": false,
+    "min_trials_per_skill": false
   },
-  "passed": 18,
-  "total": 18
+  "result": "FAIL"
 }
