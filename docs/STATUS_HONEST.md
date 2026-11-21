@@ -156,3 +156,9 @@ A5 FAIL is real Newton torque-mode evidence for the rows that ran; A7 is `SIM-PO
 | S6 push_aside | SIM | `reports/a7_s6_push_probe.json` **PASS** seed 0: blocker moved 93.1 mm (> 50 mm), tilt 3.0 deg (< 45 deg). One trial; ungraded |
 | S6 handover | SIM | `reports/a7_s6_handover_probe.json` **FAIL**: during L's carry the box fell back toward the table; at R close, box at (-0.109, 0.029, 0.935) vs expected (0, 0, 1.045), 157.3 mm away. No transfer occurred; no threshold relaxed. Diagnosed as a real grasp/carry failure, not a scoring artifact |
 | S6 handover drop timing (SIM) | SIM | `reports/a7_s6_handover_probe.json` now includes the box-z trace sampled every 200 steps: L lifts the box to 1.037–1.040 m and holds it through the carry, then it drops during R's approach/close to ~0.95 m. The failure is at the transfer phase, not at L's grasp; no cause beyond the measured timing is claimed |
+
+## Update 2026-11-21 — A7 S2 graded suite, first aggregate (SIM, FAIL)
+
+| item | evidence class | state |
+|---|---|---|
+| S2 50 seeds × 3 masses, 12 cm command | SIM | `reports/a7_s2_suite_v2.json` **FAIL**: 147/150 overall (98 %) but per-mass 0.1 kg 50/50, 0.5 kg 50/50, **1.0 kg 47/50 = 94 % < 95 %**; three failures at 78.7/78.9 mm and one near-zero gain with 50 mm drift. Original 80 mm bound untouched. All three failing seeds pass with a 14 cm commanded lift (100.5/98.9/131.8 mm), so a 1.0 kg-only 50-seed suite with `--lift-delta 0.14` is running into `reports/a7_s2_v2_heavy.json`; no pass claimed yet |

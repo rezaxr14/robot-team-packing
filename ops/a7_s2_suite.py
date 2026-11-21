@@ -29,6 +29,8 @@ def main() -> int:
     ap.add_argument("--resume", action="store_true", help="reuse existing PASS trial reports")
     ap.add_argument("--trial-script", default="ops/a7_s2_lift.py")
     ap.add_argument("--trials-dir", default="reports/a7_s2_trials")
+    ap.add_argument("--lift-delta", type=float, default=None,
+                    help="forwarded to the trial script (slip compensation, D-80)")
     ap.add_argument("--out", type=Path, default=ROOT / "reports" / "a7_s2_suite.json")
     a = ap.parse_args()
     masses = [float(x) for x in a.masses.split(",") if x.strip()]
@@ -51,6 +53,8 @@ def main() -> int:
                     pass
             cmd = [a.python, str(ROOT / a.trial_script),
                    "--seed", str(seed), "--mass", str(mass), "--out", str(out)]
+            if a.lift_delta is not None:
+                cmd += ["--lift-delta", str(a.lift_delta)]
             result = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
             try:
                 rec = json.loads(out.read_text())

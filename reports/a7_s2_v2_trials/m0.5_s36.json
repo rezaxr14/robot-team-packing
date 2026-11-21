@@ -1,0 +1,96 @@
+{
+  "step": "A7 S2 (free-box grasp and lift)",
+  "evidence_class": "SIM",
+  "scope": "one seeded Newton grasp attempt with the derived simplified parallel-jaw hand; not a certification and not a safety result",
+  "seed": 36,
+  "mass_kg": 0.5,
+  "lift_delta_m": 0.12,
+  "hand_model": "assets/derived/fr3v2_hand.xml",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp": "1.17.0"
+  },
+  "debug_at_grasp": {
+    "q_actual": [
+      0.01065,
+      0.25498,
+      -0.09432,
+      -2.95887,
+      -0.31336,
+      3.21539,
+      -1.33751,
+      -6e-05,
+      6e-05,
+      0.30383,
+      -0.00102,
+      0.92489,
+      -0.0,
+      -0.0,
+      -0.0,
+      1.0
+    ],
+    "q_cmd": [
+      -0.00806,
+      0.26654,
+      -0.07561,
+      -2.94376,
+      -0.29458,
+      3.21253,
+      -1.35774
+    ],
+    "flange_actual": [
+      0.29885,
+      0.00041,
+      0.12217
+    ],
+    "flange_cmd": [
+      0.30396,
+      -0.00113,
+      0.12054
+    ],
+    "fingers_world": [
+      [
+        0.25619,
+        0.00038,
+        0.92722
+      ],
+      [
+        0.34119,
+        0.00027,
+        0.92713
+      ]
+    ],
+    "box_world": [
+      0.30383,
+      -0.00102,
+      0.92489
+    ],
+    "finger_q": [
+      -5.609488289337605e-05,
+      5.616055932478048e-05
+    ]
+  },
+  "box_center_start": [
+    0.30383,
+    -0.00102,
+    0.925
+  ],
+  "box_z_start": 0.92489,
+  "box_z_after_pre": 0.92489,
+  "box_z_after_descend": 0.92489,
+  "box_z_after_close": 0.92467,
+  "box_z_after_hold": 1.01986,
+  "height_gain_m": 0.09496,
+  "box_xy_drift_m": 0.01019,
+  "wall_s": 37.2,
+  "steps": 5600,
+  "steps_per_s": 150.5,
+  "checks": {
+    "finite": true,
+    "height_gain_ge_8cm": true,
+    "box_xy_drift_le_2cm": true,
+    "not_fallen": true
+  },
+  "result": "PASS"
+}
