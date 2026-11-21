@@ -1,0 +1,58 @@
+{
+  "step": "A7 S4 (place into bag compartment, release, retreat)",
+  "evidence_class": "SIM",
+  "scope": "one seeded Newton place attempt with the derived simplified parallel-jaw hand; NOT a certification and NOT a safety result",
+  "seed": 7,
+  "mass_kg": 0.5,
+  "hand_model": "assets/derived/fr3v2_hand.xml",
+  "pass_bounds": {
+    "max_penetration_m": 0.01,
+    "source": "docs/AGENT_RUNBOOK.md A7 S4 (unchanged)"
+  },
+  "bag": {
+    "offset_y_m": 0.08,
+    "half_xy_m": [
+      0.12,
+      0.04
+    ],
+    "floor_t_m": 0.01,
+    "wall_t_m": 0.006,
+    "wall_h_m": 0.06,
+    "n_compartments": 3,
+    "target_compartment": 1
+  },
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp": "1.17.0"
+  },
+  "result": "PASS",
+  "reason": "one seeded trial passed; >= 90% / >= 200 trials still required",
+  "box_center_start": [
+    0.30827,
+    0.00397,
+    0.925
+  ],
+  "box_center_final": [
+    0.29495,
+    0.07871,
+    0.92496
+  ],
+  "contained_in_compartments": [
+    "compartment_1"
+  ],
+  "penetration_m": 7e-05,
+  "finger_inner_gap_m": 0.08499,
+  "flange_z_local_final_m": 0.29717,
+  "hand_clear_definition": "fingers open (inner gap >= box edge), flange above compartment rim, and object centre inside a compartment",
+  "hand_clear": true,
+  "wall_s": 68.81,
+  "steps": 7200,
+  "steps_per_s": 104.6,
+  "checks": {
+    "finite": true,
+    "object_inside_a_compartment": true,
+    "hand_clear": true,
+    "penetration_le_10mm": true
+  }
+}

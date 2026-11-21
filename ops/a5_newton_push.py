@@ -452,7 +452,7 @@ def plan_pause(h: Harness, *, force: float = 10.0, pre_s: float = 0.5,
         return np.concatenate([h.p0 + np.array([0.05 * min(s, plan_s), 0.0, 0.0]), np.zeros(3)])
     f = np.array([force, 0.0, 0.0, 0.0, 0.0, 0.0])
     n_pre, n_push, n_post = (int(round(x / h.dt)) for x in (pre_s, push_s, post_s))
-    s_yield, s_track, events, states = [], [], [], []
+    s_yield, s_track, events, states, ret_debug = [], [], [], [], []
     last_pos = h.p0.copy()
     for k in range(n_pre + n_push + n_post):
         f_ext = f if n_pre <= k < n_pre + n_push else np.zeros(6)
@@ -461,6 +461,15 @@ def plan_pause(h: Harness, *, force: float = 10.0, pre_s: float = 0.5,
         for e in rec["info"]["events"]:
             events.append((round(rec["t"], 4), e))
         states.append(rec["state"].value)
+        if rec["state"] == State.RETURN:
+            from rtp.control.scripted_ik import rotation_error
+            from rtp.control.newton_arm import matrix_from_rotvec
+            _, Rq = fk.fk_numpy(rec["q"])
+            er = float(np.linalg.norm(rotation_error(Rq, matrix_from_rotvec(rec["info"]["x_ref"][3:]))))
+            ee = float(np.linalg.norm(rec["pos"] - rec["info"]["x_ref"][:3]))
+            vv = float(np.linalg.norm(rec["vel"][:3]))
+            ww = float(np.linalg.norm(rec["vel"][3:]))
+            ret_debug.append((round(rec["t"], 3), round(ee, 5), round(vv, 5), round(er, 5), round(ww, 5)))
         if rec["state"] == State.YIELD:
             s_yield.append(rec["s"])
         if rec["state"] == State.TRACK:
@@ -478,6 +487,14 @@ def plan_pause(h: Harness, *, force: float = 10.0, pre_s: float = 0.5,
         "push_force_N": force, "push_at_s": round(float(s_yield[0]) if s_yield else -1.0, 6),
         "plan_clock_during_yield_min_max": [round(min(s_yield), 9), round(max(s_yield), 9)] if s_yield else None,
         "plan_clock_final": round(final_s, 6),
+        "states_seen": sorted(set(states)), "final_state": states[-1] if states else None,
+        "states_tail": states[-10:],
+        "return_debug_first_last": {"first": ret_debug[:5], "last": ret_debug[-5:],
+                                    "min_e": min((x[1] for x in ret_debug), default=None),
+                                    "min_v": min((x[2] for x in ret_debug), default=None),
+                                    "first_settled_t": next((x[0] for x in ret_debug if x[1] < 0.003 and x[2] < 0.01), None),
+                                    "n_settled": sum(1 for x in ret_debug if x[1] < 0.003 and x[2] < 0.01),
+                                    "last_e_rot_w": ret_debug[-1][3:] if ret_debug else None},
         "final_tracking_error_m": round(final_err, 6) if final_err is not None else None,
         "resume_events": [e for _t, e in events if "RESUMED" in e][:10],
         "checks": checks, "pass": bool(all(checks.values())),

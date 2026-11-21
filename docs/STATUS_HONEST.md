@@ -200,3 +200,9 @@ Report: `reports/g6_newton_push.json` (225,723 bytes). Gate: `python ops/arm_ste
 | `latency_error` | **FAIL** | all 8 cells (0–3 tick delay, ±20 % mass/inertia/friction/armature) pass the other three rows; **every cell fails only because of `plan_pause`** (final tracking error 2.53–5.59 mm) |
 
 Diagnosis for the next patch: a single defect in plan-clock resume/tracking after a push (the supervisor enters TRACK but the clock stays frozen and the controller settles 0.24 mm outside the 3 mm bound). No threshold, tolerance, clamp or test was changed. This is simulation evidence only (D-22); no safety claim. A7 remains `FAIL` until its 7-skill 200-trial regression exists.
+
+## Update 2026-11-22 — plan-resume integral experiment (not adopted)
+
+| item | evidence class | state |
+|---|---|---|
+| Bounded Cartesian/rotational integral in `NewtonCompliantArm` | SIM | Tried to remove the stiction floor that prevents the supervisor's 3 mm resume criterion: with gain 150 / max 8 N and rot max 2 Nm, `plan_pause` PASSED (clock 5.345, RESUMED, error 2.70 mm) but `release_return` overshot 24.2 % and `release_return_estimated` 29.3 %. With gain 100 / max 1.5 N and rot max 1 Nm, `release_return` PASSED (8.7 % overshoot) but `plan_pause` still failed at 3.54 mm. No setting passed every row, so the controller was reverted to the committed baseline. No threshold/tolerance changed; A5 remains FAIL on `plan_pause` (3.241 mm) and the grids that use it. Targeted evidence: `reports/a5_plan_probe.json`, `reports/a5_targeted_after_integral.json` |
