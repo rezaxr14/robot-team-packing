@@ -122,3 +122,62 @@ def test_unknown_stiffness_profile_is_refused_and_scale_is_clipped():
     for _ in range(3000):
         sup.step(0.001, np.zeros(6), np.zeros(6), np.zeros(6), hold, scale=100.0)
     assert sup.k_lin <= 1.5 * PROFILES["free_motion"][0] + 1e-6  # a learned policy cannot exceed 1.5x the profile
+
+
+# ---- stiction floor: the Newton FR3 plan_pause failure (measured 3.241 mm, clock never resumes) ----
+FRICTION = (0.65, 0.65)                                   # Coulomb, stiction (N): 0.65 N / 200 N/m = 3.25 mm
+PLAN_S = 2.0
+
+
+def _plan_pause_run(cfg=None, post=8.0):
+    plan = lambda s: np.array([0.05 * min(s, PLAN_S), 0, 0, 0, 0, 0])
+    return simulate(plan, pulse([1, 0, 0], 10.0, 0.5, 1.5), 1.5 + post, cfg=cfg, friction=FRICTION), plan
+
+
+def test_without_the_fix_the_stiction_floor_deadlocks_the_resume():
+    """Documents the defect: old behaviour = no stall-aware resume, no integral."""
+    r, plan = _plan_pause_run(ComplianceConfig(eps_stall=0.0, ki_lin=0.0))
+    names = [e for _t, e in r["events"]]
+    assert not any(n.startswith("RESUMED") for n in names)
+    assert r["state"][-1] == "RETURN"                                   # stuck forever
+    assert np.ptp(r["s"][int(1.6 / 0.001):]) == 0.0                      # plan clock never advances again
+    assert np.linalg.norm(r["x_ref"][-1, :3] - r["x"][-1, :3]) > 0.003  # parked just outside eps_e (~3.2 mm)
+
+
+def test_stall_aware_resume_and_gated_integral_fix_plan_pause_with_friction():
+    r, plan = _plan_pause_run()
+    names = [e for _t, e in r["events"]]
+    assert any(n.startswith("RESUMED") for n in names)
+    held = [i for i, st in enumerate(r["state"]) if st in ("YIELD", "RETURN")]
+    assert np.ptp(r["s"][held]) == pytest.approx(0.0, abs=1e-9)          # still frozen while yielding/returning
+    assert r["s"][-1] > r["s"][held[-1]] + 1.0                           # the clock advances after resume
+    assert r["state"][-1] == "TRACK"
+    final_err = np.linalg.norm(r["x"][-1, :3] - plan(r["s"][-1])[:3])
+    assert final_err <= 0.003                                            # the pre-registered 3 mm bound, unchanged
+
+
+def test_integral_never_acts_in_yield_or_return_so_release_return_overshoot_is_unchanged():
+    r = simulate(hold, pulse([1, 0, 0], 20.0, 0.2, 1.2), 10.0, friction=FRICTION)
+    st = r["state"]
+    assert not np.any(r["integral"][(st == "YIELD") | (st == "RETURN")])
+    after = slice(int(1.2 / 0.001), None)
+    delta = np.linalg.norm(r["x"][int(1.15 / 0.001), :3])
+    overshoot = max(0.0, -r["x"][after, 0].min()) / delta
+    assert overshoot <= 0.10
+    assert np.linalg.norm(r["xd"][after, :3], axis=1).max() <= 1.1 * r["cfg"].v_return
+    assert settle_time(r, 1.2, tol=0.005) is not None or r["state"][-1] == "TRACK"
+
+
+def test_integral_authority_is_capped_so_it_cannot_fight_a_real_push():
+    cfg = ComplianceConfig()
+    for force, min_defl in ((2.0, 0.004), (3.0, 0.009)):                 # below f_release: integral eligible, still capped at 1 N
+        r = simulate(hold, pulse([1, 0, 0], force, 0.5, 20.0), 20.0, friction=None)
+        defl = np.linalg.norm(r["x"][-1, :3])
+        assert defl >= min_defl, (force, defl)                           # the person still moves it: (F - i_max)/K at least
+        assert np.linalg.norm(r["F"][-1, :3] - (-200.0 * r["x"][-1, :3])) <= cfg.i_max_lin + 0.05
+
+
+def test_no_stick_slip_hunting_after_the_integral_clears_the_floor():
+    r, plan = _plan_pause_run(post=14.0)
+    last = r["x"][-int(3.0 / 0.001):, 0]                                 # final 3 s of the static hold
+    assert last.max() - last.min() < 0.001

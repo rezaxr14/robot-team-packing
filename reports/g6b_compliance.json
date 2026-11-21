@@ -28,7 +28,16 @@
     "v_settled": 0.01,
     "stiffness_tau": 0.1,
     "ref_tau": 0.02,
-    "fault_clamp_ticks": 2000
+    "fault_clamp_ticks": 2000,
+    "eps_stall": 0.008,
+    "eps_stall_rot": 0.06,
+    "t_stall": 0.5,
+    "ki_lin": 150.0,
+    "i_max_lin": 1.0,
+    "ki_rot": 8.0,
+    "i_max_rot": 0.15,
+    "t_hold_integral": 0.3,
+    "integ_bleed_tau": 2.0
   },
   "profile": "free_motion",
   "K_lin_N_per_m": 200.0,
@@ -44,19 +53,19 @@
       "limit_s": 2.5,
       "peak_return_speed_m_s": 0.10946889395872603,
       "speed_limit_m_s": 0.11000000000000001,
-      "overshoot_m": 0.0,
+      "overshoot_m": 5.1208849852488714e-06,
       "overshoot_limit_m": 0.01,
-      "rms_after_6s_m": 8.275566576462122e-16,
+      "rms_after_6s_m": 3.301721940267761e-07,
       "rms_limit_m": 0.002,
       "pass": true
     },
     "plan_pause_resume": {
       "plan_clock_range_while_held": 0.0,
-      "final_position_error_m": 5.670464098272987e-13,
+      "final_position_error_m": 4.724845748371731e-06,
       "events": [
         "PUSHED",
         "YIELDED",
-        "RESUMED err=0.000535"
+        "RESUMED err=0.000535 via=settled"
       ],
       "pass": true
     },

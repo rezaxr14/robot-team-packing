@@ -74,3 +74,26 @@ def test_require_exit_codes(tmp_path):
         assert main() == 1                                            # A7 has no report: cannot proceed to A8
     finally:
         sys.argv = old
+
+
+def test_per_skill_table_is_authoritative_and_aggregates_cannot_fake_done(tmp_path):
+    root = base(tmp_path)
+    ok = {k: {"n": 200, "passed": 190, "graded": True} for k in ("grasp", "place", "release", "retreat", "weigh", "handover", "push_aside")}
+    w(root, "skill_regression_scripted.json", {"evidence_class": "SIM", "kind": "newton_physical", "trials": 200, "passed": 7, "total": 7, "per_skill": ok})
+    assert status(root)["A7"][0] == DONE
+    bad = {**ok, "handover": {"n": 200, "passed": 120, "graded": True}, "weigh": {"n": 0, "passed": 0, "graded": False}}
+    w(root, "skill_regression_scripted.json", {"evidence_class": "SIM", "kind": "newton_physical", "trials": 200, "passed": 7, "total": 7, "per_skill": bad})
+    s, why = status(root)["A7"]
+    assert s == FAIL and "handover" in why and "weigh" in why           # a rosy aggregate cannot hide a failing skill
+    w(root, "skill_regression_scripted.json", {"evidence_class": "SIM", "kind": "newton_physical", "trials": 200, "passed": 196, "total": 7})
+    assert status(root)["A7"][0] == FAIL and "implausible" in status(root)["A7"][1]     # the passed=196,total=7 false-DONE
+
+
+def test_a_changed_criterion_needs_a_recorded_user_approval(tmp_path):
+    root = base(tmp_path)
+    rows = {"elbow_push": {"subrows": [{"criterion": "D-79 (stiffness-relative; original 15 mm bound kept)", "pass": True}]}}
+    w(root, "g6_newton_push.json", {"result": "PASS", "evidence_class": "SIM", "checks": {}, "rows": rows})
+    s, why = status(root)["A5"]
+    assert s == FAIL and "D-79" in why and "approvals.json" in why
+    (root / "configs" / "approvals.json").write_text(json.dumps({"D-79": "user, 2026-11-22: 'approved'"}))
+    assert status(root)["A5"][0] == DONE

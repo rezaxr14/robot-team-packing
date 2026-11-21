@@ -40,6 +40,28 @@ def thresholds(root: Path) -> dict:
     return t
 
 
+def approvals(root: Path) -> dict:
+    """``configs/approvals.json``: {"D-79": "<who/when/quote>"}. A pre-registered criterion changed by a decision counts only
+    once the user's approval is recorded here (rule 6); an agent's own statement that the user approved is not enough."""
+    d = _load(root / "configs" / "approvals.json")
+    return d if isinstance(d, dict) else {}
+
+
+def _criterion_decisions(rep) -> set:
+    return set(re.findall(r'"criterion": "(D-\d+)', json.dumps(rep)))
+
+
+def _check_approvals(root: Path, rep, s, w):
+    if rep is None:
+        return s, w
+    missing = sorted(d for d in _criterion_decisions(rep) if d not in approvals(root))
+    if missing and s == DONE:
+        return FAIL, f"pre-registered criterion changed by {missing} without an entry in configs/approvals.json"
+    if missing:
+        return s, w + f"; ALSO criterion changed by {missing} with no approval in configs/approvals.json"
+    return s, w
+
+
 def _result(rep, need_class=None, why=None):
     if rep is None:
         return NOT_RUN, "no report"
@@ -69,8 +91,10 @@ def status(root: Path = ROOT) -> dict:
         notrun = [k for k, v in (rep.get("rows") or {}).items() if isinstance(v, dict) and v.get("status") == "not run"]
         if notrun:
             w += f"; rows not run: {notrun}"
-    out["A5"] = (s, w)
+    out["A5"] = _check_approvals(root, rep, s, w)
     out["A6"] = _result(_load(R / "a6_scene.json"), "SIM")
+
+    skills7 = ["grasp", "place", "release", "retreat", "weigh", "handover", "push_aside"]
 
     def regression(name, label):
         rep = _load(R / name)
@@ -78,12 +102,27 @@ def status(root: Path = ROOT) -> dict:
             return NOT_RUN, "no report"
         if rep.get("evidence_class") != "SIM" or "stand" in str(rep.get("kind", "")):
             return STAND_IN, f"kind={rep.get('kind')!r}, evidence_class={rep.get('evidence_class')!r}: {str(rep.get('scope', ''))[:90]}"
+        per = rep.get("per_skill")
+        if isinstance(per, dict):                                   # authoritative: every skill must meet BOTH bars on its own
+            bad = []
+            for k in skills7:
+                v = per.get(k) or {}
+                n, p = v.get("n", 0), v.get("passed", 0)
+                if not v.get("graded") or n < T["min_trials_a7"] or p > n or (p / max(n, 1)) < T["nominal_success_min"]:
+                    bad.append(f"{k}({p}/{n})")
+            if bad:
+                return FAIL, f"skills not meeting >= {T['nominal_success_min']} at >= {T['min_trials_a7']} trials: {bad}"
+            return _check_approvals(root, rep, DONE, f"all 7 skills >= {T['nominal_success_min']} at >= {T['min_trials_a7']} trials")
+        # legacy aggregate: refuse implausible numbers instead of trusting them (a false DONE once came from passed=196,total=7)
+        total, passed = rep.get("total", 0), rep.get("passed", 0)
+        if not (isinstance(total, int) and isinstance(passed, int) and 0 <= passed <= total and total > 0):
+            return FAIL, f"implausible aggregate passed={passed} total={total}"
         if rep.get("trials", 0) < T["min_trials_a7"]:
             return FAIL, f"trials={rep.get('trials')} < pre-registered {T['min_trials_a7']}"
-        rate = rep.get("passed", 0) / max(rep.get("total", 1), 1)
+        rate = passed / total
         if rate < T["nominal_success_min"]:
             return FAIL, f"pass rate {rate:.3f} < {T['nominal_success_min']}"
-        return DONE, f"{rep['passed']}/{rep['total']} cases at {rep['trials']} trials"
+        return DONE, f"{passed}/{total} at {rep['trials']} trials"
     out["A7"] = regression("skill_regression_scripted.json", "scripted")
     out["A8"] = regression("skill_regression_learned.json", "learned")
     out["A9"] = _result(_load(R / "a9_push_robust.json"), "SIM")

@@ -60,6 +60,16 @@ class ComplianceConfig:
     stiffness_tau: float = 0.1     # s, first-order filter on K (gain changes never step)
     ref_tau: float = 0.02          # s, first-order filter on the reference in TRACK
     fault_clamp_ticks: int = 2000  # consecutive force-clamp ticks that trip FAULT
+    # --- stiction floor (measured on the Newton FR3: ~0.65 N -> ~3.2 mm at 200 N/m keeps |e| just above eps_e) ---
+    eps_stall: float = 0.008       # m   RETURN also resumes when STALLED within this (not only within eps_e)
+    eps_stall_rot: float = 0.06    # rad
+    t_stall: float = 0.5           # s   stalled = speed < v_settled continuously for this long
+    ki_lin: float = 150.0          # N/(m s) integral gain; ACTIVE ONLY in a settled TRACK hold (never in YIELD/RETURN)
+    i_max_lin: float = 1.0         # N   integral authority cap: cannot fight a real push (> f_release) or move the plan
+    ki_rot: float = 8.0            # Nm/(rad s)
+    i_max_rot: float = 0.15        # Nm
+    t_hold_integral: float = 0.3   # s of settled hold before the integral engages
+    integ_bleed_tau: float = 2.0   # s, integral bleeds off when not in a settled hold
 
 
 @dataclass
@@ -71,6 +81,8 @@ class Output:
     k_lin: float
     events: list = field(default_factory=list)
     flags: dict = field(default_factory=dict)
+    integral_active: bool = False
+    integ_norm: float = 0.0
 
 
 def _n(v) -> float:
@@ -92,6 +104,8 @@ class ComplianceSupervisor:
         self.x_hold = None
         self.k_lin, self.k_rot = PROFILES[profile]
         self._t_rel = self._t_settle = self._t_yield = 0.0
+        self._t_stall = self._t_hold = 0.0
+        self.integ = np.zeros(6)
         self._clamp_run = 0
         self.yield_count = 0
         self.xref_dot = np.zeros(6)
@@ -157,7 +171,7 @@ class ComplianceSupervisor:
                 flags["leash"] = True
             self._t_rel = self._t_rel + dt if released else 0.0
             if self._t_rel >= c.t_rel:
-                self.state, self._t_settle = State.RETURN, 0.0
+                self.state, self._t_settle, self._t_stall = State.RETURN, 0.0, 0.0
                 events.append("YIELDED")
             elif self._t_yield > c.t_yield_max:
                 self.state = State.FAULT
@@ -172,9 +186,12 @@ class ComplianceSupervisor:
             else:
                 settled = (_n(e[:3]) < c.eps_e and _n(e[3:]) < c.eps_rot and _n(xdot[:3]) < c.v_settled)
                 self._t_settle = self._t_settle + dt if settled else 0.0
-                if self._t_settle >= c.t_settle:
+                stalled = (_n(xdot[:3]) < c.v_settled and _n(e[:3]) < c.eps_stall and _n(e[3:]) < c.eps_stall_rot)
+                self._t_stall = self._t_stall + dt if stalled else 0.0
+                if self._t_settle >= c.t_settle or self._t_stall >= c.t_stall:
+                    via = "settled" if self._t_settle >= c.t_settle else "stalled"
                     self.state = State.TRACK
-                    events.append(f"RESUMED err={_n(e[:3]):.6f}")
+                    events.append(f"RESUMED err={_n(e[:3]):.6f} via={via}")
 
         e = x - self.x_ref
         # critically damped per axis group: D = 2 zeta sqrt(K * inertia)
@@ -182,6 +199,26 @@ class ComplianceSupervisor:
         d_rot = 2.0 * c.zeta * np.sqrt(self.k_rot * c.inertia_rot)
         ev = xdot - self.xref_dot
         force = np.concatenate([-self.k_lin * e[:3] - d_lin * ev[:3], -self.k_rot * e[3:] - d_rot * ev[3:]])
+
+        # bounded integral: only in a settled TRACK hold with no external force; reset in every other state
+        integral_active = False
+        if self.state == State.TRACK:
+            hold = (_n(xdot[:3]) < c.v_settled and _n(self.xref_dot[:3]) < 1e-4 and f_n < c.f_release and m_n < c.m_release)
+            self._t_hold = self._t_hold + dt if hold else 0.0
+            if self._t_hold >= c.t_hold_integral:
+                integral_active = True
+                self.integ[:3] += c.ki_lin * e[:3] * dt
+                self.integ[3:] += c.ki_rot * e[3:] * dt
+                for sl, cap in ((slice(0, 3), c.i_max_lin), (slice(3, 6), c.i_max_rot)):
+                    nn = _n(self.integ[sl])
+                    if nn > cap:
+                        self.integ[sl] *= cap / nn
+            else:
+                self.integ *= max(0.0, 1.0 - dt / c.integ_bleed_tau)
+            force = force - self.integ
+        else:
+            self._t_hold = 0.0
+            self.integ = np.zeros(6)
 
         # speed saturation (soft limiter, bounded so it can never reverse the velocity in one tick)
         letting_go = self.state == State.RETURN or (self.state == State.YIELD and released)
@@ -217,4 +254,4 @@ class ComplianceSupervisor:
             if mm > c.m_max:
                 force[3:] *= c.m_max / mm
         return Output(force=force, state=self.state, x_ref=self.x_ref.copy(), s=self.s, k_lin=float(self.k_lin),
-                      events=events, flags=flags)
+                      events=events, flags=flags, integral_active=integral_active, integ_norm=_n(self.integ))
