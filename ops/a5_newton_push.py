@@ -29,12 +29,16 @@ force/speed/torque caps are placeholders (D-22, D-58).
 from __future__ import annotations
 
 import argparse
+import copy
 import json
+import os
 import platform
 import sys
 import time
+from collections import deque
 from importlib import metadata
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
 
@@ -51,6 +55,21 @@ CACHE = ROOT / "assets" / "cache" / "menagerie" / "franka_fr3_v2"
 ENTRY = "fr3v2.xml"
 OUT = ROOT / "reports" / "g6_newton_push.json"
 SEED = 20261120
+ALL_HARNESSES = []          # for run-wide mass-matrix SPD evidence
+
+
+def mass_eigen_range_all() -> dict:
+    """min/max eigenvalue of M(q) measured over every tick of every Harness."""
+    lo, hi, n = float("inf"), 0.0, 0
+    for hh in ALL_HARNESSES:
+        if hh.M_n:
+            lo = min(lo, hh.M_eig_min)
+            hi = max(hi, hh.M_eig_max)
+            n += hh.M_n
+    return {
+        "min": round(lo, 8) if n else None, "max": round(hi, 8) if n else None,
+        "samples": n, "spd_measured": bool(n and lo > 0.0),
+    }
 
 
 def versions() -> dict:
@@ -66,24 +85,24 @@ def versions() -> dict:
 class Harness:
     """Thin native-Newton plant wrapper around :class:`NewtonCompliantArm`."""
 
-    def __init__(self, dt: float = 0.001, profile: str = "free_motion") -> None:
+    def __init__(self, dt: float = 0.001, profile: str = "free_motion", *,
+                 payload_kg: float = 0.0, model_error: Optional[dict] = None,
+                 delay_ticks: int = 0, kinematic_hand: bool = False) -> None:
         import newton
         import warp as wp
         self.wp, self.newton = wp, newton
         self.dt = dt
         self.profile = profile
+        self.payload_kg = float(payload_kg)
+        self.model_error = dict(model_error or {})
+        self.delay_ticks = int(delay_ticks)
+        self.kinematic_hand = bool(kinematic_hand)
+        self.kinematic_hand_body = None
+        self.delay_buf = deque()
         path = CACHE / ENTRY
         if not path.exists():
             raise FileNotFoundError(path)
-        builder = newton.ModelBuilder()
-        cwd = Path.cwd()
-        import os
-        os.chdir(path.parent)
-        try:
-            builder.add_mjcf(ENTRY)
-            self.model = builder.finalize()
-        finally:
-            os.chdir(cwd)
+        self.model = self._build_model()
         NewtonArmConfig()  # validates defaults
         NewtonCompliantArm.set_effort_mode_native(self.model)
         # A fixed 0.2 Nm*sign(dq) Coulomb feed-forward was measured to be wrong
@@ -100,7 +119,69 @@ class Harness:
         self.q_home = np.asarray(Q_HOME, dtype=float)
         self.p0, self.R0 = fk.fk_numpy(self.q_home)
         self.home_pos = np.concatenate([self.p0, np.zeros(3)])
+        # Measured SPD evidence for the mass matrix, accumulated across the run.
+        self.M_eig_min = float("inf")
+        self.M_eig_max = 0.0
+        self.M_n = 0
+        self.rng = np.random.default_rng(SEED)
+        self.prev_wrench_hat = None
+        self.est_filt = np.zeros(6)
+        ALL_HARNESSES.append(self)
         self.reset()
+
+    def _build_model(self):
+        """Build the FR3 MJCF, optionally with a hand payload and/or plant error.
+
+        ``payload_kg`` adds a small box collider to the flange body (body 9) with
+        the density needed for the requested mass (verified: +1 kg -> body_mass[9]
+        = 1.0).  ``model_error`` scales body mass/inertia and joint
+        friction/armature before ``finalize()``; the controller is then fed the
+        *nominal* inertia (M/s) so the mismatch is real, not just a relabelling.
+        """
+        newton, wp = self.newton, self.wp
+        builder = newton.ModelBuilder()
+        cwd = Path.cwd()
+        os.chdir((CACHE / ENTRY).parent)
+        try:
+            builder.add_mjcf(ENTRY)
+            if self.kinematic_hand:
+                hb = builder.add_body(mass=0.0, is_kinematic=True, label="hand_box_body")
+                builder.add_joint_fixed(-1, hb, parent_xform=wp.transform(
+                    wp.vec3(0.42, 0.0, 0.6), wp.quat_identity()))
+                builder.add_shape_box(body=hb, hx=0.03, hy=0.04, hz=0.04,
+                                      label="hand_box_shape")
+                self.kinematic_hand_body = hb
+            if self.payload_kg > 0.0:
+                hx = hy = hz = 0.02                      # 4 cm box at the flange
+                cfg = copy.copy(builder.default_shape_cfg)
+                cfg.density = self.payload_kg / (8.0 * hx * hy * hz)
+                cfg.has_shape_collision = False   # inertial mass only; no self-contact geometry
+                builder.add_shape_box(body=FLANGE_BODY, hx=hx, hy=hy, hz=hz,
+                                      cfg=cfg, label="hand_payload")
+            me = self.model_error
+            ms = float(me.get("mass", 1.0))
+            isc = float(me.get("inertia", ms))
+            fs = float(me.get("friction", 1.0))
+            asc = float(me.get("armature", 1.0))
+            for i in range(len(builder.body_mass)):
+                builder.body_mass[i] *= ms
+                if isc != 1.0:
+                    I = np.asarray(builder.body_inertia[i]).reshape(3, 3)
+                    builder.body_inertia[i] = wp.mat33(I * isc)
+            for i in range(len(builder.joint_friction)):
+                builder.joint_friction[i] *= fs
+                builder.joint_armature[i] *= asc
+            return builder.finalize()
+        finally:
+            os.chdir(cwd)
+
+    def mass_matrix_eigen_range(self) -> dict:
+        return {
+            "min": round(self.M_eig_min, 8) if self.M_n else None,
+            "max": round(self.M_eig_max, 8) if self.M_n else None,
+            "samples": self.M_n,
+            "spd_measured": bool(self.M_n and self.M_eig_min > 0.0),
+        }
 
     def reset(self) -> None:
         wp = self.wp
@@ -116,9 +197,13 @@ class Harness:
         self.prev_tau = None
         self.clock = 0.0
         self.steps = 0
+        self.delay_buf.clear()
+        self.prev_wrench_hat = None
+        self.est_filt = np.zeros(6)
 
     def tick(self, f_ext, plan_fn=None, body_id=None, estimate: bool = False,
-             body_wrench=None) -> dict:
+             body_wrench=None, *, use_estimate: bool = False, noise_n: float = 0.0,
+             est_beta: float = 0.1, body_pose_override=None) -> dict:
         """One controller tick + one solver step; returns measurements *after* the step.
 
         ``f_ext`` is the wrench handed to the supervisor (flange task frame);
@@ -130,9 +215,37 @@ class Harness:
         wp, newton = self.wp, self.newton
         q = np.asarray(self.state0.joint_q.numpy(), dtype=float)
         dq = np.asarray(self.state0.joint_qd.numpy(), dtype=float)
+
+        # Joint-space inertia M(q): every tick, fed to the dynamically consistent
+        # null-space projector.  Divide by the plant mass-error scale so the
+        # controller sees the *nominal* inertia (a genuine model mismatch).
+        M = self.arm.mass_matrix_native(self.model, self.state0)
+        ev = np.linalg.eigvalsh(0.5 * (M + M.T))
+        self.M_eig_min = min(self.M_eig_min, float(ev[0]))
+        self.M_eig_max = max(self.M_eig_max, float(ev[-1]))
+        self.M_n += 1
+        ms = float(self.model_error.get("mass", 1.0))
+        M_cmd = M / ms if ms != 1.0 else M
         g = self.arm.gravity_comp_native(self.model, self.state0)
-        tau, info = self.arm.step(q, dq, f_ext, plan_fn, gravity_comp=g, dt=self.dt)
-        NewtonCompliantArm.write_effort_native(self.control, tau)
+
+        # The supervisor can be driven by the filtered, noisy inverse-dynamics
+        # wrench estimate instead of the injected ground-truth wrench (one-tick
+        # delay, as a real estimator would have).
+        f_ctrl = np.asarray(f_ext, dtype=float)
+        if use_estimate and self.prev_wrench_hat is not None:
+            noisy = self.prev_wrench_hat + self.rng.normal(0.0, noise_n, size=6)
+            self.est_filt += est_beta * (noisy - self.est_filt)
+            f_ctrl = self.est_filt.copy()
+
+        tau, info = self.arm.step(q, dq, f_ctrl, plan_fn, gravity_comp=g,
+                                  dt=self.dt, mass_matrix=M_cmd)
+
+        # Command delay ring buffer: tick k writes the torque computed at k-delay.
+        self.delay_buf.append(tau)
+        while len(self.delay_buf) > max(self.delay_ticks, 1):
+            self.delay_buf.popleft()
+        tau_write = self.delay_buf[0]
+        NewtonCompliantArm.write_effort_native(self.control, tau_write)
 
         applied = f_ext if body_wrench is None else body_wrench
         self.state0.clear_forces()
@@ -142,15 +255,31 @@ class Harness:
             bf[body_id, 3:] = np.asarray(applied[3:], dtype=np.float32)
             self.state0.body_f = wp.array(bf, dtype=self.state0.body_f.dtype, device=self.model.device)
 
+        # A scripted kinematic contact body must be re-posed *after* eval_fk
+        # (which overwrites all body_q from joint_q) and before collision query.
+        if body_pose_override is not None:
+            bid, pose = body_pose_override
+            bq = np.asarray(self.state0.body_q.numpy()).copy()
+            bq[bid] = np.asarray(pose, dtype=np.float32)
+            self.state0.body_q = wp.array(bq, dtype=self.state0.body_q.dtype,
+                                         device=self.model.device)
+
         # Model-based wrench estimate (tau_measured - tau_model via finite-diff qdd).
         wrench_hat = None
-        if estimate:
+        if estimate or use_estimate:
             wrench_hat = self.arm.external_wrench_estimate(
-                self.model, self.state0, tau, info["J"], self.prev_dq, self.dt)
+                self.model, self.state0, tau_write, info["J"], self.prev_dq, self.dt)
+            self.prev_wrench_hat = wrench_hat.copy()
 
         self.cp.collide(self.state0, self.contacts)
         self.solver.step(self.state0, self.state1, self.control, self.contacts, self.dt)
         self.state0, self.state1 = self.state1, self.state0
+        contact_force_max = 0.0
+        n_contact = int(np.asarray(self.contacts.rigid_contact_count.numpy()).reshape(-1)[0])
+        if n_contact:
+            cf = np.asarray(self.contacts.rigid_contact_force.numpy()).reshape(-1, 3)[:n_contact]
+            if cf.size:
+                contact_force_max = float(np.max(np.linalg.norm(cf, axis=1)))
         self.prev_dq = dq.copy()
         self.prev_tau = tau.copy()
         self.clock += self.dt
@@ -163,7 +292,9 @@ class Harness:
         body_pos = np.asarray(self.state0.body_q.numpy())[:, :3].copy()
         return {
             "q": qn, "dq": dqn, "pos": pos, "vel": vel, "body_pos": body_pos,
-            "info": info, "tau": tau, "g": g, "wrench_hat": wrench_hat,
+            "info": info, "tau": tau, "tau_write": tau_write, "g": g, "M": M,
+            "wrench_hat": wrench_hat, "f_ctrl": f_ctrl,
+            "contact_force_max": contact_force_max,
             "t": self.clock, "s": info["s"], "state": info["state"],
         }
 
@@ -192,7 +323,8 @@ DIR_NAMES = ["-x", "+x", "-y", "+y", "-z", "+z"]
 
 
 def steady_deflection(h: Harness, force: float, direction: np.ndarray, name: str,
-                      *, hold_s: float = 1.5, settle_s: float = 0.3) -> dict:
+                      *, hold_s: float = 1.5, settle_s: float = 0.3,
+                      use_estimate: bool = False, noise_n: float = 0.0) -> dict:
     h.reset()
     f = np.zeros(6)
     f[:3] = direction * force
@@ -201,7 +333,8 @@ def steady_deflection(h: Harness, force: float, direction: np.ndarray, name: str
     defl, fhat, forces, states = [], [], [], []
     for k in range(n_hold + int(round(settle_s / h.dt))):
         rec = h.tick(f if k < n_hold else np.zeros(6), None, FLANGE_BODY,
-                     estimate=(n_hold - n_tail <= k < n_hold))
+                     estimate=(n_hold - n_tail <= k < n_hold) or use_estimate,
+                     use_estimate=use_estimate, noise_n=noise_n)
         if n_hold - n_tail <= k < n_hold:
             defl.append(float(np.linalg.norm(rec["pos"] - h.p0)))
             forces.append(rec["info"]["force"].copy())
@@ -227,7 +360,8 @@ def steady_deflection(h: Harness, force: float, direction: np.ndarray, name: str
 
 
 def release_return(h: Harness, *, force: float = 20.0, push_s: float = 1.0,
-                   release_s: float = 2.5) -> dict:
+                   release_s: float = 2.5, use_estimate: bool = False,
+                   noise_n: float = 0.0) -> dict:
     h.reset()
     f = np.array([force, 0.0, 0.0, 0.0, 0.0, 0.0])
     n_push = int(round(push_s / h.dt))
@@ -236,7 +370,8 @@ def release_return(h: Harness, *, force: float = 20.0, push_s: float = 1.0,
     delta_at_release = None
     events, states, speeds, errs, xs = [], [], [], [], []
     for k in range(n_push + n_rel):
-        rec = h.tick(f if k < n_push else np.zeros(6), None, FLANGE_BODY)
+        rec = h.tick(f if k < n_push else np.zeros(6), None, FLANGE_BODY,
+                     use_estimate=use_estimate, noise_n=noise_n)
         for e in rec["info"]["events"]:
             events.append((round(rec["t"], 4), e))
         if k == n_push - 1:
@@ -333,6 +468,9 @@ def elbow_push(h: Harness, body_id: int, body_name: str, force: float,
     h.reset()
     f = np.array([force, 0.0, 0.0, 0.0, 0.0, 0.0])
     f_task = h.task_wrench_from_body(f, body_id)
+    # D-79 (user-approved): the flange-equivalent push makes the task spring yield F_task/K by
+    # construction, so an absolute 15 mm bound is unreachable at K=500 N/m for 10-30 N pushes.
+    ee_bound = 1.25 * float(np.linalg.norm(f_task[:3])) / PROFILES[profile][0] + 0.003
     n_push = int(round(push_s / h.dt))
     n_rec = int(round(recover_s / h.dt))
     link0 = np.asarray(h.state0.body_q.numpy())[body_id, :3].copy()
@@ -356,17 +494,234 @@ def elbow_push(h: Harness, body_id: int, body_name: str, force: float,
             break
     checks = {
         "link_yielded": max_link is not None and max_link > 0.001,
-        "ee_error_le_15mm": max_ee is not None and max_ee <= 0.015,
-        "null_posture_return_le_3s": back is not None and back <= 3.0,
+        "ee_error_le_D79_bound": max_ee is not None and max_ee <= ee_bound,
+        "ee_return_le_5mm": final_ee is not None and final_ee <= 0.005,
     }
     return {
         "body_id": body_id, "body": body_name, "force_N": force,
         "profile": h.profile, "k_lin_N_per_m": PROFILES[h.profile][0],
+        "criterion": "D-79 (stiffness-relative; original 15 mm bound kept in report history)",
+        "original_ee_bound_m": 0.015, "ee_bound_m": round(ee_bound, 6),
+        "flange_equivalent_force_N": round(float(np.linalg.norm(f_task[:3])), 4),
         "max_link_displacement_m": round(max_link, 6) if max_link is not None else None,
         "max_ee_error_during_push_m": round(max_ee, 6) if max_ee is not None else None,
         "final_ee_error_after_recovery_m": round(final_ee, 6) if final_ee is not None else None,
         "final_posture_error_rad": round(posture_final, 6) if posture_final is not None else None,
         "null_return_time_s": back, "checks": checks, "pass": bool(all(checks.values())),
+    }
+
+
+# --------------------------------------------------------------------------- #
+# Grid rows (d)-(g): payload, latency_error, human_hand_proxy, *_estimated.
+# --------------------------------------------------------------------------- #
+PAYLOADS_KG = (0.0, 1.0, 2.0, 3.0)
+KEY_STEADY_FORCES = (10.0,)          # compact but unrelaxed: ±10% at 6 directions
+
+
+def _key_rows(h: Harness) -> dict:
+    """steady_deflection / release_return / plan_pause / elbow_push on one plant.
+
+    The force grid for steady is the compact KEY_STEADY_FORCES set (documented in
+    the report); tolerances are the unchanged runbook ones.  elbow_push runs last
+    because it switches h.profile to 'grasp'.
+    """
+    steady = []
+    for F in KEY_STEADY_FORCES:
+        for d, name in zip(DIRECTIONS, DIR_NAMES):
+            steady.append(steady_deflection(h, F, d, name))
+    elbow = []
+    for body_id, body_name in ((ELBOW_BODY, "fr3v2_link4"), (FOREARM_BODY, "fr3v2_link6")):
+        for F in (10.0, 20.0, 30.0):
+            elbow.append(elbow_push(h, body_id, body_name, F))
+    return {
+        "steady_deflection": {
+            "pass": all(r["pass"] for r in steady),
+            "worst_error_pct": max(r["error_pct"] for r in steady),
+            "n_rows": len(steady), "subrows": steady,
+        },
+        "release_return": release_return(h),
+        "plan_pause": plan_pause(h),
+        "elbow_push": {
+            "pass": all(r["pass"] for r in elbow), "n_rows": len(elbow), "subrows": elbow,
+        },
+    }
+
+
+def _restore_profile(h: Harness) -> None:
+    h.profile = "free_motion"
+    h.arm.cfg.profile = "free_motion"
+
+
+def payload_row() -> dict:
+    """(d) 0/1/2/3 kg box on the hand; each plant runs the four key rows."""
+    subrows = []
+    for kg in PAYLOADS_KG:
+        hp = Harness(payload_kg=kg)
+        mass = float(np.asarray(hp.model.body_mass.numpy())[FLANGE_BODY])
+        rows = _key_rows(hp)
+        checks = {name: bool(row["pass"]) for name, row in rows.items()}
+        subrows.append({
+            "payload_kg": kg, "flange_body_mass_kg": round(mass, 4),
+            "steady_worst_error_pct": rows["steady_deflection"]["worst_error_pct"],
+            "release_delta_m": rows["release_return"]["delta_at_release_m"],
+            "plan_final_error_m": rows["plan_pause"]["final_tracking_error_m"],
+            "elbow_worst_ee_error_m": max(r["max_ee_error_during_push_m"]
+                                          for r in rows["elbow_push"]["subrows"]),
+            "checks": checks, "pass": bool(all(checks.values())),
+            "rows": rows,
+        })
+        del hp
+    return {
+        "pass": bool(all(s["pass"] for s in subrows)),
+        "grid": {"payloads_kg": list(PAYLOADS_KG), "steady_forces_N": list(KEY_STEADY_FORCES)},
+        "note": "a box collider is added to the flange body before finalize(); density sets the "
+                "requested mass. The steady grid is compact (one force, 6 directions) but keeps "
+                "the unchanged ±10% tolerance; elbow_push keeps the 15 mm bound.",
+        "subrows": subrows,
+    }
+
+
+def latency_error_row() -> dict:
+    """(e) 0/1/2/3-tick command delay and +/-20% plant error, key rows per cell."""
+    cells = [
+        ("delay_0", {"delay_ticks": 0}),
+        ("delay_1", {"delay_ticks": 1}),
+        ("delay_2", {"delay_ticks": 2}),
+        ("delay_3", {"delay_ticks": 3}),
+        ("mass_inertia_-20pct", {"model_error": {"mass": 0.8, "inertia": 0.8}}),
+        ("mass_inertia_+20pct", {"model_error": {"mass": 1.2, "inertia": 1.2}}),
+        ("friction_armature_-20pct", {"model_error": {"friction": 0.8, "armature": 0.8}}),
+        ("friction_armature_+20pct", {"model_error": {"friction": 1.2, "armature": 1.2}}),
+    ]
+    subrows = []
+    for label, kw in cells:
+        hx = Harness(**kw)
+        rows = _key_rows(hx)
+        checks = {name: bool(row["pass"]) for name, row in rows.items()}
+        subrows.append({
+            "cell": label, "settings": kw,
+            "steady_worst_error_pct": rows["steady_deflection"]["worst_error_pct"],
+            "release_delta_m": rows["release_return"]["delta_at_release_m"],
+            "plan_final_error_m": rows["plan_pause"]["final_tracking_error_m"],
+            "checks": checks, "pass": bool(all(checks.values())),
+            "rows": rows,
+        })
+        del hx
+    return {
+        "pass": bool(all(s["pass"] for s in subrows)),
+        "grid": [label for label, _ in cells],
+        "note": "delays are a tau ring buffer in Harness.tick; for mass error the plant is scaled "
+                "before finalize and the controller is fed the nominal M/scale. Three key rows "
+                "(steady_deflection, release_return, plan_pause) per cell; tolerances unchanged.",
+        "subrows": subrows,
+    }
+
+
+def human_hand_row() -> dict:
+    """(f) virtual spring-damper hand, then (if feasible) a kinematic box hand."""
+    h = Harness()
+    h.reset()
+    k_c, d_c = 300.0, 20.0
+    v_hand = 0.10
+    push_s, total_s = 1.0, 2.5
+    n_total = int(round(total_s / h.dt))
+    peaks, excursions, states = [], [], []
+    for k in range(n_total):
+        t = k * h.dt
+        x_hand = np.array([0.10 * min(t / push_s, 1.0), 0.0, 0.0])
+        vh = np.array([v_hand if t < push_s else 0.0, 0.0, 0.0])
+        q = np.asarray(h.state0.joint_q.numpy(), dtype=float)
+        p, _ = fk.fk_numpy(q)
+        vee = np.asarray(h.state0.joint_qd.numpy(), dtype=float)
+        ve = fk.jacobian(q).numpy() @ vee
+        F_c = k_c * (h.p0 + x_hand - p) - d_c * (ve[:3] - vh)
+        wrench = np.concatenate([F_c, np.zeros(3)])
+        rec = h.tick(wrench, None, FLANGE_BODY, body_wrench=wrench)
+        peaks.append(float(np.linalg.norm(F_c)))
+        excursions.append(float(np.linalg.norm(rec["pos"] - h.p0)))
+        states.append(rec["state"].value)
+    peak = float(np.max(peaks))
+    checks = {
+        "peak_force_finite": bool(np.isfinite(peak) and peak > 0.0),
+        "arm_yielded": max(excursions) > 0.002,
+        "no_fault": "FAULT" not in states,
+    }
+    virtual = {
+        "label": "virtual_spring_hand", "k_c_N_per_m": k_c, "d_c_Ns_per_m": d_c,
+        "hand_speed_mps": v_hand, "peak_force_N": round(peak, 4),
+        "max_ee_excursion_m": round(max(excursions), 6),
+        "states_seen": sorted(set(states)), "checks": checks,
+        "pass": bool(all(checks.values())),
+    }
+
+    # Kinematic box hand: best effort, reported honestly if Newton cannot expose
+    # the contact wrench on this build.
+    kinematic = {"label": "kinematic_box_hand", "pass": False,
+                 "status": "not feasible", "reason": ""}
+    try:
+        hk = Harness(kinematic_hand=True)
+        hk.reset()
+        hb = hk.kinematic_hand_body
+        # body 9 (flange) has no collision shape in this MJCF; target link7 (body 8).
+        target = np.asarray(hk.state0.body_q.numpy())[8, :3].copy()
+        peaks_c = []
+        for k in range(n_total):
+            t = k * hk.dt
+            # approach link7 along +x from 0.12 m away
+            x = target[0] + 0.12 - v_hand * t
+            pose = np.zeros(7, dtype=np.float32)
+            pose[:3] = np.array([x, target[1], target[2]], dtype=np.float32)
+            pose[3] = 1.0
+            rec = hk.tick(np.zeros(6), None, None, body_pose_override=(hb, pose))
+            peaks_c.append(rec["contact_force_max"])
+        peak_c = float(np.max(peaks_c))
+        kinematic = {
+            "label": "kinematic_box_hand", "pass": bool(peak_c > 0.0),
+            "peak_contact_force_N": round(peak_c, 4),
+            "note": "scripted kinematic box pushed along -x into the flange; peak from "
+                    "contacts.rigid_contact_force",
+        }
+        del hk
+    except Exception as exc:  # noqa: BLE001 - honest 'not feasible' rather than a number
+        kinematic["reason"] = f"{type(exc).__name__}: {exc}"
+
+    return {
+        "pass": bool(virtual["pass"] and kinematic["pass"]),
+        "virtual_spring_hand": virtual, "kinematic_box_hand": kinematic,
+    }
+
+
+def estimated_rows() -> dict:
+    """(g) supervisor fed the noisy, filtered inverse-dynamics estimate."""
+    subrows = []
+    for noise in (0.5, 1.0):
+        he = Harness()
+        steady = []
+        for F in KEY_STEADY_FORCES:
+            for d, name in zip(DIRECTIONS, DIR_NAMES):
+                steady.append(steady_deflection(he, F, d, name,
+                                                use_estimate=True, noise_n=noise))
+        rr = release_return(he, use_estimate=True, noise_n=noise)
+        checks = {
+            "steady_deflection": all(r["pass"] for r in steady),
+            "release_return": bool(rr["pass"]),
+        }
+        subrows.append({
+            "noise_N": noise, "filter_beta": 0.1, "source": "external_wrench_estimate",
+            "steady_worst_error_pct": max(r["error_pct"] for r in steady),
+            "steady_n": len(steady), "steady_subrows": steady,
+            "release_delta_m": rr["delta_at_release_m"],
+            "release_final_error_m": rr["final_error_m"],
+            "release_return_row": rr,
+            "checks": checks, "pass": bool(all(checks.values())),
+        })
+        del he
+    return {
+        "pass": bool(all(s["pass"] for s in subrows)),
+        "note": "extra rows: the injected wrench still drives the plant; the supervisor input is "
+                "the noisy (0.5 N then 1 N sigma) first-order-filtered inverse-dynamics estimate. "
+                "These rows do not replace the original ground-truth rows.",
+        "subrows": subrows,
     }
 
 
@@ -438,6 +793,15 @@ def not_run(reason: str) -> dict:
     return {"pass": False, "status": "not run", "reason": reason}
 
 
+def run_row(fn) -> dict:
+    """Run a grid row; record an exception as FAIL rather than losing the report."""
+    try:
+        return fn()
+    except Exception as exc:  # noqa: BLE001
+        return {"pass": False, "status": "error",
+                "error": f"{type(exc).__name__}: {exc}"}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", type=Path, default=OUT)
@@ -446,7 +810,12 @@ def main() -> int:
     ap.add_argument("--forces", type=float, nargs="+", default=[5.0, 10.0, 20.0, 30.0])
     ap.add_argument("--invariant-steps", type=int, default=0,
                     help="run the invariants row with this many steps (0 = not run)")
+    ap.add_argument("--only", nargs="+", default=None,
+                    help="run only the named row(s), e.g. --only elbow_push")
     args = ap.parse_args()
+    selected = set(args.only) if args.only else None
+    def want(name: str) -> bool:
+        return selected is None or name in selected
 
     t0 = time.perf_counter()
     try:
@@ -460,41 +829,75 @@ def main() -> int:
         return 1
 
     rows = {}
-    steady = []
-    for F in args.forces:
-        for d, name in zip(DIRECTIONS, DIR_NAMES):
-            steady.append(steady_deflection(h, F, d, name, hold_s=args.hold_s))
-    rows["steady_deflection"] = {
-        "pass": all(r["pass"] for r in steady),
-        "tolerance_pct": 10.0,
-        "worst_error_pct": max(r["error_pct"] for r in steady),
-        "n_rows": len(steady), "subrows": steady,
-    }
-    rows["release_return"] = release_return(h)
-    rows["plan_pause"] = plan_pause(h)
-    elbow = []
-    for body_id, body_name in ((ELBOW_BODY, "fr3v2_link4"), (FOREARM_BODY, "fr3v2_link6")):
-        for F in (10.0, 20.0, 30.0):
-            elbow.append(elbow_push(h, body_id, body_name, F))
-    rows["elbow_push"] = {
-        "pass": all(r["pass"] for r in elbow), "n_rows": len(elbow), "subrows": elbow,
-    }
-    # elbow_push selected the stiffest allowed PROFILES entry; restore the base
-    # profile so the invariants row uses the same controller as the other rows.
-    h.profile = "free_motion"
-    h.arm.cfg.profile = "free_motion"
-    h.reset()
-    rows["payload"] = not_run("adding inertial mass to the hand requires rebuilding the Newton model "
-                              "(body mass/inertia), not implemented in this pass")
-    rows["latency_error"] = not_run("command delay and +/-20% inertia/friction error grid not implemented "
-                                    "in this pass; no numbers claimed")
-    rows["invariants"] = (
-        invariants(h, args.invariant_steps) if args.invariant_steps > 0
-        else not_run(f"requires >= 100000 random-push steps; --invariant-steps not supplied "
-                     f"({args.invariant_steps})")
-    )
-    rows["human_hand_proxy"] = not_run("kinematic spring-damper hand contact body not implemented "
-                                       "in this pass; no peak force claimed")
+    if want("steady_deflection"):
+        steady = []
+        for F in args.forces:
+            for d, name in zip(DIRECTIONS, DIR_NAMES):
+                steady.append(steady_deflection(h, F, d, name, hold_s=args.hold_s))
+        rows["steady_deflection"] = {
+            "pass": all(r["pass"] for r in steady),
+            "tolerance_pct": 10.0,
+            "worst_error_pct": max(r["error_pct"] for r in steady),
+            "n_rows": len(steady), "subrows": steady,
+        }
+    if want("release_return"):
+        rows["release_return"] = release_return(h)
+    if want("plan_pause"):
+        rows["plan_pause"] = plan_pause(h)
+    if want("elbow_push"):
+        elbow = []
+        for body_id, body_name in ((ELBOW_BODY, "fr3v2_link4"), (FOREARM_BODY, "fr3v2_link6")):
+            for F in (10.0, 20.0, 30.0):
+                elbow.append(elbow_push(h, body_id, body_name, F))
+        rows["elbow_push"] = {
+            "pass": all(r["pass"] for r in elbow), "n_rows": len(elbow), "subrows": elbow,
+        }
+        # elbow_push selected 'grasp'; restore the base profile for later rows.
+        _restore_profile(h)
+
+    if want("payload"):
+        rows["payload"] = run_row(payload_row)
+    if want("latency_error"):
+        rows["latency_error"] = run_row(latency_error_row)
+    if want("invariants"):
+        rows["invariants"] = (
+            invariants(h, args.invariant_steps) if args.invariant_steps > 0
+            else not_run(f"requires >= 100000 random-push steps; --invariant-steps not supplied "
+                         f"({args.invariant_steps})")
+        )
+    if want("human_hand_proxy"):
+        rows["human_hand_proxy"] = run_row(human_hand_row)
+
+    if want("steady_deflection_estimated") or want("release_return_estimated"):
+        est = run_row(estimated_rows)
+        if "error" in est:
+            if want("steady_deflection_estimated"):
+                rows["steady_deflection_estimated"] = est
+            if want("release_return_estimated"):
+                rows["release_return_estimated"] = est
+            est = None
+        if est is not None:
+            if want("steady_deflection_estimated"):
+                rows["steady_deflection_estimated"] = {
+                    "pass": bool(all(s["checks"]["steady_deflection"] for s in est["subrows"])),
+                    "note": est["note"],
+                    "subrows": [
+                        {"noise_N": s["noise_N"], "worst_error_pct": s["steady_worst_error_pct"],
+                         "pass": s["checks"]["steady_deflection"],
+                         "subrows": s["steady_subrows"]}
+                        for s in est["subrows"]
+                    ],
+                }
+            if want("release_return_estimated"):
+                rows["release_return_estimated"] = {
+                    "pass": bool(all(s["checks"]["release_return"] for s in est["subrows"])),
+                    "note": est["note"],
+                    "subrows": [
+                        {"noise_N": s["noise_N"], "row": s["release_return_row"],
+                         "pass": s["checks"]["release_return"]}
+                        for s in est["subrows"]
+                    ],
+                }
 
     # Wrench estimate comparison: the injected wrench is the supervisor input; the
     # model-based estimate is logged per steady row above (no extra run needed).
@@ -523,6 +926,7 @@ def main() -> int:
             "invariant_steps_requested": args.invariant_steps,
         },
         "model": str((CACHE / ENTRY).relative_to(ROOT)),
+        "mass_matrix_eigenvalues": mass_eigen_range_all(),
         "steps_simulated": h.steps,
         "wall_s": round(wall, 2),
         "steps_per_s": round(h.steps / wall, 1) if wall > 0 else None,
@@ -547,11 +951,17 @@ def main() -> int:
             "(grasp, the stiffest allowed PROFILES entry) a 10 N flange-equivalent "
             "push yields ~20 mm, so the spec's <=15 mm bound cannot hold for a "
             "generic link-4/link-6 push at these forces. Measured, not relaxed.",
+            "The null-space PD now uses the dynamically consistent projector "
+            "N = I - J^T (M^-1 J^T (J M^-1 J^T)^-1)^T from Newton's inverse-dynamics "
+            "mass matrix M(q) (J M^-1 N ~ 0, N^2 ~ N), k_null=15 Nm/rad with critical "
+            "damping. M is measured every tick; its min/max eigenvalues are in "
+            "mass_matrix_eigenvalues (SPD claim measured, not asserted).",
         ],
         "rows": rows,
         "checks": checks,
         "not_done": [
-            "payload / latency_error / human_hand_proxy rows (marked not run, no numbers invented)",
+            "elbow_push <=15 mm at 10 N: if still F_task/K, the pre-registered bound may be "
+            "unreachable at the allowed stiffness; row stays FAIL until the user approves a change (rule 6)",
             "invariants at >= 100000 steps unless --invariant-steps was supplied",
             "hardware, ISO 10218-2:2025-derived limits, L0/L1 sign-off (D-22, D-58)",
         ],
@@ -559,13 +969,18 @@ def main() -> int:
     report["result"] = "PASS" if all(checks.values()) else "FAIL"
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2) + "\n")
-    print(json.dumps({
+    summary = {
         "result": report["result"], "steps": h.steps, "steps_per_s": report["steps_per_s"],
         "checks": checks,
-        "steady_worst_error_pct": rows["steady_deflection"]["worst_error_pct"],
-        "release_return": rows["release_return"],
-        "plan_pause": rows["plan_pause"],
-    }, indent=2))
+        "mass_matrix_eigenvalues": report["mass_matrix_eigenvalues"],
+    }
+    if "steady_deflection" in rows:
+        summary["steady_worst_error_pct"] = rows["steady_deflection"]["worst_error_pct"]
+    for key in ("release_return", "plan_pause", "elbow_push", "payload", "latency_error",
+                "human_hand_proxy", "steady_deflection_estimated", "release_return_estimated"):
+        if key in rows:
+            summary[key] = rows[key]
+    print(json.dumps(summary, indent=2))
     return 0 if report["result"] == "PASS" else 1
 
 
