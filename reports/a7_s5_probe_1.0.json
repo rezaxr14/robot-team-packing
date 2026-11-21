@@ -1,0 +1,66 @@
+{
+  "step": "A7 S5 (weigh a held box from gravity-comp torque difference)",
+  "evidence_class": "SIM",
+  "scope": "one seeded Newton effort-mode hold with the derived simplified parallel-jaw hand; NOT a certification and NOT a safety result",
+  "seed": 0,
+  "mass_kg_true": 1.0,
+  "hand_model": "assets/derived/fr3v2_hand.xml",
+  "method": "dtau = gravity_comp_with - gravity_comp_bare; F = pinv(J^T) dtau; m = F_z/g (holding-torque sign)",
+  "pass_bounds": {
+    "max_relative_error": 0.15,
+    "source": "docs/AGENT_RUNBOOK.md A7 S5 (unchanged)"
+  },
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp": "1.17.0"
+  },
+  "result": "PASS",
+  "reason": "one seeded mass passed; >= 90% / >= 200 trials still required",
+  "flange_body_id": 9,
+  "tau_with_arm_Nm": [
+    0.0,
+    -5.74457,
+    -0.61139,
+    25.05697,
+    0.71774,
+    2.81916,
+    -0.0
+  ],
+  "tau_bare_arm_Nm": [
+    0.0,
+    -2.7327,
+    -0.61139,
+    20.42647,
+    0.71774,
+    1.95587,
+    -0.0
+  ],
+  "dtau_arm_Nm": [
+    0.0,
+    -3.01188,
+    -0.0,
+    4.6305,
+    -0.0,
+    0.86329,
+    -0.0
+  ],
+  "recovered_flange_wrench": [
+    0.0,
+    -0.0,
+    9.81002,
+    0.0,
+    -1e-05,
+    0.0
+  ],
+  "mass_kg_estimated": 1.0,
+  "relative_error": 0.0,
+  "flange_drift_m": 0.0,
+  "wall_s": 7.28,
+  "steps": 1000,
+  "steps_per_s": 137.4,
+  "checks": {
+    "finite": true,
+    "mass_estimate_within_15pct": true
+  }
+}

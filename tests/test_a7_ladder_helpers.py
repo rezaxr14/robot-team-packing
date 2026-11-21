@@ -76,7 +76,7 @@ def _jacobian():
 def test_recover_flange_wrench_returns_downward_load():
     J = _jacobian()
     m, g = 0.7, 9.81
-    F = np.array([0.0, 0.0, -m * g, 0.0, 0.0, 0.0])
+    F = np.array([0.0, 0.0, m * g, 0.0, 0.0, 0.0])  # holding-torque difference: upward +mg
     dtau = J.T @ F
     F_hat = recover_flange_wrench(J, dtau, np.zeros(7))
     np.testing.assert_allclose(F_hat, F, atol=1e-9)
@@ -85,7 +85,7 @@ def test_recover_flange_wrench_returns_downward_load():
 def test_mass_estimate_matches_true_mass_over_range():
     J = _jacobian()
     for m in (0.1, 0.3, 1.0, 2.0, 3.0):
-        dtau = J.T @ np.array([0.0, 0.0, -m * 9.81, 0.0, 0.0, 0.0])
+        dtau = J.T @ np.array([0.0, 0.0, m * 9.81, 0.0, 0.0, 0.0])
         est = estimate_mass_from_gravity_torque(J, dtau, np.zeros(7))
         assert est == pytest.approx(m, rel=1e-9, abs=1e-9)
         assert relative_error(est, m) < 1e-9
@@ -94,7 +94,7 @@ def test_mass_estimate_matches_true_mass_over_range():
 def test_mass_estimate_uses_the_difference_not_absolute_torque():
     J = _jacobian()
     m = 1.2
-    F = np.array([0.0, 0.0, -m * 9.81, 0.0, 0.0, 0.0])
+    F = np.array([0.0, 0.0, m * 9.81, 0.0, 0.0, 0.0])
     # A large bare-arm gravity torque plus the payload difference must cancel to the same mass.
     tau_bare = J.T @ np.array([3.0, -2.0, 5.0, 0.5, -0.5, 1.0])
     tau_with = tau_bare + J.T @ F

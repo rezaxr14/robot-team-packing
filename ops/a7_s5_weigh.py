@@ -61,11 +61,14 @@ def recover_flange_wrench(J, tau_with, tau_bare):
 def estimate_mass_from_gravity_torque(J, tau_with, tau_bare, g: float = G) -> float:
     """Mass estimate (kg) from the gravity-comp joint-torque difference and flange Jacobian.
 
-    A downward point load gives ``F = [0, 0, -m g, 0, 0, 0]`` in the world frame, so
-    ``m_est = -F_z / g``.  Returns a float; never invents a measurement.
+    ``gravity_comp_native`` returns the *holding* torque: a payload adds
+    ``dtau = Jᵀ [0, 0, +m g, 0, 0, 0]``, so the recovered upward force is ``+m g`` and
+    ``m_est = F_z / g``.  The sign was measured on a real Newton build (first probe gave
+    -0.5 kg for a 0.5 kg payload with the old ``-F_z/g`` sign); fixed here, not by relaxing
+    the 15 % bound. Returns a float; never invents a measurement.
     """
     F = recover_flange_wrench(J, tau_with, tau_bare)
-    return float(-F[2] / g)
+    return float(F[2] / g)
 
 
 def relative_error(estimate: float, true: float) -> float:
@@ -120,7 +123,7 @@ def main() -> int:
                  "NOT a certification and NOT a safety result",
         "seed": a.seed, "mass_kg_true": a.mass,
         "hand_model": str(MODEL.relative_to(ROOT)),
-        "method": "dtau = gravity_comp_with - gravity_comp_bare; F = pinv(J^T) dtau; m = -F_z/g",
+        "method": "dtau = gravity_comp_with - gravity_comp_bare; F = pinv(J^T) dtau; m = F_z/g (holding-torque sign)",
         "pass_bounds": {"max_relative_error": MAX_REL_ERROR,
                         "source": "docs/AGENT_RUNBOOK.md A7 S5 (unchanged)"},
         "versions": {"python": platform.python_version(), "newton": metadata.version("newton"),

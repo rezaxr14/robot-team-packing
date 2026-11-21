@@ -140,3 +140,9 @@ A5 FAIL is real Newton torque-mode evidence for the rows that ran; A7 is `SIM-PO
 |---|---|---|
 | R5 `rtp/curate.py` + `rtp/sft_format.py` + CPU tests | FIXTURE (code, not run on real data) | `/home/reza/venvs/rtp/bin/python -m pytest tests/test_curate.py -q`: 11 passed. Synthetic records only; covers certified/uncertified arm models, test-seed and replay-failure exclusion, dedupe, per-model cap, failure→replan ranking, deterministic chat rows and canonical-hash tamper detection. No certified skill tables, certified-arm episodes or SFT dataset exist: **no dataset was built**, no train/val jsonl written, no threshold changed |
 | Full suite after R1/R5/S4-S6 code | FIXTURE/MODEL | `520 passed, 10 skipped` (`$ISAAC_PY -m pytest -q`, 69.9 s). All new modules are code fixtures; this does not change A5 FAIL or A7 STAND_IN |
+
+## Update 2026-11-21 — A7 S5 weigh probe (SIM, single seed)
+
+| item | evidence class | state |
+|---|---|---|
+| S5 mass-from-gravity-torque | SIM | First probe (0.5 kg) measured -0.5 kg because the estimator used the opposite sign to Newton's **holding-torque** convention; fixed `m = F_z/g` with matching CPU tests (16 passed). Re-run seeds 0 at 0.1 / 0.5 / 1.0 / 3.0 kg: estimates 0.1 / 0.5 / 1.0 / 3.00001 kg, relative error 0.0 in all four (`reports/a7_s5_probe*.json`). This is a welded-payload single-seed probe, **not** the >= 90 % / >= 200-trial rung pass and not a certification |
