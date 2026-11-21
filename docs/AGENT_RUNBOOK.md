@@ -13,7 +13,7 @@ You are a coding agent working in this repository on the user's machine. Follow 
 7. **One step = one commit** with message `A3: …` / `R2: …`. After each step: update `docs/STATUS_HONEST.md` (what is now true, with its evidence class) and add a line to `DECISIONS.md` if you made a design choice.
 8. **Seeds.** Training seeds are >= 100000. Held-out test seeds are < 100000 and are never used for training, memory or prompts.
 9. **Before every step run:** `source ops/env.sh && python -m pytest -q` (training venv). It must be green before you start and green when you finish.
-10. **Gate before every arm step.** Run `python ops/arm_steps_status.py --require A<k-1>` before starting step A<k>. If it exits 1, work on the first step that is not DONE; skipping ahead is forbidden. `STAND_IN` (a pose-level or fixture stand-in) is never DONE. After each step regenerate the status block with `python ops/arm_steps_status.py --markdown` and paste it into `docs/STATUS_HONEST.md`. Review notes on the first run of the steps: `docs/FEEDBACK_ARMS_2026-11-20.md`.
+10. **Gate before every arm step.** Run `python ops/arm_steps_status.py --require A<k-1>` before starting step A<k>. If it exits 1, work on the first step that is not DONE; skipping ahead is forbidden. `STAND_IN` (a pose-level or fixture stand-in) is never DONE. After each step regenerate the status block with `python ops/arm_steps_status.py --markdown` and paste it into `docs/STATUS_HONEST.md`.
 11. If you are unsure about a library function name, **look it up in the local checkout** (`$ISAACLAB_DIR`, and Newton inside `$ISAAC_PY`'s site-packages) with the `grep` commands given in the step. Do not guess names from memory.
 
 ## 1. The ten arm steps (A1–A10) at a glance
@@ -108,7 +108,8 @@ Questions and where to look (run each grep, open the files, read):
 
 **Do.**
 1. Create `rtp/control/newton_arm.py` with `class NewtonCompliantArm` that each control tick: reads `q, dq`; computes end-effector pose and velocity with `fr3_kinematics`; computes the pose error to `x_ref` from `ComplianceSupervisor.step(...)`; maps the returned 6-vector wrench to joint torque with `tau = Jᵀ F`; adds a weak null-space PD toward `q_home` (`k_null <= 20 Nm/rad`, project with `I − Jᵀ(J⁺)ᵀ`); adds gravity compensation (A3); applies **torque limits** and the **rate limit 1 Nm/ms** from `rtp/control/impedance.py::rate_limit`; writes the torque in effort mode.
-   * **Null-space must be dynamically consistent** (see `docs/FEEDBACK_ARMS_2026-11-20.md` §3): get `M(q)` from Newton inverse dynamics (column i = `ID(q,0,e_i) − ID(q,0,0)`), `Λ=(J M⁻¹ Jᵀ)⁻¹`, `J̄=M⁻¹ Jᵀ Λ`, `N=I−Jᵀ J̄ᵀ`, `τ = Jᵀ F + N τ_null`, with `k_null` 15–20 Nm/rad. A plain `I−Jᵀ(J⁺)ᵀ` made the elbow push transmit to the end-effector (EE error ≈ F/K).
+   * **Null-space must be dynamically consistent** (the first A5 run used the plain `I−Jᵀ(J⁺)ᵀ` and the elbow push was transmitted to the end-effector, EE error ≈ F/K): get `M(q)` from Newton inverse dynamics (column i = `ID(q,0,e_i) − ID(q,0,0)`), verify `M` symmetric positive definite, then `Λ=(J M⁻¹ Jᵀ)⁻¹`, `J̄=M⁻¹ Jᵀ Λ`, `N=I−Jᵀ J̄ᵀ`, `τ = Jᵀ F + N τ_null`, with `k_null` 15–20 Nm/rad and critical damping. Unit-test `N·N ≈ N` and `J M⁻¹ Nᵀ ≈ 0` (1e-6).
+   * **Elbow criterion (rule 6).** If `elbow_push` EE error at 10 N is still ≈ F/K after the null-space fix, the pre-registered ≤ 15 mm bound may be unreachable at that stiffness: write a `DECISIONS.md` entry with the measured numbers proposing a stiffness-relative bound, and **leave the row FAIL until the user approves**. Never edit the bound silently.
    * Orientation error: use a rotation-vector error (`R_err = R · R_refᵀ → rotvec`), never subtract quaternions.
    * The wrench estimate for push detection: in simulation use the injected wrench plus the controller's own contact estimate (`tau_ext_hat = τ_measured − τ_model`, mapped with `J⁺ᵀ`); log both and compare.
    * **Fallback ladder** if A3 only reached L1: use joint stiffness `K_q = Jᵀ K J` (computed each tick) as the joint `ke` with critical damping and `Δq_target` from the plan; the state machine still runs; mark `mode: "L1"` in the report and say so in STATUS.
@@ -150,7 +151,18 @@ Questions and where to look (run each grep, open the files, read):
 3. Write `configs/arm_cert.yaml` FIRST (thresholds from section 1 above), commit it, then run.
 4. Report: `reports/skill_regression_scripted.json` with per-skill pass rate, per-case outcome categories, failure causes (`slip, crush, out_of_reach, no_space, ...`), Wilson intervals (`rtp/stats.py`).
 
-**Physical skills only.** A pose-level state machine on the Newton scene is `SIM-POSE` plumbing and does not count. Climb the physical-grasp ladder S1–S6 in `docs/FEEDBACK_ARMS_2026-11-20.md` §4, one rung per commit, then run >= 200 seeded trials per skill through `NewtonCompliantArm` with evidence class `SIM`.
+**Physical skills only.** A pose-level state machine on the Newton scene is `SIM-POSE` plumbing and does not count. Climb this ladder, one rung per commit, each with its own report, and do not skip rungs; then run >= 200 seeded trials per skill through `NewtonCompliantArm` with evidence class `SIM`.
+
+| rung | build | pass |
+|---|---|---|
+| S1 | hand opens/closes under position control with a force cap; close on a fixed 5 cm box held in a static clamp | finger contact force readable, box does not move |
+| S2 | free box on the table: approach with the impedance arm (profile `approach`), close, lift 10 cm, hold 1 s | box height gain >= 8 cm at the end of the hold, in >= 95 % of 50 seeds for masses 0.1–1 kg |
+| S3 | vary friction {0.3, 0.6, 0.9} and grasp force `need = 4 + 6·mass` ×{0.7, 1, 1.3} | failure causes match the rules: ×0.7 → `slip`, high force on fragile → `crush` (cause histogram in the report) |
+| S4 | place into the three bag compartments; release; retreat | object ends inside the compartment volume, hand clear, <= 10 mm penetration |
+| S5 | `weigh`: estimate mass from the joint-torque/gravity difference while holding still | mass estimate within 15 % over 0.1–3 kg (needs effort-mode torque readout from A5's L2) |
+| S6 | `handover` between the two arms (profile `handover`), `push_aside` | object transferred without ground contact; blocker moved >= 5 cm without toppling |
+
+If grasps do not hold in Newton's MuJoCo-Warp solver, diagnose in this order and record each setting and its effect in `reports/a7_grasp_diagnosis.json`: (1) contact friction on fingers and object (set both explicitly; use the friction-cone `condim` that supports torsional friction); (2) finger collision shapes (print `model.shape_*` for the finger bodies; the Menagerie hand must have usable pads); (3) solver settings (`impratio`, iterations, timestep); (4) object collision geometry (a convex box first; SimReady meshes only after S3 passes); (5) force control of the finger joints in effort mode instead of position targets. The stand-in stays in the repo only as `SIM-POSE` plumbing and is never counted.
 
 **Done when.** `python ops/arm_steps_status.py --require A7` exits 0 (class `SIM`, >= 200 trials, pass rate >= 0.90), or the report lists exactly which cases fail and why (then fix the skill, not the threshold).
 
