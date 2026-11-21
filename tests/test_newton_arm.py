@@ -22,6 +22,7 @@ from rtp.control.newton_arm import (
     Q_HOME,
     NewtonArmConfig,
     NewtonCompliantArm,
+    dynamic_nullspace,
     matrix_from_rotvec,
     rate_limit_numpy,
     rotvec_from_matrix,
@@ -150,6 +151,66 @@ def test_nullspace_projector_annihilates_task_torques():
     pinv = np.linalg.pinv(J, rcond=1e-3)
     N = np.eye(7) - J.T @ pinv.T
     assert np.allclose(N @ J.T, np.zeros((7, 6)), atol=1e-10)
+
+
+def _random_spd(rng, n=7):
+    A = rng.normal(size=(n, n))
+    return A @ A.T + 0.5 * np.eye(n)
+
+
+def test_dynamic_nullspace_random_spd_full_rank_j():
+    """(a) N@N ~ N and J Minv N ~ 0 (NOT J Minv N.T) for random SPD M, full-rank J."""
+    rng = np.random.default_rng(20261120)
+    M = _random_spd(rng)
+    J = rng.normal(size=(6, 7))
+    assert np.linalg.matrix_rank(J) == 6
+    N = dynamic_nullspace(J, M)
+    Minv = np.linalg.inv(M)
+    assert np.max(np.abs(N @ N - N)) < 1e-8
+    assert np.max(np.abs(J @ Minv @ N)) < 1e-8
+    # NOTE: J Minv N.T is deliberately NOT tested: the identity holds for N only.
+
+
+def test_dynamic_nullspace_rejects_non_spd():
+    """(b) a non-SPD M (and a wrong-shape M) raises ValueError."""
+    J = np.eye(6, 7)
+    M_indef = np.diag([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0])
+    with pytest.raises(ValueError, match="positive definite"):
+        dynamic_nullspace(J, M_indef)
+    M_singular = np.ones((7, 7))
+    with pytest.raises(ValueError, match="positive definite"):
+        dynamic_nullspace(J, M_singular)
+    with pytest.raises(ValueError, match="expected M 7x7"):
+        dynamic_nullspace(J, np.eye(6))
+
+
+def test_step_mass_matrix_dynamic_and_plain_fallback():
+    """(c) valid M selects the dynamic projector; None / invalid M fall back to plain."""
+    rng = np.random.default_rng(77)
+    J = rng.normal(size=(6, 7))
+    arm, _ = _arm(jac=J, friction_comp=False, speed_limiter_gain=0.0)
+    q = np.asarray(Q_HOME, dtype=float) + 0.01
+    dq = rng.normal(size=7) * 0.01
+    f_ext = rng.normal(size=6)
+    M = _random_spd(rng)
+
+    _, plain = arm.step(q, dq, f_ext)
+    assert plain["nullspace"] == "plain"
+    Pinv = np.linalg.pinv(J, rcond=1e-3)
+    N_plain = np.eye(7) - J.T @ Pinv.T
+    assert np.allclose(plain["tau_null"],
+                       N_plain @ (arm.cfg.k_null * (arm.q_home - q)
+                                  - 2.0 * np.sqrt(arm.cfg.k_null) * dq), atol=1e-10)
+
+    _, dyn = arm.step(q, dq, f_ext, mass_matrix=M)
+    assert dyn["nullspace"] == "dynamic"
+    N_dyn = dynamic_nullspace(J, M)
+    assert np.allclose(dyn["tau_null"],
+                       N_dyn @ (arm.cfg.k_null * (arm.q_home - q)
+                                - 2.0 * np.sqrt(arm.cfg.k_null) * dq), atol=1e-10)
+    # an invalid mass matrix is ignored, not raised, so legacy callers keep working
+    _, bad = arm.step(q, dq, f_ext, mass_matrix=np.diag([-1.0] + [1.0] * 6))
+    assert bad["nullspace"] == "plain"
 
 
 def test_torque_is_jtf_plus_nullspace_plus_gravity_with_clamps():

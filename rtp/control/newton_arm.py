@@ -60,6 +60,7 @@ __all__ = [
     "rotvec_from_matrix",
     "matrix_from_rotvec",
     "rate_limit_numpy",
+    "dynamic_nullspace",
     "NewtonCompliantArm",
 ]
 
@@ -84,7 +85,7 @@ class NewtonArmConfig:
 
     dt: float = 0.001                    # s, 1 kHz control loop (A2 answer 7)
     profile: str = "free_motion"         # stiffness profile from PROFILES (allow-list)
-    k_null: float = 5.0                  # Nm/rad null-space PD; must be <= 20
+    k_null: float = 15.0                 # Nm/rad null-space PD; must be <= 20 (spec: 15-20)
     tau_max: float = 50.0                # Nm per-joint saturation (placeholder)
     torque_rate_nm_per_ms: float = 1.0   # Nm/ms torque-rate saturation [V:S-20]
     #: Coulomb friction feed-forward.  The Menagerie FR3 v2 MJCF declares
@@ -189,6 +190,53 @@ def _to_numpy(x: Any) -> np.ndarray:
     return np.asarray(x, dtype=float)
 
 
+def dynamic_nullspace(J: np.ndarray, M: np.ndarray, rcond: float = 1e-6) -> np.ndarray:
+    """Mass-weighted (dynamically consistent) null-space projector.
+
+    With ``Minv = inv(M)``, ``Lam = inv(J Minv Jᵀ)``, ``Jbar = Minv Jᵀ Lam``:
+
+        N = I - Jᵀ Jbarᵀ
+
+    The exact property this buys is::
+
+        J @ Minv @ N ~ 0        # a torque in this null space produces ZERO task acceleration
+        N @ N ~ N               # N is a projector
+
+    i.e. ``tau_null = N @ tau_null_raw`` cannot accelerate the task
+    ``xdd = J Minv (tau_task + tau_null + ...)``.  That is why an elbow/link push
+    can be absorbed by the null space without being transmitted to the flange.
+
+    .. important::
+       The identity holds for ``N`` itself, **not** for ``N.T``: with this
+       convention ``J @ Minv @ N.T`` is *not* zero.  Do not test ``J Minv N.T``.
+
+    ``M`` is symmetrised and must be a finite, symmetric positive-definite 7x7
+    matrix; ``rcond`` guards the inversion of ``J Minv Jᵀ`` against rank
+    deficiency.  Raises ``ValueError`` for any violation.
+    """
+    J = np.asarray(J, dtype=float).reshape(6, 7)
+    M = np.asarray(M, dtype=float)
+    M = 0.5 * (M + M.T)                       # symmetrise (ID/FD noise is float32)
+    if M.shape != (7, 7) or J.shape != (6, 7):
+        raise ValueError(f"expected M 7x7 and J 6x7, got M{M.shape} and J{J.shape}")
+    if not np.all(np.isfinite(M)) or not np.all(np.isfinite(J)):
+        raise ValueError("M and J must be finite")
+    try:
+        ev = np.linalg.eigvalsh(M)
+    except np.linalg.LinAlgError as exc:      # pragma: no cover - defensive
+        raise ValueError("M is not symmetric positive definite") from exc
+    if ev[0] <= 0.0:
+        raise ValueError(f"M is not positive definite (min eigenvalue {ev[0]:.3e})")
+    Minv = np.linalg.inv(M)
+    A = J @ Minv @ J.T                        # 6x6 operational-space inertia inverse
+    sv = np.linalg.svd(A, compute_uv=False)
+    if sv[-1] <= float(rcond) * sv[0]:
+        raise ValueError(f"J Minv J^T is rank-deficient (sv_min/sv_max={sv[-1] / sv[0]:.3e})")
+    Lam = np.linalg.inv(A)
+    Jbar = Minv @ J.T @ Lam
+    return np.eye(7) - J.T @ Jbar.T
+
+
 class NewtonCompliantArm:
     """One-arm compliant controller for the native Newton FR3 articulation.
 
@@ -284,6 +332,7 @@ class NewtonCompliantArm:
         dt: Optional[float] = None,
         scale: float = 1.0,
         ref_rotvec: Optional[np.ndarray] = None,
+        mass_matrix: Optional[np.ndarray] = None,
     ) -> tuple[np.ndarray, dict]:
         """One control tick. Returns ``(tau, info)`` with ``tau`` shape ``(7,)``.
 
@@ -294,6 +343,13 @@ class NewtonCompliantArm:
         and a rotation vector *relative to the home orientation*.  A5's plans
         hold the home orientation, so the last three entries are zero; the
         default plan holds the home position with zero rotation error.
+
+        ``mass_matrix`` is the 7x7 joint-space inertia ``M(q)`` from
+        :meth:`mass_matrix_native`.  When it is a valid SPD 7x7 matrix the null
+        space is the dynamically consistent projector :func:`dynamic_nullspace`
+        (``J Minv N ~ 0``); otherwise (including ``None``, for legacy CPU tests)
+        the plain ``I - Jᵀ(J⁺)ᵀ`` projector is used.  ``info['nullspace']``
+        records which one was applied.
         """
         dt = self.cfg.dt if dt is None else float(dt)
         if ref_rotvec is None:
@@ -301,6 +357,7 @@ class NewtonCompliantArm:
         q = _to_numpy(q)
         dq = _to_numpy(dq)
         f_ext = _to_numpy(f_ext)
+        fn, mn = np.linalg.norm(f_ext[:3]), np.linalg.norm(f_ext[3:])
         if plan_fn is None:
             home_pos = self._reference()[:3]
             plan_fn = lambda _s: np.concatenate([home_pos, np.zeros(3)])  # noqa: E731
@@ -315,7 +372,12 @@ class NewtonCompliantArm:
         # F_imp = -f_ext, i.e. |delta| = F/K as specified.  The corrected wrench
         # is re-clamped to the supervisor's force/moment caps.
         force_used = out.force.copy()
-        if self.cfg.residual_comp_gain > 0.0:
+        wrench_applied = bool(fn > 1e-9 or mn > 1e-9)
+        if self.cfg.residual_comp_gain > 0.0 and wrench_applied:
+            # Only active while a wrench is actually applied.  During RETURN
+            # (f_ext == 0) F_imp is the whole return spring, not a friction
+            # residual; amplifying it by (1+gain) saturates F_lin_max and makes
+            # the rate-limited speed damper unable to enforce v_return.
             residual = out.force + f_ext
             self._res_filt += self.cfg.residual_beta * (residual - self._res_filt)
             force_used = force_used + self.cfg.residual_comp_gain * self._res_filt
@@ -328,9 +390,19 @@ class NewtonCompliantArm:
         # Cartesian wrench -> joint torque.
         tau_task = J.T @ force_used
 
-        # Weak dynamically-consistent null-space PD (k_null <= 20 so elbows yield).
-        Jpinv = np.linalg.pinv(J, rcond=1e-3)
-        N = np.eye(7) - J.T @ Jpinv.T
+        # Weak null-space PD (k_null <= 20 so elbows yield).  Prefer the
+        # dynamically consistent projector when a valid mass matrix is supplied;
+        # fall back to the plain projector for legacy callers/tests.
+        N, ns_kind = None, "plain"
+        if mass_matrix is not None:
+            try:
+                N = dynamic_nullspace(J, mass_matrix)
+                ns_kind = "dynamic"
+            except (ValueError, np.linalg.LinAlgError):
+                N = None
+        if N is None:
+            Jpinv = np.linalg.pinv(J, rcond=1e-3)
+            N = np.eye(7) - J.T @ Jpinv.T
         kn = self.cfg.k_null
         tau_null_raw = kn * (self.q_home - q) - 2.0 * np.sqrt(kn) * dq
         tau_null = N @ tau_null_raw
@@ -338,7 +410,6 @@ class NewtonCompliantArm:
         g = np.zeros(7) if gravity_comp is None else _to_numpy(gravity_comp)
         tau_raw = tau_task + tau_null + g
 
-        fn, mn = np.linalg.norm(f_ext[:3]), np.linalg.norm(f_ext[3:])
         # Coulomb friction feed-forward.  MJCF frictionloss is 0.2 Nm per joint
         # and opposes motion; during a sustained push it biases the equilibrium
         # by roughly friction/K.  Use the joint torques that would create the
@@ -367,7 +438,19 @@ class NewtonCompliantArm:
         released = fn < c.f_release and mn < c.m_release
         letting_go = out.state == State.RETURN or (out.state == State.YIELD and released)
         if letting_go and self.cfg.speed_limiter_gain > 0.0:
+            # Damp the velocity at the END of the step, not the one measured at
+            # its start: a reactive damper on xdot=J@dq is one tick late and the
+            # spring can push the flange past v_return inside that tick.  With
+            # M(q) available, predict xdot_next = xdot + J M^-1 tau_raw dt.
             v = xdot[:3]
+            if mass_matrix is not None and ns_kind == "dynamic":
+                try:
+                    Msym = 0.5 * (np.asarray(mass_matrix, dtype=float)
+                                  + np.asarray(mass_matrix, dtype=float).T)
+                    dq_pred = dq + dt * (np.linalg.solve(Msym, tau_raw))
+                    v = J[:3] @ dq_pred
+                except np.linalg.LinAlgError:
+                    pass
             speed = float(np.linalg.norm(v))
             cap = c.v_return
             if speed > cap:
@@ -395,6 +478,7 @@ class NewtonCompliantArm:
             "J": J,
             "tau_task": tau_task,
             "tau_null": tau_null,
+            "nullspace": ns_kind,
             "gravity_comp": g,
             "tau_friction": tau_fric,
             "tau_speed": tau_speed,
@@ -425,6 +509,29 @@ class NewtonCompliantArm:
         import warp as wp  # lazy
         arr = np.asarray(tau, dtype=np.float32).reshape(-1)
         control.joint_f = wp.array(arr, dtype=control.joint_f.dtype, device=control.joint_f.device)
+
+    @staticmethod
+    def mass_matrix_native(model: Any, state: Any) -> np.ndarray:
+        """Joint-space inertia ``M(q)`` from Newton's passive inverse dynamics.
+
+        A2 answer 4: ``newton.eval_inverse_dynamics_passive(..., mass_matrix=M)``
+        fills ``M`` with the 7x7 joint-space mass matrix.  ``eval_fk`` is run
+        first so ``state.body_q`` is consistent with ``state.joint_q``.  Uses
+        ``na = model.joint_dof_count`` (``model.joint_q.numpy()`` is a warp
+        array whose item indexing raised on this Newton version), asserts that
+        it matches the joint-coordinate length, and returns a float64 numpy
+        matrix.  The A5 probe measured it symmetric (err ~6e-8) and SPD at
+        ``Q_HOME`` (eigenvalues 7.3e-4 ... 1.87).
+        """
+        import newton  # lazy
+        import warp as wp  # lazy
+        na = int(model.joint_dof_count)
+        jq = np.asarray(model.joint_q.numpy()).reshape(-1)
+        assert na == len(jq), f"joint_dof_count {na} != len(joint_q) {len(jq)}"
+        newton.eval_fk(model, state.joint_q, state.joint_qd, state)
+        M = wp.zeros((1, na, na), device=model.device)   # warp float32 (ID kernel requires f32)
+        newton.eval_inverse_dynamics_passive(model, state, mass_matrix=M)
+        return np.asarray(M.numpy()).reshape(na, na).astype(np.float64)
 
     @staticmethod
     def gravity_comp_native(model: Any, state: Any) -> np.ndarray:

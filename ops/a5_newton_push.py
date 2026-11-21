@@ -126,6 +126,7 @@ class Harness:
         self.rng = np.random.default_rng(SEED)
         self.prev_wrench_hat = None
         self.est_filt = np.zeros(6)
+        self.est_push = False          # Schmitt-trigger state for estimator-only rows
         ALL_HARNESSES.append(self)
         self.reset()
 
@@ -145,7 +146,12 @@ class Harness:
         try:
             builder.add_mjcf(ENTRY)
             if self.kinematic_hand:
-                hb = builder.add_body(mass=0.0, is_kinematic=True, label="hand_box_body")
+                # add_body(is_kinematic=True) adds a phantom free DOF (dof 13,
+                # len(joint_q) 14) and a fixed joint on it breaks mujoco_warp
+                # conversion ("Vector[float32, Literal[11]] ... size 12").
+                # add_link + fixed-to-world keeps dof==len(joint_q)==7; its pose
+                # is scripted through state.body_q after eval_fk in tick().
+                hb = builder.add_link(label="hand_box_body")
                 builder.add_joint_fixed(-1, hb, parent_xform=wp.transform(
                     wp.vec3(0.42, 0.0, 0.6), wp.quat_identity()))
                 builder.add_shape_box(body=hb, hx=0.03, hy=0.04, hz=0.04,
@@ -200,6 +206,7 @@ class Harness:
         self.delay_buf.clear()
         self.prev_wrench_hat = None
         self.est_filt = np.zeros(6)
+        self.est_push = False
 
     def tick(self, f_ext, plan_fn=None, body_id=None, estimate: bool = False,
              body_wrench=None, *, use_estimate: bool = False, noise_n: float = 0.0,
@@ -235,7 +242,19 @@ class Harness:
         if use_estimate and self.prev_wrench_hat is not None:
             noisy = self.prev_wrench_hat + self.rng.normal(0.0, noise_n, size=6)
             self.est_filt += est_beta * (noisy - self.est_filt)
-            f_ctrl = self.est_filt.copy()
+            # Schmitt-trigger push detection on the ESTIMATE ONLY: use the
+            # supervisor's existing f_push/f_release values (no threshold change).
+            # Feeding an exact zero after release stops filter-noise chatter from
+            # repeatedly re-triggering YIELD during the return.
+            from rtp.control.compliance import ComplianceConfig
+            cc = self.arm.cfg.compliance or ComplianceConfig()
+            fn = float(np.linalg.norm(self.est_filt[:3]))
+            mn = float(np.linalg.norm(self.est_filt[3:]))
+            if not self.est_push and (fn > cc.f_push or mn > cc.m_push):
+                self.est_push = True
+            elif self.est_push and fn < cc.f_release and mn < cc.m_release:
+                self.est_push = False
+            f_ctrl = self.est_filt.copy() if self.est_push else np.zeros(6)
 
         tau, info = self.arm.step(q, dq, f_ctrl, plan_fn, gravity_comp=g,
                                   dt=self.dt, mass_matrix=M_cmd)
@@ -529,18 +548,25 @@ def _key_rows(h: Harness) -> dict:
     for F in KEY_STEADY_FORCES:
         for d, name in zip(DIRECTIONS, DIR_NAMES):
             steady.append(steady_deflection(h, F, d, name))
+    steady_row = {
+        "pass": all(r["pass"] for r in steady),
+        "worst_error_pct": max(r["error_pct"] for r in steady),
+        "n_rows": len(steady), "subrows": steady,
+    }
+    # These two must run BEFORE elbow_push: elbow_push switches the profile to
+    # 'grasp' (K_lin=500), and a 20 N release would then yield 0.04 m rather than
+    # the free_motion 0.10 m, producing an artificial release_return failure.
+    release = release_return(h)
+    plan = plan_pause(h)
     elbow = []
     for body_id, body_name in ((ELBOW_BODY, "fr3v2_link4"), (FOREARM_BODY, "fr3v2_link6")):
         for F in (10.0, 20.0, 30.0):
             elbow.append(elbow_push(h, body_id, body_name, F))
+    _restore_profile(h)
     return {
-        "steady_deflection": {
-            "pass": all(r["pass"] for r in steady),
-            "worst_error_pct": max(r["error_pct"] for r in steady),
-            "n_rows": len(steady), "subrows": steady,
-        },
-        "release_return": release_return(h),
-        "plan_pause": plan_pause(h),
+        "steady_deflection": steady_row,
+        "release_return": release,
+        "plan_pause": plan,
         "elbow_push": {
             "pass": all(r["pass"] for r in elbow), "n_rows": len(elbow), "subrows": elbow,
         },
