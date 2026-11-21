@@ -1,0 +1,43 @@
+{
+  "step": "A7 S6 (push_aside)",
+  "evidence_class": "SIM",
+  "scope": "one seeded two-arm Newton trial with the derived simplified parallel-jaw hands; NOT a certification and NOT a safety result",
+  "seed": 0,
+  "mass_kg": 0.3,
+  "variant": "push_aside",
+  "hand_model": "assets/derived/fr3v2_hand.xml",
+  "pass_bounds": {
+    "min_blocker_displacement_m": 0.05,
+    "max_topple_deg": 45.0,
+    "source": "docs/AGENT_RUNBOOK.md A7 S6 (unchanged; topple angle is an operationalisation, not a config bound)"
+  },
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp": "1.17.0"
+  },
+  "result": "PASS",
+  "reason": "one seeded trial passed; >= 90% / >= 200 trials still required",
+  "blocker_start_world": [
+    -0.04159,
+    -0.10232,
+    0.92492
+  ],
+  "blocker_end_world": [
+    0.05146,
+    -0.09949,
+    0.925
+  ],
+  "blocker_displacement_m": 0.09309,
+  "blocker_tilt_deg": 3.024,
+  "toppled": false,
+  "topple_definition": "body local +z tilt from world +z > 45.0 deg",
+  "wall_s": 22.59,
+  "steps": 2700,
+  "steps_per_s": 119.5,
+  "checks": {
+    "finite": true,
+    "blocker_moved_ge_5cm": true,
+    "not_toppled": true
+  }
+}

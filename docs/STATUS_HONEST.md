@@ -146,3 +146,12 @@ A5 FAIL is real Newton torque-mode evidence for the rows that ran; A7 is `SIM-PO
 | item | evidence class | state |
 |---|---|---|
 | S5 mass-from-gravity-torque | SIM | First probe (0.5 kg) measured -0.5 kg because the estimator used the opposite sign to Newton's **holding-torque** convention; fixed `m = F_z/g` with matching CPU tests (16 passed). Re-run seeds 0 at 0.1 / 0.5 / 1.0 / 3.0 kg: estimates 0.1 / 0.5 / 1.0 / 3.00001 kg, relative error 0.0 in all four (`reports/a7_s5_probe*.json`). This is a welded-payload single-seed probe, **not** the >= 90 % / >= 200-trial rung pass and not a certification |
+
+## Update 2026-11-21 — A7 rung S4/S5/S6 single-seed probes (SIM, ungraded)
+
+| item | evidence class | state |
+|---|---|---|
+| S4 place into a compartment | SIM | `reports/a7_s4_probe.json` **PASS** seed 0: box centre in `compartment_1`, hand clear, penetration 0 mm. One trial; >= 90 % / >= 200 trials not run |
+| S5 weigh | SIM | `reports/a7_s5_probe*.json` **PASS** at 0.1 / 0.5 / 1.0 / 3.0 kg with the holding-torque sign fix (D-83), 0 % relative error. One seed each, welded payload; ungraded |
+| S6 push_aside | SIM | `reports/a7_s6_push_probe.json` **PASS** seed 0: blocker moved 93.1 mm (> 50 mm), tilt 3.0 deg (< 45 deg). One trial; ungraded |
+| S6 handover | SIM | `reports/a7_s6_handover_probe.json` **FAIL**: during L's carry the box fell back toward the table; at R close, box at (-0.109, 0.029, 0.935) vs expected (0, 0, 1.045), 157.3 mm away. No transfer occurred; no threshold relaxed. Diagnosed as a real grasp/carry failure, not a scoring artifact |

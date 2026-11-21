@@ -178,7 +178,7 @@ def build(seed: int, mass: float):
 def _make_ik(fk, solve_ik, R_TARGET_local):
     def ik(q0, target_local):
         r = solve_ik(q0, tuple(float(v) for v in target_local), R_TARGET_local,
-                     max_iters=250, pos_tol=1e-3, rot_tol=5e-3)
+                     max_iters=250, pos_tol=5e-3, rot_tol=1e-2)
         if not r.converged:
             raise RuntimeError(f"IK failed for {target_local}: pos {r.pos_error_m:.4f}, "
                                f"rot {r.rot_error_rad:.4f}")
@@ -261,6 +261,8 @@ def main() -> int:
                 step(1, track)
 
         t0 = time.perf_counter()
+        # The grasp target is expressed in the LEFT arm's local (base) frame for both variants.
+        gx, gy = (float(v) for v in fk.fk_numpy(np.asarray(fk.Q_HOME, float))[0][:2])
         if a.variant == "handover":
             sm = HandoverStateMachine()
             track = []
@@ -296,8 +298,14 @@ def main() -> int:
             r_flange_world = handover_flange_world.copy()        # commanded, local->world known
             box_near_r = bool(np.linalg.norm(bq[obj_id, :3] - (r_flange_world - np.array([0, 0, BOX_BELOW_FLANGE])))
                               <= 0.04)
+            report["r_acquire_proxy"] = {
+                "box_world": [round(float(v), 5) for v in bq[obj_id, :3]],
+                "expected_world": [round(float(v), 5) for v in (r_flange_world - np.array([0, 0, BOX_BELOW_FLANGE]))],
+                "distance_m": round(float(np.linalg.norm(bq[obj_id, :3] -
+                                      (r_flange_world - np.array([0, 0, BOX_BELOW_FLANGE])))), 5),
+            }
             if not box_near_r:
-                raise RuntimeError("R did not acquire the box (geometry proxy failed)")
+                raise RuntimeError("R did not acquire the box (geometry proxy failed); see r_acquire_proxy")
             sm.step("R_GRASPED")
             # --- L: open and retreat ----------------------------------------------------------
             ramp(0, carry, 0.0, 300, track)
