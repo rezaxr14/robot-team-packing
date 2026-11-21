@@ -181,3 +181,22 @@ A5 FAIL is real Newton torque-mode evidence for the rows that ran; A7 is `SIM-PO
 | S6 handover experiments (not adopted) | SIM | Tried a 90°-rotated R wrist, perpendicular grippers, a +0.25 m higher approach and 12 incremental Cartesian descent waypoints. All still dropped the box or made DLS IK diverge; none improved on the measured FAIL, so all were reverted to the committed version. No threshold changed; handover remains FAIL |
 | A7 release / retreat trial scripts | SIM (single seed) | `ops/a7_s7_release_retreat.py` added and registered in the physical regression driver; seed 0 probes PASS for both skills (`reports/a7_release_probe.json`, `reports/a7_retreat_probe.json`): box lands in the table band, lift observed, hand clear >= 80 mm. No 200-trial aggregate yet; not a certification |
 | S3 friction × force grid | SIM | `reports/a7_s3_grid.json` PASS (all 27 cells ran): 27/27 `lifted`, mean gain 115.1/111.4/98.5 mm at force factors 0.7/1.0/1.3 (0.5 kg, friction 0.3/0.6/0.9). The histogram does **not** show the runbook's expected slip/crush differentiation; with the 14 cm commanded lift and the derived gripper all cells were lifted, so no slip/crush cause is claimed. One outcome class only; not a certification |
+
+## Update 2026-11-22 — definitive A5 full run (SIM): 7 PASS / 3 FAIL
+
+Command: `source ops/env.sh && $ISAAC_PY ops/a5_newton_push.py --invariant-steps 100000 --out reports/g6_newton_push.json`
+Report: `reports/g6_newton_push.json` (225,723 bytes). Gate: `python ops/arm_steps_status.py --require A5` exits **1**.
+
+| row | state | measured evidence |
+|---|---|---|
+| `steady_deflection` | **PASS** | ±10 % bound met after the identified-mass/friction compensation |
+| `release_return` | **PASS** | release and bounded-speed return within the unchanged runbook bounds |
+| `plan_pause` | **FAIL** | plan clock frozen during yield (0.500 → 0.500), state returns to TRACK, but the clock **never advances after resume** (final 0.500) and final tracking error is **3.241 mm > 3 mm**; no RESUMED event. Single root cause for the two grid failures below |
+| `elbow_push` | **PASS** | D-79 stiffness-relative bound: 19.4/38.9/58.9 mm (link 4) and 19.7/39.8/61.3 mm (link 6) at 10/20/30 N, all below 27.6/52.1/76.7 and 28.1/53.1/78.2 mm bounds; link yielded and post-release EE <= 5 mm |
+| `invariants` | **PASS** | 100,000 random-push steps, 63,979 RETURN ticks, **zero** force / moment / leash / torque-rate / return-speed / fault violations (predictive limiter + residual-comp gating) |
+| `human_hand_proxy` | **PASS** | virtual spring hand peak 14.66 N; kinematic box peak 7.50 N from a labelled **model-based force estimate** (Newton does not populate `rigid_contact_force` here) |
+| `steady_deflection_estimated`, `release_return_estimated` | **PASS** | 0.5 N and 1 N estimator noise, release signalling: overshoot 6.7/7.0 %, peak 0.0989 m/s < 0.11 |
+| `payload` | **FAIL** | 0/1/2/3 kg cells all pass `steady_deflection`, `release_return` and `elbow_push`; **every cell fails only because of `plan_pause`** (final tracking error 3.241 / 3.006 / 2.825 / 2.671 mm) |
+| `latency_error` | **FAIL** | all 8 cells (0–3 tick delay, ±20 % mass/inertia/friction/armature) pass the other three rows; **every cell fails only because of `plan_pause`** (final tracking error 2.53–5.59 mm) |
+
+Diagnosis for the next patch: a single defect in plan-clock resume/tracking after a push (the supervisor enters TRACK but the clock stays frozen and the controller settles 0.24 mm outside the 3 mm bound). No threshold, tolerance, clamp or test was changed. This is simulation evidence only (D-22); no safety claim. A7 remains `FAIL` until its 7-skill 200-trial regression exists.
