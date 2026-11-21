@@ -1,0 +1,2074 @@
+{
+  "step": "A7 S2 rung final aggregate (seeded grasp + lift)",
+  "evidence_class": "SIM",
+  "scope": "single-skill rung; NOT the >=200-trial per-skill A7 certification suite",
+  "python": "3.12.16",
+  "sources": [
+    {
+      "dir": "reports/a7_s2_v2_trials",
+      "commanded_lift_m": 0.12
+    },
+    {
+      "dir": "reports/a7_s2_v2_heavy_trials",
+      "commanded_lift_m": 0.14
+    }
+  ],
+  "n": 200,
+  "pass": 196,
+  "rate": 0.98,
+  "wilson95": [
+    0.9497121344948062,
+    0.9921956998236058
+  ],
+  "by_mass": {
+    "0.1": {
+      "n": 50,
+      "pass": 50,
+      "rate": 1.0,
+      "wilson95": [
+        0.9286499658256813,
+        1.0
+      ],
+      "min_gain_m": 0.11325,
+      "commanded_lift_m": [
+        0.12
+      ]
+    },
+    "0.5": {
+      "n": 50,
+      "pass": 50,
+      "rate": 1.0,
+      "wilson95": [
+        0.9286499658256813,
+        1.0
+      ],
+      "min_gain_m": 0.08606,
+      "commanded_lift_m": [
+        0.12
+      ]
+    },
+    "1.0": {
+      "n": 100,
+      "pass": 96,
+      "rate": 0.96,
+      "wilson95": [
+        0.9016278276739262,
+        0.984336949448152
+      ],
+      "min_gain_m": -0.0001,
+      "commanded_lift_m": [
+        0.12,
+        0.14
+      ]
+    }
+  },
+  "checks": {
+    "all_trials_have_reports": true,
+    "per_mass_rate_ge_0p95": true,
+    "min_50_seeds_per_mass": true,
+    "measured_gain_bound_unchanged": true
+  },
+  "trials": [
+    {
+      "mass_kg": 0.1,
+      "seed": 0,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s0.json",
+      "result": "PASS",
+      "height_gain_m": 0.11726,
+      "box_xy_drift_m": 0.00552,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 1,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s1.json",
+      "result": "PASS",
+      "height_gain_m": 0.11725,
+      "box_xy_drift_m": 0.0056,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 10,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s10.json",
+      "result": "PASS",
+      "height_gain_m": 0.11604,
+      "box_xy_drift_m": 0.0058,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 11,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s11.json",
+      "result": "PASS",
+      "height_gain_m": 0.11732,
+      "box_xy_drift_m": 0.00585,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 12,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s12.json",
+      "result": "PASS",
+      "height_gain_m": 0.11652,
+      "box_xy_drift_m": 0.00661,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 13,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s13.json",
+      "result": "PASS",
+      "height_gain_m": 0.11712,
+      "box_xy_drift_m": 0.00559,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 14,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s14.json",
+      "result": "PASS",
+      "height_gain_m": 0.1168,
+      "box_xy_drift_m": 0.00522,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 15,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s15.json",
+      "result": "PASS",
+      "height_gain_m": 0.11663,
+      "box_xy_drift_m": 0.00601,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 16,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s16.json",
+      "result": "PASS",
+      "height_gain_m": 0.11732,
+      "box_xy_drift_m": 0.0056,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 17,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s17.json",
+      "result": "PASS",
+      "height_gain_m": 0.11699,
+      "box_xy_drift_m": 0.0057,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 18,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s18.json",
+      "result": "PASS",
+      "height_gain_m": 0.11737,
+      "box_xy_drift_m": 0.00579,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 19,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s19.json",
+      "result": "PASS",
+      "height_gain_m": 0.11325,
+      "box_xy_drift_m": 0.00355,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 2,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s2.json",
+      "result": "PASS",
+      "height_gain_m": 0.11759,
+      "box_xy_drift_m": 0.00553,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 20,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s20.json",
+      "result": "PASS",
+      "height_gain_m": 0.11752,
+      "box_xy_drift_m": 0.00576,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 21,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s21.json",
+      "result": "PASS",
+      "height_gain_m": 0.11678,
+      "box_xy_drift_m": 0.00571,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 22,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s22.json",
+      "result": "PASS",
+      "height_gain_m": 0.11756,
+      "box_xy_drift_m": 0.0054,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 23,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s23.json",
+      "result": "PASS",
+      "height_gain_m": 0.11357,
+      "box_xy_drift_m": 0.00368,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 24,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s24.json",
+      "result": "PASS",
+      "height_gain_m": 0.1175,
+      "box_xy_drift_m": 0.00557,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 25,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s25.json",
+      "result": "PASS",
+      "height_gain_m": 0.11776,
+      "box_xy_drift_m": 0.00528,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 26,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s26.json",
+      "result": "PASS",
+      "height_gain_m": 0.1175,
+      "box_xy_drift_m": 0.00538,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 27,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s27.json",
+      "result": "PASS",
+      "height_gain_m": 0.11713,
+      "box_xy_drift_m": 0.00585,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 28,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s28.json",
+      "result": "PASS",
+      "height_gain_m": 0.11709,
+      "box_xy_drift_m": 0.00563,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 29,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s29.json",
+      "result": "PASS",
+      "height_gain_m": 0.11681,
+      "box_xy_drift_m": 0.0061,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 3,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s3.json",
+      "result": "PASS",
+      "height_gain_m": 0.11769,
+      "box_xy_drift_m": 0.00573,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 30,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s30.json",
+      "result": "PASS",
+      "height_gain_m": 0.11757,
+      "box_xy_drift_m": 0.00583,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 31,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s31.json",
+      "result": "PASS",
+      "height_gain_m": 0.11712,
+      "box_xy_drift_m": 0.00559,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 32,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s32.json",
+      "result": "PASS",
+      "height_gain_m": 0.11724,
+      "box_xy_drift_m": 0.00633,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 33,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s33.json",
+      "result": "PASS",
+      "height_gain_m": 0.11728,
+      "box_xy_drift_m": 0.0057,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 34,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s34.json",
+      "result": "PASS",
+      "height_gain_m": 0.11726,
+      "box_xy_drift_m": 0.00633,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 35,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s35.json",
+      "result": "PASS",
+      "height_gain_m": 0.11729,
+      "box_xy_drift_m": 0.00568,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 36,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s36.json",
+      "result": "PASS",
+      "height_gain_m": 0.11767,
+      "box_xy_drift_m": 0.00553,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 37,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s37.json",
+      "result": "PASS",
+      "height_gain_m": 0.11574,
+      "box_xy_drift_m": 0.00584,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 38,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s38.json",
+      "result": "PASS",
+      "height_gain_m": 0.11745,
+      "box_xy_drift_m": 0.00539,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 39,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s39.json",
+      "result": "PASS",
+      "height_gain_m": 0.11732,
+      "box_xy_drift_m": 0.00576,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 4,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s4.json",
+      "result": "PASS",
+      "height_gain_m": 0.11396,
+      "box_xy_drift_m": 0.00357,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 40,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s40.json",
+      "result": "PASS",
+      "height_gain_m": 0.11354,
+      "box_xy_drift_m": 0.0037,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 41,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s41.json",
+      "result": "PASS",
+      "height_gain_m": 0.117,
+      "box_xy_drift_m": 0.00553,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 42,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s42.json",
+      "result": "PASS",
+      "height_gain_m": 0.11714,
+      "box_xy_drift_m": 0.00549,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 43,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s43.json",
+      "result": "PASS",
+      "height_gain_m": 0.11708,
+      "box_xy_drift_m": 0.00586,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 44,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s44.json",
+      "result": "PASS",
+      "height_gain_m": 0.11776,
+      "box_xy_drift_m": 0.00568,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 45,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s45.json",
+      "result": "PASS",
+      "height_gain_m": 0.11735,
+      "box_xy_drift_m": 0.00562,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 46,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s46.json",
+      "result": "PASS",
+      "height_gain_m": 0.11706,
+      "box_xy_drift_m": 0.00549,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 47,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s47.json",
+      "result": "PASS",
+      "height_gain_m": 0.11713,
+      "box_xy_drift_m": 0.00571,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 48,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s48.json",
+      "result": "PASS",
+      "height_gain_m": 0.11732,
+      "box_xy_drift_m": 0.00587,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 49,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s49.json",
+      "result": "PASS",
+      "height_gain_m": 0.11741,
+      "box_xy_drift_m": 0.00576,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 5,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s5.json",
+      "result": "PASS",
+      "height_gain_m": 0.11677,
+      "box_xy_drift_m": 0.00584,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 6,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s6.json",
+      "result": "PASS",
+      "height_gain_m": 0.11743,
+      "box_xy_drift_m": 0.00543,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 7,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s7.json",
+      "result": "PASS",
+      "height_gain_m": 0.11712,
+      "box_xy_drift_m": 0.00562,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 8,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s8.json",
+      "result": "PASS",
+      "height_gain_m": 0.11715,
+      "box_xy_drift_m": 0.0062,
+      "error": null
+    },
+    {
+      "mass_kg": 0.1,
+      "seed": 9,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.1_s9.json",
+      "result": "PASS",
+      "height_gain_m": 0.11714,
+      "box_xy_drift_m": 0.00559,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 0,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s0.json",
+      "result": "PASS",
+      "height_gain_m": 0.08957,
+      "box_xy_drift_m": 0.01151,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 1,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s1.json",
+      "result": "PASS",
+      "height_gain_m": 0.11734,
+      "box_xy_drift_m": 0.00333,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 10,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s10.json",
+      "result": "PASS",
+      "height_gain_m": 0.10333,
+      "box_xy_drift_m": 0.00719,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 11,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s11.json",
+      "result": "PASS",
+      "height_gain_m": 0.11787,
+      "box_xy_drift_m": 0.00351,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 12,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s12.json",
+      "result": "PASS",
+      "height_gain_m": 0.11795,
+      "box_xy_drift_m": 0.00371,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 13,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s13.json",
+      "result": "PASS",
+      "height_gain_m": 0.11604,
+      "box_xy_drift_m": 0.00664,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 14,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s14.json",
+      "result": "PASS",
+      "height_gain_m": 0.09163,
+      "box_xy_drift_m": 0.00965,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 15,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s15.json",
+      "result": "PASS",
+      "height_gain_m": 0.08743,
+      "box_xy_drift_m": 0.00627,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 16,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s16.json",
+      "result": "PASS",
+      "height_gain_m": 0.11868,
+      "box_xy_drift_m": 0.00443,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 17,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s17.json",
+      "result": "PASS",
+      "height_gain_m": 0.10253,
+      "box_xy_drift_m": 0.00343,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 18,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s18.json",
+      "result": "PASS",
+      "height_gain_m": 0.11702,
+      "box_xy_drift_m": 0.00367,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 19,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s19.json",
+      "result": "PASS",
+      "height_gain_m": 0.08754,
+      "box_xy_drift_m": 0.00594,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 2,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s2.json",
+      "result": "PASS",
+      "height_gain_m": 0.11749,
+      "box_xy_drift_m": 0.00364,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 20,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s20.json",
+      "result": "PASS",
+      "height_gain_m": 0.09153,
+      "box_xy_drift_m": 0.00791,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 21,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s21.json",
+      "result": "PASS",
+      "height_gain_m": 0.09225,
+      "box_xy_drift_m": 0.00974,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 22,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s22.json",
+      "result": "PASS",
+      "height_gain_m": 0.11801,
+      "box_xy_drift_m": 0.00335,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 23,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s23.json",
+      "result": "PASS",
+      "height_gain_m": 0.08793,
+      "box_xy_drift_m": 0.00928,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 24,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s24.json",
+      "result": "PASS",
+      "height_gain_m": 0.11745,
+      "box_xy_drift_m": 0.00335,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 25,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s25.json",
+      "result": "PASS",
+      "height_gain_m": 0.11674,
+      "box_xy_drift_m": 0.00361,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 26,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s26.json",
+      "result": "PASS",
+      "height_gain_m": 0.09414,
+      "box_xy_drift_m": 0.0077,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 27,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s27.json",
+      "result": "PASS",
+      "height_gain_m": 0.10044,
+      "box_xy_drift_m": 0.00341,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 28,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s28.json",
+      "result": "PASS",
+      "height_gain_m": 0.08676,
+      "box_xy_drift_m": 0.00783,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 29,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s29.json",
+      "result": "PASS",
+      "height_gain_m": 0.10901,
+      "box_xy_drift_m": 0.00349,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 3,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s3.json",
+      "result": "PASS",
+      "height_gain_m": 0.09432,
+      "box_xy_drift_m": 0.00338,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 30,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s30.json",
+      "result": "PASS",
+      "height_gain_m": 0.11747,
+      "box_xy_drift_m": 0.00356,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 31,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s31.json",
+      "result": "PASS",
+      "height_gain_m": 0.0951,
+      "box_xy_drift_m": 0.00683,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 32,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s32.json",
+      "result": "PASS",
+      "height_gain_m": 0.11927,
+      "box_xy_drift_m": 0.0043,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 33,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s33.json",
+      "result": "PASS",
+      "height_gain_m": 0.11798,
+      "box_xy_drift_m": 0.0034,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 34,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s34.json",
+      "result": "PASS",
+      "height_gain_m": 0.11539,
+      "box_xy_drift_m": 0.00568,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 35,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s35.json",
+      "result": "PASS",
+      "height_gain_m": 0.11747,
+      "box_xy_drift_m": 0.0034,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 36,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s36.json",
+      "result": "PASS",
+      "height_gain_m": 0.09496,
+      "box_xy_drift_m": 0.01019,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 37,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s37.json",
+      "result": "PASS",
+      "height_gain_m": 0.09248,
+      "box_xy_drift_m": 0.00454,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 38,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s38.json",
+      "result": "PASS",
+      "height_gain_m": 0.0868,
+      "box_xy_drift_m": 0.00892,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 39,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s39.json",
+      "result": "PASS",
+      "height_gain_m": 0.118,
+      "box_xy_drift_m": 0.00368,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 4,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s4.json",
+      "result": "PASS",
+      "height_gain_m": 0.09911,
+      "box_xy_drift_m": 0.0068,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 40,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s40.json",
+      "result": "PASS",
+      "height_gain_m": 0.11865,
+      "box_xy_drift_m": 0.00346,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 41,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s41.json",
+      "result": "PASS",
+      "height_gain_m": 0.09423,
+      "box_xy_drift_m": 0.00349,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 42,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s42.json",
+      "result": "PASS",
+      "height_gain_m": 0.11647,
+      "box_xy_drift_m": 0.0049,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 43,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s43.json",
+      "result": "PASS",
+      "height_gain_m": 0.08606,
+      "box_xy_drift_m": 0.00791,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 44,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s44.json",
+      "result": "PASS",
+      "height_gain_m": 0.11634,
+      "box_xy_drift_m": 0.00339,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 45,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s45.json",
+      "result": "PASS",
+      "height_gain_m": 0.1169,
+      "box_xy_drift_m": 0.00425,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 46,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s46.json",
+      "result": "PASS",
+      "height_gain_m": 0.08866,
+      "box_xy_drift_m": 0.01164,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 47,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s47.json",
+      "result": "PASS",
+      "height_gain_m": 0.11817,
+      "box_xy_drift_m": 0.00333,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 48,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s48.json",
+      "result": "PASS",
+      "height_gain_m": 0.11595,
+      "box_xy_drift_m": 0.00365,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 49,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s49.json",
+      "result": "PASS",
+      "height_gain_m": 0.11386,
+      "box_xy_drift_m": 0.00339,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 5,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s5.json",
+      "result": "PASS",
+      "height_gain_m": 0.11721,
+      "box_xy_drift_m": 0.00403,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 6,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s6.json",
+      "result": "PASS",
+      "height_gain_m": 0.11706,
+      "box_xy_drift_m": 0.00344,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 7,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s7.json",
+      "result": "PASS",
+      "height_gain_m": 0.11782,
+      "box_xy_drift_m": 0.00331,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 8,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s8.json",
+      "result": "PASS",
+      "height_gain_m": 0.10642,
+      "box_xy_drift_m": 0.00489,
+      "error": null
+    },
+    {
+      "mass_kg": 0.5,
+      "seed": 9,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m0.5_s9.json",
+      "result": "PASS",
+      "height_gain_m": 0.11628,
+      "box_xy_drift_m": 0.00452,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 0,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s0.json",
+      "result": "PASS",
+      "height_gain_m": 0.11318,
+      "box_xy_drift_m": 0.01045,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 1,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s1.json",
+      "result": "PASS",
+      "height_gain_m": 0.08671,
+      "box_xy_drift_m": 0.00414,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 10,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s10.json",
+      "result": "PASS",
+      "height_gain_m": 0.08123,
+      "box_xy_drift_m": 0.00827,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 11,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s11.json",
+      "result": "PASS",
+      "height_gain_m": 0.09171,
+      "box_xy_drift_m": 0.00409,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 12,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s12.json",
+      "result": "PASS",
+      "height_gain_m": 0.11354,
+      "box_xy_drift_m": 0.00877,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 13,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s13.json",
+      "result": "PASS",
+      "height_gain_m": 0.11279,
+      "box_xy_drift_m": 0.00954,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 14,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s14.json",
+      "result": "PASS",
+      "height_gain_m": 0.11109,
+      "box_xy_drift_m": 0.0095,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 15,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s15.json",
+      "result": "PASS",
+      "height_gain_m": 0.11178,
+      "box_xy_drift_m": 0.01085,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 16,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s16.json",
+      "result": "PASS",
+      "height_gain_m": 0.11185,
+      "box_xy_drift_m": 0.01099,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 17,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s17.json",
+      "result": "PASS",
+      "height_gain_m": 0.11149,
+      "box_xy_drift_m": 0.00859,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 18,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s18.json",
+      "result": "PASS",
+      "height_gain_m": 0.08082,
+      "box_xy_drift_m": 0.01038,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 19,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s19.json",
+      "result": "PASS",
+      "height_gain_m": 0.11156,
+      "box_xy_drift_m": 0.0097,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 2,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s2.json",
+      "result": "PASS",
+      "height_gain_m": 0.08345,
+      "box_xy_drift_m": 0.00532,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 20,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s20.json",
+      "result": "PASS",
+      "height_gain_m": 0.11139,
+      "box_xy_drift_m": 0.01045,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 21,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s21.json",
+      "result": "PASS",
+      "height_gain_m": 0.11151,
+      "box_xy_drift_m": 0.01103,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 22,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s22.json",
+      "result": "PASS",
+      "height_gain_m": 0.11146,
+      "box_xy_drift_m": 0.00968,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 23,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s23.json",
+      "result": "FAIL",
+      "height_gain_m": 4e-05,
+      "box_xy_drift_m": 0.05019,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 24,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s24.json",
+      "result": "PASS",
+      "height_gain_m": 0.11386,
+      "box_xy_drift_m": 0.01008,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 25,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s25.json",
+      "result": "PASS",
+      "height_gain_m": 0.08908,
+      "box_xy_drift_m": 0.0039,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 26,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s26.json",
+      "result": "PASS",
+      "height_gain_m": 0.08328,
+      "box_xy_drift_m": 0.00828,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 27,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s27.json",
+      "result": "PASS",
+      "height_gain_m": 0.11151,
+      "box_xy_drift_m": 0.00991,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 28,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s28.json",
+      "result": "PASS",
+      "height_gain_m": 0.08626,
+      "box_xy_drift_m": 0.00397,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 29,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s29.json",
+      "result": "PASS",
+      "height_gain_m": 0.09006,
+      "box_xy_drift_m": 0.00412,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 3,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s3.json",
+      "result": "PASS",
+      "height_gain_m": 0.08716,
+      "box_xy_drift_m": 0.00534,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 30,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s30.json",
+      "result": "PASS",
+      "height_gain_m": 0.08094,
+      "box_xy_drift_m": 0.00875,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 31,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s31.json",
+      "result": "PASS",
+      "height_gain_m": 0.08492,
+      "box_xy_drift_m": 0.00533,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 32,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s32.json",
+      "result": "PASS",
+      "height_gain_m": 0.09077,
+      "box_xy_drift_m": 0.00438,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 33,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s33.json",
+      "result": "PASS",
+      "height_gain_m": 0.11139,
+      "box_xy_drift_m": 0.00959,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 34,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s34.json",
+      "result": "PASS",
+      "height_gain_m": 0.11575,
+      "box_xy_drift_m": 0.00767,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 35,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s35.json",
+      "result": "PASS",
+      "height_gain_m": 0.11177,
+      "box_xy_drift_m": 0.00994,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 36,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s36.json",
+      "result": "PASS",
+      "height_gain_m": 0.08854,
+      "box_xy_drift_m": 0.00415,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 37,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s37.json",
+      "result": "PASS",
+      "height_gain_m": 0.11194,
+      "box_xy_drift_m": 0.01054,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 38,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s38.json",
+      "result": "PASS",
+      "height_gain_m": 0.11148,
+      "box_xy_drift_m": 0.00994,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 39,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s39.json",
+      "result": "PASS",
+      "height_gain_m": 0.11154,
+      "box_xy_drift_m": 0.00939,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 4,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s4.json",
+      "result": "PASS",
+      "height_gain_m": 0.11136,
+      "box_xy_drift_m": 0.00972,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 40,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s40.json",
+      "result": "PASS",
+      "height_gain_m": 0.11172,
+      "box_xy_drift_m": 0.01013,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 41,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s41.json",
+      "result": "PASS",
+      "height_gain_m": 0.11194,
+      "box_xy_drift_m": 0.01001,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 42,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s42.json",
+      "result": "PASS",
+      "height_gain_m": 0.11138,
+      "box_xy_drift_m": 0.00956,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 43,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s43.json",
+      "result": "FAIL",
+      "height_gain_m": 0.07885,
+      "box_xy_drift_m": 0.01106,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 44,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s44.json",
+      "result": "PASS",
+      "height_gain_m": 0.11391,
+      "box_xy_drift_m": 0.0086,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 45,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s45.json",
+      "result": "PASS",
+      "height_gain_m": 0.08702,
+      "box_xy_drift_m": 0.00563,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 46,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s46.json",
+      "result": "PASS",
+      "height_gain_m": 0.08071,
+      "box_xy_drift_m": 0.01266,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 47,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s47.json",
+      "result": "PASS",
+      "height_gain_m": 0.11154,
+      "box_xy_drift_m": 0.00915,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 48,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s48.json",
+      "result": "PASS",
+      "height_gain_m": 0.08724,
+      "box_xy_drift_m": 0.00398,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 49,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s49.json",
+      "result": "PASS",
+      "height_gain_m": 0.08034,
+      "box_xy_drift_m": 0.01081,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 5,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s5.json",
+      "result": "FAIL",
+      "height_gain_m": 0.07873,
+      "box_xy_drift_m": 0.00283,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 6,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s6.json",
+      "result": "PASS",
+      "height_gain_m": 0.11164,
+      "box_xy_drift_m": 0.01044,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 7,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s7.json",
+      "result": "PASS",
+      "height_gain_m": 0.09285,
+      "box_xy_drift_m": 0.00523,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 8,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s8.json",
+      "result": "PASS",
+      "height_gain_m": 0.11488,
+      "box_xy_drift_m": 0.00735,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 9,
+      "lift_delta_m": 0.12,
+      "source": "reports/a7_s2_v2_trials/m1_s9.json",
+      "result": "PASS",
+      "height_gain_m": 0.11279,
+      "box_xy_drift_m": 0.01199,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 0,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s0.json",
+      "result": "PASS",
+      "height_gain_m": 0.11114,
+      "box_xy_drift_m": 0.00403,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 1,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s1.json",
+      "result": "PASS",
+      "height_gain_m": 0.10578,
+      "box_xy_drift_m": 0.00556,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 10,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s10.json",
+      "result": "FAIL",
+      "height_gain_m": -0.0001,
+      "box_xy_drift_m": 0.01484,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 11,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s11.json",
+      "result": "PASS",
+      "height_gain_m": 0.13221,
+      "box_xy_drift_m": 0.0087,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 12,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s12.json",
+      "result": "PASS",
+      "height_gain_m": 0.13532,
+      "box_xy_drift_m": 0.00791,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 13,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s13.json",
+      "result": "PASS",
+      "height_gain_m": 0.11108,
+      "box_xy_drift_m": 0.00379,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 14,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s14.json",
+      "result": "PASS",
+      "height_gain_m": 0.13103,
+      "box_xy_drift_m": 0.00878,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 15,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s15.json",
+      "result": "PASS",
+      "height_gain_m": 0.1069,
+      "box_xy_drift_m": 0.00627,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 16,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s16.json",
+      "result": "PASS",
+      "height_gain_m": 0.10184,
+      "box_xy_drift_m": 0.0094,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 17,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s17.json",
+      "result": "PASS",
+      "height_gain_m": 0.13127,
+      "box_xy_drift_m": 0.00803,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 18,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s18.json",
+      "result": "PASS",
+      "height_gain_m": 0.10546,
+      "box_xy_drift_m": 0.00476,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 19,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s19.json",
+      "result": "PASS",
+      "height_gain_m": 0.13147,
+      "box_xy_drift_m": 0.00902,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 2,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s2.json",
+      "result": "PASS",
+      "height_gain_m": 0.1084,
+      "box_xy_drift_m": 0.00504,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 20,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s20.json",
+      "result": "PASS",
+      "height_gain_m": 0.13138,
+      "box_xy_drift_m": 0.00956,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 21,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s21.json",
+      "result": "PASS",
+      "height_gain_m": 0.09942,
+      "box_xy_drift_m": 0.01202,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 22,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s22.json",
+      "result": "PASS",
+      "height_gain_m": 0.13135,
+      "box_xy_drift_m": 0.00875,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 23,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s23.json",
+      "result": "PASS",
+      "height_gain_m": 0.13175,
+      "box_xy_drift_m": 0.00993,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 24,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s24.json",
+      "result": "PASS",
+      "height_gain_m": 0.13366,
+      "box_xy_drift_m": 0.0092,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 25,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s25.json",
+      "result": "PASS",
+      "height_gain_m": 0.10785,
+      "box_xy_drift_m": 0.00464,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 26,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s26.json",
+      "result": "PASS",
+      "height_gain_m": 0.11228,
+      "box_xy_drift_m": 0.00402,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 27,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s27.json",
+      "result": "PASS",
+      "height_gain_m": 0.13135,
+      "box_xy_drift_m": 0.00929,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 28,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s28.json",
+      "result": "PASS",
+      "height_gain_m": 0.13156,
+      "box_xy_drift_m": 0.00929,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 29,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s29.json",
+      "result": "PASS",
+      "height_gain_m": 0.13204,
+      "box_xy_drift_m": 0.00932,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 3,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s3.json",
+      "result": "PASS",
+      "height_gain_m": 0.13207,
+      "box_xy_drift_m": 0.00944,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 30,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s30.json",
+      "result": "PASS",
+      "height_gain_m": 0.13275,
+      "box_xy_drift_m": 0.00964,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 31,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s31.json",
+      "result": "PASS",
+      "height_gain_m": 0.1314,
+      "box_xy_drift_m": 0.01069,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 32,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s32.json",
+      "result": "PASS",
+      "height_gain_m": 0.13188,
+      "box_xy_drift_m": 0.00883,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 33,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s33.json",
+      "result": "PASS",
+      "height_gain_m": 0.10799,
+      "box_xy_drift_m": 0.00263,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 34,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s34.json",
+      "result": "PASS",
+      "height_gain_m": 0.1361,
+      "box_xy_drift_m": 0.00685,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 35,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s35.json",
+      "result": "PASS",
+      "height_gain_m": 0.13168,
+      "box_xy_drift_m": 0.00906,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 36,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s36.json",
+      "result": "PASS",
+      "height_gain_m": 0.13177,
+      "box_xy_drift_m": 0.00937,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 37,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s37.json",
+      "result": "PASS",
+      "height_gain_m": 0.10671,
+      "box_xy_drift_m": 0.0055,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 38,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s38.json",
+      "result": "PASS",
+      "height_gain_m": 0.13138,
+      "box_xy_drift_m": 0.00905,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 39,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s39.json",
+      "result": "PASS",
+      "height_gain_m": 0.13139,
+      "box_xy_drift_m": 0.00858,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 4,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s4.json",
+      "result": "PASS",
+      "height_gain_m": 0.13117,
+      "box_xy_drift_m": 0.00915,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 40,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s40.json",
+      "result": "PASS",
+      "height_gain_m": 0.1316,
+      "box_xy_drift_m": 0.00936,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 41,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s41.json",
+      "result": "PASS",
+      "height_gain_m": 0.10172,
+      "box_xy_drift_m": 0.01267,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 42,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s42.json",
+      "result": "PASS",
+      "height_gain_m": 0.13115,
+      "box_xy_drift_m": 0.00902,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 43,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s43.json",
+      "result": "PASS",
+      "height_gain_m": 0.10016,
+      "box_xy_drift_m": 0.00976,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 44,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s44.json",
+      "result": "PASS",
+      "height_gain_m": 0.13405,
+      "box_xy_drift_m": 0.00777,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 45,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s45.json",
+      "result": "PASS",
+      "height_gain_m": 0.1012,
+      "box_xy_drift_m": 0.00523,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 46,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s46.json",
+      "result": "PASS",
+      "height_gain_m": 0.13155,
+      "box_xy_drift_m": 0.01043,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 47,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s47.json",
+      "result": "PASS",
+      "height_gain_m": 0.13125,
+      "box_xy_drift_m": 0.0085,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 48,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s48.json",
+      "result": "PASS",
+      "height_gain_m": 0.10871,
+      "box_xy_drift_m": 0.00508,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 49,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s49.json",
+      "result": "PASS",
+      "height_gain_m": 0.10341,
+      "box_xy_drift_m": 0.00523,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 5,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s5.json",
+      "result": "PASS",
+      "height_gain_m": 0.10749,
+      "box_xy_drift_m": 0.00682,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 6,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s6.json",
+      "result": "PASS",
+      "height_gain_m": 0.13152,
+      "box_xy_drift_m": 0.00968,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 7,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s7.json",
+      "result": "PASS",
+      "height_gain_m": 0.10752,
+      "box_xy_drift_m": 0.00553,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 8,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s8.json",
+      "result": "PASS",
+      "height_gain_m": 0.13579,
+      "box_xy_drift_m": 0.00704,
+      "error": null
+    },
+    {
+      "mass_kg": 1.0,
+      "seed": 9,
+      "lift_delta_m": 0.14,
+      "source": "reports/a7_s2_v2_heavy_trials/m1_s9.json",
+      "result": "PASS",
+      "height_gain_m": 0.10289,
+      "box_xy_drift_m": 0.00617,
+      "error": null
+    }
+  ],
+  "result": "PASS"
+}

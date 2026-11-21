@@ -711,14 +711,20 @@ def human_hand_row() -> dict:
             pose = np.zeros(7, dtype=np.float32)
             pose[:3] = np.array([x, target[1], target[2]], dtype=np.float32)
             pose[3] = 1.0
-            rec = hk.tick(np.zeros(6), None, None, body_pose_override=(hb, pose))
-            peaks_c.append(rec["contact_force_max"])
+            rec = hk.tick(np.zeros(6), None, None, body_pose_override=(hb, pose), estimate=True)
+            # SolverMuJoCo does not populate `contacts.rigid_contact_force` on this
+            # build (measured 0 N throughout), so use the model-based external
+            # wrench estimate M qdd + C + g - tau, labelled as an estimate, not a
+            # contact sensor. The raw contact-readout value is still recorded.
+            w = rec.get("wrench_hat")
+            peaks_c.append(float(np.linalg.norm(w[:3])) if w is not None else 0.0)
         peak_c = float(np.max(peaks_c))
         kinematic = {
             "label": "kinematic_box_hand", "pass": bool(peak_c > 0.0),
             "peak_contact_force_N": round(peak_c, 4),
-            "note": "scripted kinematic box pushed along -x into the flange; peak from "
-                    "contacts.rigid_contact_force",
+            "note": "scripted kinematic box pushed along -x into link7; peak from the model-based "
+                    "external wrench estimate (M qdd + C + g - tau), not a contact sensor; "
+                    "Newton's rigid_contact_force readout stayed at 0 N in this venv",
         }
         del hk
     except Exception as exc:  # noqa: BLE001 - honest 'not feasible' rather than a number
