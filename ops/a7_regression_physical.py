@@ -29,6 +29,8 @@ DRIVERS = {
     "grasp": ("ops/a7_s2_lift_v2.py", ()),
     "place": ("ops/a7_s4_place.py", ()),
     "weigh": ("ops/a7_s5_weigh.py", ()),
+    "release": ("ops/a7_s7_release_retreat.py", ("--skill", "release")),
+    "retreat": ("ops/a7_s7_release_retreat.py", ("--skill", "retreat")),
     "handover": ("ops/a7_s6_handover.py", ("--variant", "handover")),
     "push_aside": ("ops/a7_s6_handover.py", ("--variant", "push_aside")),
 }
