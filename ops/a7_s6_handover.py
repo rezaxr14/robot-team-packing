@@ -298,6 +298,7 @@ def main() -> int:
             r_flange_world = handover_flange_world.copy()        # commanded, local->world known
             box_near_r = bool(np.linalg.norm(bq[obj_id, :3] - (r_flange_world - np.array([0, 0, BOX_BELOW_FLANGE])))
                               <= 0.04)
+            report["box_z_trace_every_200"] = [round(float(v[2]), 4) for v in track[::200]]
             report["r_acquire_proxy"] = {
                 "box_world": [round(float(v), 5) for v in bq[obj_id, :3]],
                 "expected_world": [round(float(v), 5) for v in (r_flange_world - np.array([0, 0, BOX_BELOW_FLANGE]))],
