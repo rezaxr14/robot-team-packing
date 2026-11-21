@@ -285,19 +285,26 @@ def main() -> int:
             step(200, track)
             # --- R: approach the same point from above, open ----------------------------------
             r_home = np.asarray(R_HOME, float)
-            r_above = np.array(to_local(handover_flange_world + np.array([0.0, 0.0, 0.07]), 1))
+            r_above = np.array(to_local(handover_flange_world + np.array([0.0, 0.0, 0.25]), 1))
             r_hover = np.array(to_local(handover_flange_world + np.array([0.0, 0.0, 0.01]), 1))
             r_pre = ik(r_home, tuple(r_above))
             r_down = ik(r_pre[-1], tuple(r_hover))
+            phase_box = {}
+            phase_box["after_L_carry"] = np.asarray(state.body_q.numpy())[obj_id, :3].copy()
             ramp(1, r_pre, 0.0, 800, track)
+            phase_box["after_R_pre"] = np.asarray(state.body_q.numpy())[obj_id, :3].copy()
             ramp(1, r_down, 0.0, 400, track)
-            ramp(1, r_down, CLOSED_CTRL, 300, track)            # R closes on the box
+            phase_box["after_R_down"] = np.asarray(state.body_q.numpy())[obj_id, :3].copy()
+            ramp(1, r_down, CLOSED_CTRL, 300, track)
+            phase_box["after_R_close"] = np.asarray(state.body_q.numpy())[obj_id, :3].copy()            # R closes on the box
             step(200, track)
             # Did R acquire the box? geometric proxy: box centre near R flange - 0.095 z.
             bq = np.asarray(state.body_q.numpy())
             r_flange_world = handover_flange_world.copy()        # commanded, local->world known
             box_near_r = bool(np.linalg.norm(bq[obj_id, :3] - (r_flange_world - np.array([0, 0, BOX_BELOW_FLANGE])))
                               <= 0.04)
+            report["phase_box_positions"] = {k: [round(float(v), 5) for v in val]
+                                             for k, val in phase_box.items()}
             report["box_z_trace_every_200"] = [round(float(v[2]), 4) for v in track[::200]]
             report["r_acquire_proxy"] = {
                 "box_world": [round(float(v), 5) for v in bq[obj_id, :3]],
