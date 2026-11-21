@@ -1,0 +1,27 @@
+{
+  "result": "FAIL",
+  "pass": 49,
+  "total": 50,
+  "rate": 0.98,
+  "wilson95": [
+    0.8950431352816304,
+    0.9964608319110235
+  ],
+  "by_mass": {
+    "1.0": {
+      "pass": 49,
+      "total": 50,
+      "rate": 0.98,
+      "wilson95": [
+        0.8950431352816304,
+        0.9964608319110235
+      ],
+      "min_height_gain_m": -0.0001
+    }
+  },
+  "checks": {
+    "rate_ge_0p95": true,
+    "all_trials_have_reports": true,
+    "min_gain_ge_8cm": false
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "step": "A5",
+  "evidence_class": "SIM",
+  "scope": "native Newton FR3 v2 articulation, effort-mode compliant control, simulated pushes; no hardware, no contact sensor, no safety certification",
+  "mode": "L2",
+  "controller": "rtp.control.newton_arm.NewtonCompliantArm + rtp.control.compliance.ComplianceSupervisor",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp-lang": "1.17.0",
+    "isaaclab": "28.0.0",
+    "isaaclab-newton": "9.1.4",
+    "torch": "2.15.0",
+    "numpy": "2.5.4"
+  },
+  "seed": 20261120,
+  "params": {
+    "dt_s": 0.001,
+    "profile": "free_motion",
+    "k_lin_N_per_m": 200.0,
+    "k_rot_Nm_per_rad": 15.0,
+    "k_null_Nm_per_rad": 15.0,
+    "tau_max_Nm": 50.0,
+    "torque_rate_Nm_per_ms": 1.0,
+    "residual_comp_gain": 4.0,
+    "residual_beta": 0.1,
+    "speed_limiter_gain_Ns_per_m": 4000.0,
+    "fixed_friction_feedforward_enabled": false,
+    "flange_body_id": 9,
+    "elbow_body_id": 5,
+    "forearm_body_id": 7,
+    "hold_s": 1.5,
+    "forces_N": [
+      5.0,
+      10.0,
+      20.0,
+      30.0
+    ],
+    "invariant_steps_requested": 0
+  },
+  "model": "assets/cache/menagerie/franka_fr3_v2/fr3v2.xml",
+  "mass_matrix_eigenvalues": {
+    "min": 0.00073125,
+    "max": 1.91933682,
+    "samples": 2500,
+    "spd_measured": true
+  },
+  "steps_simulated": 0,
+  "wall_s": 39.59,
+  "steps_per_s": 0.0,
+  "wrench_estimate_note": "supervisor uses the injected wrench (simulation ground truth); the acceleration-based inverse-dynamics estimate is logged beside it in each steady_deflection subrow for comparison",
+  "measurement_notes": [
+    "Steady deflection is the mean over the last 0.5 s of a 1.5 s hold; expected |delta| = F / K_lin with K_lin from PROFILES[profile].",
+    "A fixed 0.2 Nm*sign(dq) Coulomb feed-forward was measured to be invalid (effective stiction 0.05-0.6 Nm, configuration-dependent and mixed sign). It was removed. Residual-wrench compensation F_corr = g*(F_imp + f_ext) (g=4), a runbook-A5 'injected wrench + controller estimate' feedback, drives the steady-state bias to zero without identifying the plant.",
+    "The supervisor's soft speed limiter is reinforced on every RETURN / released-YIELD tick through J[:3].T using the joint-torque budget; the Cartesian F_lin_max cap otherwise limited its deceleration.",
+    "The first A5 run's 334 'return_speed' violations were a harness bookkeeping error: the 'free' test read the NEXT wrench segment rather than the one applied. The applied wrench is now captured before tick().",
+    "EE error during an elbow push is F_task/K_lin; even at K_lin=500 N/m (grasp, the stiffest allowed PROFILES entry) a 10 N flange-equivalent push yields ~20 mm, so the spec's <=15 mm bound cannot hold for a generic link-4/link-6 push at these forces. Measured, not relaxed.",
+    "The null-space PD now uses the dynamically consistent projector N = I - J^T (M^-1 J^T (J M^-1 J^T)^-1)^T from Newton's inverse-dynamics mass matrix M(q) (J M^-1 N ~ 0, N^2 ~ N), k_null=15 Nm/rad with critical damping. M is measured every tick; its min/max eigenvalues are in mass_matrix_eigenvalues (SPD claim measured, not asserted)."
+  ],
+  "rows": {
+    "human_hand_proxy": {
+      "pass": false,
+      "virtual_spring_hand": {
+        "label": "virtual_spring_hand",
+        "k_c_N_per_m": 300.0,
+        "d_c_Ns_per_m": 20.0,
+        "hand_speed_mps": 0.1,
+        "peak_force_N": 14.3126,
+        "max_ee_excursion_m": 0.059893,
+        "states_seen": [
+          "TRACK",
+          "YIELD"
+        ],
+        "checks": {
+          "peak_force_finite": true,
+          "arm_yielded": true,
+          "no_fault": true
+        },
+        "pass": true
+      },
+      "kinematic_box_hand": {
+        "label": "kinematic_box_hand",
+        "pass": false,
+        "status": "not feasible",
+        "reason": "AssertionError: joint_dof_count 13 != len(joint_q) 14"
+      }
+    }
+  },
+  "checks": {
+    "human_hand_proxy": false
+  },
+  "not_done": [
+    "elbow_push <=15 mm at 10 N: if still F_task/K, the pre-registered bound may be unreachable at the allowed stiffness; row stays FAIL until the user approves a change (rule 6)",
+    "invariants at >= 100000 steps unless --invariant-steps was supplied",
+    "hardware, ISO 10218-2:2025-derived limits, L0/L1 sign-off (D-22, D-58)"
+  ],
+  "result": "FAIL"
+}

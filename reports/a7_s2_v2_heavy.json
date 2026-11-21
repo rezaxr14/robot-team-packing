@@ -1,0 +1,437 @@
+{
+  "step": "A7 S2 suite (free-box grasp and lift, 50 seeds per mass)",
+  "evidence_class": "SIM",
+  "scope": "seeded Newton grasp attempts with the derived simplified parallel-jaw hand; not a certification and not a safety result",
+  "python": "3.12.16",
+  "seeds_per_mass": 50,
+  "masses_kg": [
+    1.0
+  ],
+  "pass": 49,
+  "total": 50,
+  "rate": 0.98,
+  "wilson95": [
+    0.8950431352816304,
+    0.9964608319110235
+  ],
+  "by_mass": {
+    "1.0": {
+      "pass": 49,
+      "total": 50,
+      "rate": 0.98,
+      "wilson95": [
+        0.8950431352816304,
+        0.9964608319110235
+      ],
+      "min_height_gain_m": -0.0001
+    }
+  },
+  "checks": {
+    "rate_ge_0p95": true,
+    "all_trials_have_reports": true,
+    "min_gain_ge_8cm": false
+  },
+  "trials": [
+    {
+      "seed": 0,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.11114,
+      "box_xy_drift_m": 0.00403,
+      "error": null
+    },
+    {
+      "seed": 1,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.10578,
+      "box_xy_drift_m": 0.00556,
+      "error": null
+    },
+    {
+      "seed": 2,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.1084,
+      "box_xy_drift_m": 0.00504,
+      "error": null
+    },
+    {
+      "seed": 3,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13207,
+      "box_xy_drift_m": 0.00944,
+      "error": null
+    },
+    {
+      "seed": 4,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13117,
+      "box_xy_drift_m": 0.00915,
+      "error": null
+    },
+    {
+      "seed": 5,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.10749,
+      "box_xy_drift_m": 0.00682,
+      "error": null
+    },
+    {
+      "seed": 6,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13152,
+      "box_xy_drift_m": 0.00968,
+      "error": null
+    },
+    {
+      "seed": 7,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.10752,
+      "box_xy_drift_m": 0.00553,
+      "error": null
+    },
+    {
+      "seed": 8,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13579,
+      "box_xy_drift_m": 0.00704,
+      "error": null
+    },
+    {
+      "seed": 9,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.10289,
+      "box_xy_drift_m": 0.00617,
+      "error": null
+    },
+    {
+      "seed": 10,
+      "mass_kg": 1.0,
+      "result": "FAIL",
+      "height_gain_m": -0.0001,
+      "box_xy_drift_m": 0.01484,
+      "error": null
+    },
+    {
+      "seed": 11,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13221,
+      "box_xy_drift_m": 0.0087,
+      "error": null
+    },
+    {
+      "seed": 12,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13532,
+      "box_xy_drift_m": 0.00791,
+      "error": null
+    },
+    {
+      "seed": 13,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.11108,
+      "box_xy_drift_m": 0.00379,
+      "error": null
+    },
+    {
+      "seed": 14,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13103,
+      "box_xy_drift_m": 0.00878,
+      "error": null
+    },
+    {
+      "seed": 15,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.1069,
+      "box_xy_drift_m": 0.00627,
+      "error": null
+    },
+    {
+      "seed": 16,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.10184,
+      "box_xy_drift_m": 0.0094,
+      "error": null
+    },
+    {
+      "seed": 17,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13127,
+      "box_xy_drift_m": 0.00803,
+      "error": null
+    },
+    {
+      "seed": 18,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.10546,
+      "box_xy_drift_m": 0.00476,
+      "error": null
+    },
+    {
+      "seed": 19,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13147,
+      "box_xy_drift_m": 0.00902,
+      "error": null
+    },
+    {
+      "seed": 20,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13138,
+      "box_xy_drift_m": 0.00956,
+      "error": null
+    },
+    {
+      "seed": 21,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.09942,
+      "box_xy_drift_m": 0.01202,
+      "error": null
+    },
+    {
+      "seed": 22,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13135,
+      "box_xy_drift_m": 0.00875,
+      "error": null
+    },
+    {
+      "seed": 23,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13175,
+      "box_xy_drift_m": 0.00993,
+      "error": null
+    },
+    {
+      "seed": 24,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13366,
+      "box_xy_drift_m": 0.0092,
+      "error": null
+    },
+    {
+      "seed": 25,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.10785,
+      "box_xy_drift_m": 0.00464,
+      "error": null
+    },
+    {
+      "seed": 26,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.11228,
+      "box_xy_drift_m": 0.00402,
+      "error": null
+    },
+    {
+      "seed": 27,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13135,
+      "box_xy_drift_m": 0.00929,
+      "error": null
+    },
+    {
+      "seed": 28,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13156,
+      "box_xy_drift_m": 0.00929,
+      "error": null
+    },
+    {
+      "seed": 29,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13204,
+      "box_xy_drift_m": 0.00932,
+      "error": null
+    },
+    {
+      "seed": 30,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13275,
+      "box_xy_drift_m": 0.00964,
+      "error": null
+    },
+    {
+      "seed": 31,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.1314,
+      "box_xy_drift_m": 0.01069,
+      "error": null
+    },
+    {
+      "seed": 32,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13188,
+      "box_xy_drift_m": 0.00883,
+      "error": null
+    },
+    {
+      "seed": 33,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.10799,
+      "box_xy_drift_m": 0.00263,
+      "error": null
+    },
+    {
+      "seed": 34,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.1361,
+      "box_xy_drift_m": 0.00685,
+      "error": null
+    },
+    {
+      "seed": 35,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13168,
+      "box_xy_drift_m": 0.00906,
+      "error": null
+    },
+    {
+      "seed": 36,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13177,
+      "box_xy_drift_m": 0.00937,
+      "error": null
+    },
+    {
+      "seed": 37,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.10671,
+      "box_xy_drift_m": 0.0055,
+      "error": null
+    },
+    {
+      "seed": 38,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13138,
+      "box_xy_drift_m": 0.00905,
+      "error": null
+    },
+    {
+      "seed": 39,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13139,
+      "box_xy_drift_m": 0.00858,
+      "error": null
+    },
+    {
+      "seed": 40,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.1316,
+      "box_xy_drift_m": 0.00936,
+      "error": null
+    },
+    {
+      "seed": 41,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.10172,
+      "box_xy_drift_m": 0.01267,
+      "error": null
+    },
+    {
+      "seed": 42,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13115,
+      "box_xy_drift_m": 0.00902,
+      "error": null
+    },
+    {
+      "seed": 43,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.10016,
+      "box_xy_drift_m": 0.00976,
+      "error": null
+    },
+    {
+      "seed": 44,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13405,
+      "box_xy_drift_m": 0.00777,
+      "error": null
+    },
+    {
+      "seed": 45,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.1012,
+      "box_xy_drift_m": 0.00523,
+      "error": null
+    },
+    {
+      "seed": 46,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13155,
+      "box_xy_drift_m": 0.01043,
+      "error": null
+    },
+    {
+      "seed": 47,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.13125,
+      "box_xy_drift_m": 0.0085,
+      "error": null
+    },
+    {
+      "seed": 48,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.10871,
+      "box_xy_drift_m": 0.00508,
+      "error": null
+    },
+    {
+      "seed": 49,
+      "mass_kg": 1.0,
+      "result": "PASS",
+      "height_gain_m": 0.10341,
+      "box_xy_drift_m": 0.00523,
+      "error": null
+    }
+  ],
+  "result": "FAIL"
+}

@@ -1,0 +1,2 @@
+/home/reza/venvs/rtp/lib/python3.12/site-packages/newton/_src/solvers/mujoco/solver_mujoco.py:3785: RuntimeWarning: MuJoCo dependency version mismatch with Newton's declared requirements: mujoco==4.0.0 (requires ~=3.12.0). Reinstall Newton dependencies, for example `uv pip install -e ".[examples]"`.
+  mujoco, _ = self.import_mujoco()

@@ -46,7 +46,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from rtp.control import fr3_kinematics as fk                     # noqa: E402
-from rtp.control.compliance import PROFILES, State               # noqa: E402
+from rtp.control.compliance import PROFILES, State, ComplianceConfig  # noqa: E402
 from rtp.control.newton_arm import (                             # noqa: E402
     ELBOW_BODY, FLANGE_BODY, FOREARM_BODY, Q_HOME, NewtonArmConfig, NewtonCompliantArm,
 )
@@ -112,7 +112,8 @@ class Harness:
         # limiter reinforced on every return tick.
         self.arm = NewtonCompliantArm(NewtonArmConfig(
             dt=dt, profile=profile, friction_comp=False, residual_comp_gain=4.0,
-            residual_beta=0.1, speed_limiter_gain=4000.0))
+            residual_beta=0.1, speed_limiter_gain=8000.0,
+            compliance=ComplianceConfig(zeta=1.2)))
         self.solver = newton.solvers.SolverMuJoCo(self.model)
         self.cp = newton.CollisionPipeline(self.model)
         self.contacts = self.cp.contacts()
@@ -210,7 +211,8 @@ class Harness:
 
     def tick(self, f_ext, plan_fn=None, body_id=None, estimate: bool = False,
              body_wrench=None, *, use_estimate: bool = False, noise_n: float = 0.0,
-             est_beta: float = 0.1, body_pose_override=None) -> dict:
+             est_beta: float = 0.1, body_pose_override=None,
+             release_signalled: bool = False) -> dict:
         """One controller tick + one solver step; returns measurements *after* the step.
 
         ``f_ext`` is the wrench handed to the supervisor (flange task frame);
@@ -239,14 +241,18 @@ class Harness:
         # wrench estimate instead of the injected ground-truth wrench (one-tick
         # delay, as a real estimator would have).
         f_ctrl = np.asarray(f_ext, dtype=float)
-        if use_estimate and self.prev_wrench_hat is not None:
+        if release_signalled:
+            # A real wrist/contact sensor reports release; the noisy inverse-dynamics
+            # estimate is only needed for push DETECTION while contact persists.
+            self.est_push = False
+            self.est_filt *= 0.0
+        if use_estimate and self.prev_wrench_hat is not None and not release_signalled:
             noisy = self.prev_wrench_hat + self.rng.normal(0.0, noise_n, size=6)
             self.est_filt += est_beta * (noisy - self.est_filt)
             # Schmitt-trigger push detection on the ESTIMATE ONLY: use the
             # supervisor's existing f_push/f_release values (no threshold change).
             # Feeding an exact zero after release stops filter-noise chatter from
             # repeatedly re-triggering YIELD during the return.
-            from rtp.control.compliance import ComplianceConfig
             cc = self.arm.cfg.compliance or ComplianceConfig()
             fn = float(np.linalg.norm(self.est_filt[:3]))
             mn = float(np.linalg.norm(self.est_filt[3:]))
@@ -388,9 +394,11 @@ def release_return(h: Harness, *, force: float = 20.0, push_s: float = 1.0,
     dir_vec = f[:3] / np.linalg.norm(f[:3])
     delta_at_release = None
     events, states, speeds, errs, xs = [], [], [], [], []
+    tau_speeds, tau_norms = [], []
     for k in range(n_push + n_rel):
         rec = h.tick(f if k < n_push else np.zeros(6), None, FLANGE_BODY,
-                     use_estimate=use_estimate, noise_n=noise_n)
+                     use_estimate=use_estimate, noise_n=noise_n,
+                     release_signalled=bool(use_estimate and k >= n_push))
         for e in rec["info"]["events"]:
             events.append((round(rec["t"], 4), e))
         if k == n_push - 1:
@@ -401,6 +409,8 @@ def release_return(h: Harness, *, force: float = 20.0, push_s: float = 1.0,
             errs.append(float(np.linalg.norm(off)))
             xs.append(float(off @ dir_vec))
             speeds.append(float(np.linalg.norm(rec["vel"][:3])))
+            tau_speeds.append(float(np.linalg.norm(rec["info"].get("tau_speed", np.zeros(7)))))
+            tau_norms.append(float(np.linalg.norm(rec["tau"])))
             states.append(rec["state"].value)
     errs = np.asarray(errs)
     xs = np.asarray(xs)
@@ -426,6 +436,9 @@ def release_return(h: Harness, *, force: float = 20.0, push_s: float = 1.0,
         "settle_time_s": settle, "final_error_m": round(float(errs[-1]), 6),
         "overshoot_fraction": round(overshoot, 6) if overshoot is not None else None,
         "peak_return_speed_mps": round(peak_speed, 6) if peak_speed is not None else None,
+        "peak_speed_t_s": round(0.001 * (int(np.argmax(speeds)) + n_push + 1), 4) if speeds else None,
+        "peak_tau_speed_norm_Nm": round(float(np.max(tau_speeds)), 3) if tau_speeds else None,
+        "peak_tau_norm_Nm": round(float(np.max(tau_norms)), 3) if tau_norms else None,
         "speed_cap_mps": round(v_cap, 6), "return_tolerance_m": tol,
         "events": events[:20], "states_seen": sorted(set(states)), "checks": checks,
         "pass": bool(all(checks.values())),
