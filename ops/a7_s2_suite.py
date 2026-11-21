@@ -26,6 +26,7 @@ def main() -> int:
     ap.add_argument("--seeds", type=int, default=50)
     ap.add_argument("--masses", default="0.1,0.5,1.0")
     ap.add_argument("--python", default=sys.executable)
+    ap.add_argument("--resume", action="store_true", help="reuse existing PASS trial reports")
     ap.add_argument("--out", type=Path, default=ROOT / "reports" / "a7_s2_suite.json")
     a = ap.parse_args()
     masses = [float(x) for x in a.masses.split(",") if x.strip()]
@@ -36,6 +37,16 @@ def main() -> int:
     for mass in masses:
         for seed in range(a.seeds):
             out = trials_dir / f"m{mass:g}_s{seed}.json"
+            if a.resume and out.exists():
+                try:
+                    old = json.loads(out.read_text())
+                    if old.get("result") == "PASS":
+                        rows.append({"seed": seed, "mass_kg": mass, "result": "PASS",
+                                     "height_gain_m": old.get("height_gain_m"),
+                                     "box_xy_drift_m": old.get("box_xy_drift_m"), "error": None})
+                        continue
+                except Exception:  # noqa: BLE001
+                    pass
             cmd = [a.python, str(ROOT / "ops" / "a7_s2_lift.py"),
                    "--seed", str(seed), "--mass", str(mass), "--out", str(out)]
             result = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)

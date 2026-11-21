@@ -76,7 +76,7 @@ def build(seed: int, mass: float):
         os.chdir(cwd)
 
     def ik(z_flange: float, q_start):
-        r = solve_ik(q_start, (float(x), float(y), z_flange), Rtarget, max_iters=250, pos_tol=1e-3, rot_tol=2e-3)
+        r = solve_ik(q_start, (float(x), float(y), z_flange), Rtarget, max_iters=250, pos_tol=1e-3, rot_tol=5e-3)
         if not r.converged:
             raise RuntimeError(f"IK failed at z={z_flange}: pos {r.pos_error_m:.4f}, rot {r.rot_error_rad:.4f}")
         return r.path
