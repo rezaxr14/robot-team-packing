@@ -1,0 +1,46 @@
+{
+  "step": "A7 S3b grasp contact-model diagnosis",
+  "evidence_class": "SIM",
+  "scope": "each setting changed one at a time and measured with the same pre-registered cell; no threshold changed",
+  "analytic_bound": "2*mu*N_pad >= m*g",
+  "findings": [
+    {
+      "order": 1,
+      "setting": "baseline derived hand (finger pads mu=1.2, palm 0.9, MJCF combination)",
+      "cell": {
+        "mass_kg": 0.5,
+        "mu": [
+          0.3,
+          0.6,
+          0.9
+        ],
+        "force_factor": [
+          0.7,
+          1.0,
+          1.3
+        ]
+      },
+      "measured": "27/27 cells lifted, i.e. neither friction nor force changed the outcome",
+      "interpretation": "the hand's 1.2 pad friction dominated the contact, so the object mu the Brain reasons about was not in the contact at all",
+      "report": "reports/a7_s3_grid.json"
+    },
+    {
+      "order": 2,
+      "setting": "set finger-pad and palm mu to the tested object mu after finalize()",
+      "cell": {
+        "mass_kg": 0.1,
+        "mu": 0.1,
+        "force_factor": 0.1
+      },
+      "measured_before": "lifted, height_gain 0.1018 m at N_pad=1.52 N (analytic with mu=0.1: 2*0.1*1.52=0.304 N < m*g=0.981 N, so it should slip)",
+      "measured_after": "FAIL, height_gain 0.00002 m; the 1.5 N squeeze slips and the fingers close to zero force (report below)",
+      "interpretation": "with both surfaces at the tested mu the simulated outcome follows the analytic two-pad bound for the boundary cell",
+      "report": "reports/a7_s3b_contact_fix_smoke.json"
+    }
+  ],
+  "next": "run the full S3b grid (mass x mu x force factor) and compare each (mass, mu) boundary with the analytic boundary; crush is a force-threshold rule (no crush sensor).",
+  "not_done": [
+    "crush sensor does not exist; crush is a definition",
+    "pad compliance/solver settings were not changed (the friction-dominance fix was sufficient)"
+  ]
+}

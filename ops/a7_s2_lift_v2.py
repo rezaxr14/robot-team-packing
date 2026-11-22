@@ -33,8 +33,17 @@ BASE_Z = 0.90                # arm base sits on the table plane
 BOX = 0.05                    # cube edge (m)
 GRASP_XY = None               # set from the home flange pose (reachable with flange z down)
 CLOSED_CTRL = 0.035
-LIFT_DELTA = 0.12                  # command 12 cm so >=8 cm survives in-grip slip at 0.5-1 kg
+LIFT_DELTA = 0.12                  # exploration default; the reported rule is lift_delta_for_mass()
 DT = 0.001
+
+
+def lift_delta_for_mass(mass_kg: float) -> float:
+    """Deterministic single rule f(mass), chosen on the tuning split (seeds >= 900000).
+
+    The mass is the value the `weigh` skill supplies (the A7 card records which mass source
+    was used).  Continuous and monotone: 0.104 m at 0.1 kg, 0.12 m at 0.5 kg, 0.14 m at 1 kg.
+    """
+    return 0.10 + 0.04 * max(0.0, min(float(mass_kg), 1.0))
 
 
 def build(seed: int, mass: float, lift_delta: float = 0.12):
@@ -96,23 +105,35 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--mass", type=float, default=0.3)
-    ap.add_argument("--lift-delta", type=float, default=0.12,
-                    help="commanded lift above the grasp pose; >0.10 compensates measured in-grip slip")
+    ap.add_argument("--lift-delta", type=float, default=None,
+                    help="explicit commanded lift (tuning only); omit to use lift_delta_for_mass()")
+    ap.add_argument("--rule", action="store_true",
+                    help="use the single deterministic rule lift_delta = f(mass)")
+    ap.add_argument("--compliant", action="store_true",
+                    help="drive the arm through NewtonCompliantArm (A5 controller) instead of the "
+                         "MJCF position servos; the finger servos stay active")
     ap.add_argument("--out", type=Path, default=OUT)
     a = ap.parse_args()
 
+    lift_delta = (lift_delta_for_mass(a.mass) if (a.rule or a.lift_delta is None)
+                  else float(a.lift_delta))
     report = {
         "step": "A7 S2 (free-box grasp and lift)",
         "evidence_class": "SIM",
         "scope": "one seeded Newton grasp attempt with the derived simplified parallel-jaw hand; "
                  "not a certification and not a safety result",
-        "seed": a.seed, "mass_kg": a.mass, "lift_delta_m": a.lift_delta,
+        "seed": a.seed, "mass_kg": a.mass, "lift_delta_m": lift_delta,
+        "lift_rule": ("lift_delta_for_mass(mass)=0.10+0.04*clip(mass,0,1)" if (a.rule or a.lift_delta is None)
+                      else "explicit --lift-delta (tuning/exploration)"),
+        "mass_source": "commanded mass (the `weigh` value would be used on the robot; recorded here)",
+        "controller": ("NewtonCompliantArm (A5 supervisor; phase profiles approach/grasp/transport)"
+                       if a.compliant else "MJCF position servos (rung script, not the A5 controller)"),
         "hand_model": str(MODEL.relative_to(ROOT)),
         "versions": {"python": platform.python_version(), "newton": metadata.version("newton"),
                      "warp": wp.__version__},
     }
     try:
-        model, box0, q_pre, q_grasp, q_lift, Rhome = build(a.seed, a.mass, a.lift_delta)
+        model, box0, q_pre, q_grasp, q_lift, Rhome = build(a.seed, a.mass, lift_delta)
         state, control = model.state(), model.control()
         labels = [lbl.split("/")[-1] for lbl in model.joint_label]
         offsets = [int(model.joint_q_start.numpy()[i]) for i, lbl in enumerate(labels)
@@ -127,10 +148,22 @@ def main() -> int:
                                           device=model.device)
         finger_ids = [int(np.flatnonzero([lbl.split("/")[-1] == name for lbl in model.body_label])[0])
                       for name in ("hand_finger_left", "hand_finger_right")]
+        # The compliant runner zeroes the arm's position-servo gains, so it must run BEFORE the
+        # solver is constructed (the solver copies the gains).
+        runner = None
+        if a.compliant:
+            sys.path.insert(0, str(ROOT / "ops"))
+            from a7_compliant import CompliantArmRunner
+            runner = CompliantArmRunner(model, state, q_home=fk.Q_HOME, profile="approach")
         solver = newton.solvers.SolverMuJoCo(model, njmax=512, nconmax=512)
         cp = newton.CollisionPipeline(model)
         contacts = cp.contacts()
         item_body = int(np.flatnonzero(["s2_item" in lbl for lbl in model.body_label])[0])
+
+        arm = None
+        if runner is not None:
+            from a7_compliant import SkillArm
+            arm = SkillArm(runner, fl, fr, control)
 
         def set_cmd(arm_q, finger_ctrl):
             c = np.asarray(control.joint_target_q.numpy()).astype(float).copy()
@@ -139,24 +172,51 @@ def main() -> int:
             control.joint_target_q = wp.array(c.astype(np.float32), dtype=control.joint_target_q.dtype,
                                               device=model.device)
 
+        def step_one():
+            state.clear_forces()
+            if runner is not None:
+                runner.tick(control)
+            cp.collide(state, contacts)
+            solver.step(state, state, control, contacts, DT)
+
+        def step_plan(plan):
+            """One physics tick with the compliant arm following ``plan``."""
+            state.clear_forces()
+            runner.tick(control, plan=plan)
+            cp.collide(state, contacts)
+            solver.step(state, state, control, contacts, DT)
+
         def step(n):
-            for _ in range(n):
-                state.clear_forces()
-                cp.collide(state, contacts)
-                solver.step(state, state, control, contacts, DT)
+            if arm is not None:
+                arm.hold(step_plan, n)
+            else:
+                for _ in range(n):
+                    step_one()
 
         def ramp(path, finger_ctrl, n):
-            for k in range(n):
-                u = min(1.0, (k + 1) / n)
-                idx = u * (len(path) - 1)
-                i = min(int(idx), len(path) - 2)
-                arm = path[i] + (idx - i) * (path[i + 1] - path[i])
-                set_cmd(arm, finger_ctrl)
-                step(1)
+            if arm is not None:
+                # Time-parameterized Cartesian plan through the FK poses of the joint path,
+                # starting at the measured pose.  Measured on the A5 controller: a plan at
+                # ~0.19 m/s tracks with ~5 mm final error; 0.37 m in 1 s leaves 30 mm and
+                # yields.  A target that starts where the arm actually is does not look like
+                # a push (the supervisor's e_pause is 30 mm).
+                plan, t_end = arm.path_plan(path, vmax=0.08)
+                arm.run_plan(plan, t_end, step_plan, finger=finger_ctrl)
+                arm.hold(step_plan, 400, finger=finger_ctrl)
+            else:
+                for k in range(n):
+                    u = min(1.0, (k + 1) / n)
+                    idx = u * (len(path) - 1)
+                    i = min(int(idx), len(path) - 2)
+                    arm_q = path[i] + (idx - i) * (path[i + 1] - path[i])
+                    set_cmd(arm_q, finger_ctrl)
+                    step_one()
 
         t0 = time.perf_counter()
         step(200)                                    # settle on the table
         z_start = float(np.asarray(state.body_q.numpy())[item_body, 2])
+        if runner is not None:
+            runner.set_profile("approach")
         ramp(q_pre, 0.0, 1000)                       # approach 10 cm above
         z_after_pre = float(np.asarray(state.body_q.numpy())[item_body, 2])
         ramp(q_grasp, 0.0, 600)                      # descend to the box
@@ -173,9 +233,13 @@ def main() -> int:
             "box_world": [round(float(v), 5) for v in bqd[item_body, :3]],
             "finger_q": [float(np.asarray(state.joint_q.numpy())[i]) for i in offsets],
         }
+        if runner is not None:
+            runner.set_profile("grasp")
         ramp(q_grasp, CLOSED_CTRL, 500)              # close the fingers
         step(500)                                    # establish the grasp
         z_grasped = float(np.asarray(state.body_q.numpy())[item_body, 2])
+        if runner is not None:
+            runner.set_profile("transport")
         ramp(q_lift, CLOSED_CTRL, 800)               # lift 10 cm
         step(1000)                                   # hold 1 s
         z_hold = float(np.asarray(state.body_q.numpy())[item_body, 2])
@@ -191,7 +255,9 @@ def main() -> int:
             "box_z_after_hold": round(z_hold, 5),
             "height_gain_m": round(gain, 5),
             "box_xy_drift_m": round(float(np.linalg.norm(bq[item_body, :2] - np.asarray(box0[:2]))), 5),
-            "wall_s": round(wall, 2), "steps": 5600, "steps_per_s": round(5600 / wall, 1),
+            "wall_s": round(wall, 2),
+            "steps": int(arm.steps + 200) if arm is not None else 5600,
+            "steps_per_s": round((int(arm.steps + 200) if arm is not None else 5600) / wall, 1),
             "checks": {
                 "finite": bool(np.isfinite(bq).all()),
                 "height_gain_ge_8cm": gain >= 0.08,

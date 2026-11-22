@@ -356,3 +356,39 @@ State: which gate command now passes, the evidence class, the report paths, the 
 
 BEGIN NOW with S0. 
 ```
+
+## U055 — 2026-11-22 — review feedback and next orders
+
+```
+FEEDBACK AND NEXT ORDERS (review of your A5/A7 work; supersedes your plan for the next steps)
+
+FIRST: append this entire message verbatim to docs/USER_PROMPTS_VERBATIM.md. Then apply robot-team-packing-review2.patch with `git am` and CHECK THE EXIT CODE (must be 0; if not, run `git am --abort` and tell me). Run `python -m pytest -q`, then `python ops/arm_steps_status.py`. Read the "Addendum 2026-11-22" at the end of docs/AGENT_RUNBOOK.md. Same rules as before: no push without my approval, no threshold changes, no new docs (use existing ones), evidence classes on every number, one step per commit, commit messages say what was NOT done.
+
+WHAT IS GOOD (keep doing it): A1-A4 and the A6 scene are solid. You kept result FAIL visible, reverted experiments that did not work, and found the real elbow cause. The A5 rows that passed (steady_deflection, release_return, invariants at 100k steps, human_hand_proxy, both *_estimated) are real Newton torque-mode evidence.
+
+WHAT IS WRONG, AND WHAT TO DO ABOUT EACH:
+
+1. A5 plan_pause is a STICTION DEADLOCK, not a physics limit. After the push the arm parks at ~3.24 mm (stiction ~0.65 N / 200 N/m), just outside eps_e = 3 mm, so the supervisor stays in RETURN forever, emits no RESUMED, and the plan clock never restarts. payload and latency_error fail only through this row. I reproduced it on the abstract plant with friction and fixed it in rtp/control/compliance.py: (a) RETURN also resumes when STALLED (speed < v_settled for t_stall = 0.5 s and error < eps_stall = 8 mm); (b) a bounded integral (ki_lin 150, authority <= 1 N) that is active ONLY in a settled TRACK hold with no external force and is reset in YIELD/RETURN, so it cannot change the return overshoot (your global integral did: 24%) and cannot fight a real push. DO: confirm NewtonCompliantArm passes the supervisor's force through (line ~374 `force_used = out.force`), re-run ops/a5_newton_push.py with the new defaults, then read plan_pause, release_return (overshoot must stay <= 10%), the *_estimated rows, then the payload and latency grids. If resume still fails on Newton, print the RETURN debug (e, v, e_rot, w) and check the rotational tolerances (eps_rot, eps_stall_rot) next. Do NOT edit any bound. Commit the evidence whether it passes or not.
+
+2. D-79 says "user pre-approved" but my verbatim log has NO such approval. Do not write that claim. Fix the D-79 text to "proposed; user approval not recorded". The gate now fails any report that cites "criterion": "D-NN" unless configs/approvals.json has an entry; I will write that entry myself if I approve. BEFORE you ask me, try the correct physics: feed the supervisor the dynamically consistent task wrench F_task = Lambda J M^-1 tau_ext (= Jbar^T tau_ext) instead of the flange-equivalent (J_f^+)^T J_b^T F. An elbow push should then mostly move the elbow in the null space and the EE error should fall well below F/K. Run BOTH mappings, report both in the elbow_push row, and if the original 15 mm bound is met at 10-30 N, withdraw D-79 entirely.
+
+3. A7 grasp (S2) result is not clean and must be redone under these rules. lift_delta (12 cm, then 14 cm) was chosen after seeing which seeds failed and was evaluated on the same seeds; the 1 kg number (96/100) pools two different commands. REQUIRED: one deterministic rule lift_delta = f(mass), using the mass from `weigh`; choose it ONLY on a tuning split of seeds >= 900000 (append `tuning_seeds_min: 900000` to configs/arm_cert.yaml, additive only, I authorize exactly that line); then evaluate that single rule ONCE on fresh seeds >= 100000, >= 200 trials covering 0.1, 0.5, 1.0 kg. Pooled settings never count; relabel the earlier numbers as exploration in STATUS_HONEST.
+
+4. The grasp is force-insensitive, so it cannot be certified yet. S3 lifted 27/27 for force factors 0.7-1.3 at 0.5 kg and friction 0.3-0.9: force did not matter, so the certified table would say every force succeeds and the Brain would learn nothing about force. Add rung S3b: analytic slip boundary 2*mu*N >= m*g (two pads). Run masses {0.1, 1, 2, 3} kg x mu {0.1, 0.3, 0.9} x force factor {0.1, 0.3, 0.5, 1.0}. The simulated lift/slip boundary must match the analytic one within one grid step; if not, fix the contact model (pad compliance, solver settings, friction cone, finger force control) one setting at a time, measured, and record each in reports/a7_grasp_diagnosis.json. Crush has no rigid-body sensor on this hand: define it explicitly as peak finger force > crush_force_for(fragility), say so in the card, and test the extremes (0.3x never crushes, 1.3x crushes fragility 1). The grasp skill is NOT certifiable until S3b passes, even at 98%.
+
+5. A7 overall: only grasp has graded trials; place, release, retreat, weigh, handover, push_aside show 0 graded trials, and handover still FAILS (box dropped at the R-hand approach/close). The gate now reads the per_skill table: EVERY one of the 7 skills needs >= 200 trials and >= 0.90 on its own. After S3b, grade each skill with >= 200 seeded trials through NewtonCompliantArm (class SIM). Fix handover by testing one physically motivated change at a time (approach alignment, close timing, grip force by mass, handover point), keep only changes that measurably help, revert the rest, as you did before.
+
+6. Process: you went past a failing step before (A6/A7 on a failing A5). Run `python ops/arm_steps_status.py --require A<k-1>` before every arm step; STAND_IN is never DONE. After each step regenerate the block with `--markdown` into docs/STATUS_HONEST.md. Never say "reach 18/18" or "PASS" in a commit message for plumbing or exploration.
+
+ORDER OF WORK: (1) apply patch, tests, gate; (2) A5 re-run and the two-mapping elbow test; (3) fix D-79 wording; (4) A7 grasp redo under item 3, then S3b; (5) remaining six skills to 200 graded trials each; (6) A8, A9, A10 exactly as in the runbook. The Kaggle bring-up (R3) may run in parallel when you have my push approval and CLI auth; its records never go to SFT. Do not start R4 before `python ops/arm_steps_status.py --require A10` exits 0.
+
+STOP AND ASK ME ONLY FOR: push approval; D-79 approval (only after both wrench mappings are measured); visual-result acceptance; hardware, the ISO 10218 standard, or Kaggle CLI auth.
+
+REPORT TO ME at each of these points: A5 PASS/FAIL with the per-row numbers; S3b boundary result; each skill reaching 200 graded trials; A10. State the gate output, evidence class, report paths, commits awaiting push approval, and what failed.
+```
+
+## U056 — 2026-11-23 — stop for today
+
+```
+stop after this we will continue tommarow
+```

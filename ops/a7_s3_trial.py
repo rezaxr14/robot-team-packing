@@ -73,6 +73,23 @@ def build(seed: int, mass: float, friction: float, force_factor: float, lift_del
                         cfg=newton.ModelBuilder.ShapeConfig(mu=friction),
                         color=(0.70, 0.45, 0.25), label="s3_item_box")
         model = b.finalize()
+        # The derived hand's pad material is 1.2 and MuJoCo combines geom friction with a
+        # max-like rule, so the object's mu was previously ignored (measured: a 0.1 kg box at
+        # mu=0.1 stayed on 2*0.1*1.5=0.3 N of friction).  Set the pad/palm mu to the tested
+        # value so both surfaces of the contact pair carry the object's friction; this makes
+        # the contact model test the property the Brain reasons about.  Recorded as a
+        # one-setting contact-model fix in reports/a7_grasp_diagnosis.json.
+        mu_obj = float(friction)
+        shape_labels = list(model.shape_label)
+        pads = [i for i, lbl in enumerate(shape_labels)
+                if "finger" in lbl and "pad" in lbl or lbl.endswith("hand_palm_collision")]
+        if pads:
+            mu_arr = np.asarray(model.shape_material_mu.numpy(), dtype=float).copy()
+            for i in pads:
+                mu_arr[i] = mu_obj
+            model.shape_material_mu = wp.array(mu_arr.astype(np.float32),
+                                               dtype=model.shape_material_mu.dtype,
+                                               device=model.device)
         # Grasp force is the finger servo stiffness times its position error. Scaling the two
         # finger target gains by `force_factor` scales the commanded force by the same factor
         # (still clamped by the MJCF actuator force range).
@@ -117,6 +134,8 @@ def main() -> int:
                  "not a certification and not a safety result",
         "seed": a.seed, "mass_kg": a.mass, "friction": a.friction,
         "force_factor": a.force_factor, "lift_delta_m": a.lift_delta,
+        "contact_model": "box, finger pads and palm all carry the tested mu (derived hand had 1.2 pad mu, "
+                         "which dominated the contact and hid the object friction)",
         "hand_model": str(MODEL.relative_to(ROOT)),
         "versions": {"python": platform.python_version(), "newton": metadata.version("newton"),
                      "warp": wp.__version__},
@@ -183,8 +202,23 @@ def main() -> int:
             "box_world": [round(float(v), 5) for v in bqd[item_body, :3]],
             "finger_q": [float(np.asarray(state.joint_q.numpy())[i]) for i in offsets],
         }
+        # Finger squeeze force estimate from the position servo: kp_eff * (ctrl - q).
+        # The solver's rigid_contact_force is not populated on this build, so this is a
+        # model-based estimate of the pad normal force, not a contact-sensor reading.
+        kp_eff = [float(np.asarray(model.joint_target_ke.numpy())[i]) for i in (fl, fr)]
+        n_peak, n_trace = 0.0, []
+
+        def pad_force_est() -> float:
+            qq = np.asarray(state.joint_q.numpy())
+            return float(np.mean([kp_eff[j] * (CLOSED_CTRL - float(qq[off]))
+                                  for j, off in enumerate((fl, fr))]))
+
         ramp(q_grasp, CLOSED_CTRL, 500)              # close the fingers
-        step(500)                                    # establish the grasp
+        for _ in range(500):                         # establish the grasp, track the peak
+            step(1)
+            n_peak = max(n_peak, abs(pad_force_est()))
+            if len(n_trace) < 500 and _ % 50 == 0:
+                n_trace.append(round(pad_force_est(), 3))
         z_grasped = float(np.asarray(state.body_q.numpy())[item_body, 2])
         ramp(q_lift, CLOSED_CTRL, 800)               # lift 10 cm
         step(1000)                                   # hold 1 s
@@ -201,6 +235,11 @@ def main() -> int:
             "box_z_after_hold": round(z_hold, 5),
             "height_gain_m": round(gain, 5),
             "box_xy_drift_m": round(float(np.linalg.norm(bq[item_body, :2] - np.asarray(box0[:2]))), 5),
+            "pad_force_est_N": round(pad_force_est(), 4),
+            "pad_force_peak_est_N": round(n_peak, 4),
+            "pad_force_trace_N": n_trace,
+            "pad_force_model": "kp_eff*(ctrl-q) averaged over the two finger servos; "
+                               "model estimate, not a contact sensor",
             "wall_s": round(wall, 2), "steps": 5600, "steps_per_s": round(5600 / wall, 1),
             "checks": {
                 "finite": bool(np.isfinite(bq).all()),

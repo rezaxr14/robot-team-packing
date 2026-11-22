@@ -23,6 +23,14 @@ def crush_force_for(fragility: float) -> float:
     return 30.0 - 22.0 * fragility + SIM_FORCE_MARGIN_N
 
 
+def slip_bound_holds(mass_kg: float, mu: float, pad_force_N: float, g: float = 9.81) -> bool:
+    """Two-pad quasi-static friction bound: the grip holds while ``2*mu*N >= m*g``.
+
+    Used by A7 rung S3b to compare the simulated lift/slip boundary with the analytic one.
+    """
+    return 2.0 * float(mu) * float(pad_force_N) >= float(mass_kg) * float(g)
+
+
 @dataclass
 class Layout:
     zone_axis: int = 0                       # 0 = x, 1 = y

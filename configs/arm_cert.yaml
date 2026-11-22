@@ -47,3 +47,7 @@ placeholder_caps:
   force_n: 40.0
   moment_nm: 4.0
   speed_m_s: 0.5
+
+# A7 grasp rung: seeds >= this value are the tuning split only; the reported rule is
+# evaluated once on fresh seeds >= 100000 (review 2026-11-22, user-authorized additive line).
+tuning_seeds_min: 900000

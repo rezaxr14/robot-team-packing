@@ -1,0 +1,323 @@
+{
+  "step": "A5",
+  "evidence_class": "SIM",
+  "scope": "native Newton FR3 v2 articulation, effort-mode compliant control, simulated pushes; no hardware, no contact sensor, no safety certification",
+  "mode": "L2",
+  "controller": "rtp.control.newton_arm.NewtonCompliantArm + rtp.control.compliance.ComplianceSupervisor",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp-lang": "1.17.0",
+    "isaaclab": "28.0.0",
+    "isaaclab-newton": "9.1.4",
+    "torch": "2.15.0",
+    "numpy": "2.5.4"
+  },
+  "seed": 20261120,
+  "params": {
+    "dt_s": 0.001,
+    "profile": "free_motion",
+    "k_lin_N_per_m": 200.0,
+    "k_rot_Nm_per_rad": 15.0,
+    "k_null_Nm_per_rad": 15.0,
+    "tau_max_Nm": 50.0,
+    "torque_rate_Nm_per_ms": 1.0,
+    "residual_comp_gain": 4.0,
+    "residual_beta": 0.1,
+    "speed_limiter_gain_Ns_per_m": 8000.0,
+    "fixed_friction_feedforward_enabled": false,
+    "flange_body_id": 9,
+    "elbow_body_id": 5,
+    "forearm_body_id": 7,
+    "hold_s": 1.5,
+    "forces_N": [
+      5.0,
+      10.0,
+      20.0,
+      30.0
+    ],
+    "invariant_steps_requested": 0
+  },
+  "model": "assets/cache/menagerie/franka_fr3_v2/fr3v2.xml",
+  "mass_matrix_eigenvalues": {
+    "min": 0.00069788,
+    "max": 1.96677711,
+    "samples": 7500,
+    "spd_measured": true
+  },
+  "steps_simulated": 7500,
+  "wall_s": 76.08,
+  "steps_per_s": 98.6,
+  "wrench_estimate_note": "supervisor uses the injected wrench (simulation ground truth); the acceleration-based inverse-dynamics estimate is logged beside it in each steady_deflection subrow for comparison",
+  "measurement_notes": [
+    "Steady deflection is the mean over the last 0.5 s of a 1.5 s hold; expected |delta| = F / K_lin with K_lin from PROFILES[profile].",
+    "A fixed 0.2 Nm*sign(dq) Coulomb feed-forward was measured to be invalid (effective stiction 0.05-0.6 Nm, configuration-dependent and mixed sign). It was removed. Residual-wrench compensation F_corr = g*(F_imp + f_ext) (g=4), a runbook-A5 'injected wrench + controller estimate' feedback, drives the steady-state bias to zero without identifying the plant.",
+    "The supervisor's soft speed limiter is reinforced on every RETURN / released-YIELD tick through J[:3].T using the joint-torque budget; the Cartesian F_lin_max cap otherwise limited its deceleration.",
+    "The first A5 run's 334 'return_speed' violations were a harness bookkeeping error: the 'free' test read the NEXT wrench segment rather than the one applied. The applied wrench is now captured before tick().",
+    "EE error during an elbow push is F_task/K_lin; even at K_lin=500 N/m (grasp, the stiffest allowed PROFILES entry) a 10 N flange-equivalent push yields ~20 mm, so the spec's <=15 mm bound cannot hold for a generic link-4/link-6 push at these forces. Measured, not relaxed.",
+    "The null-space PD now uses the dynamically consistent projector N = I - J^T (M^-1 J^T (J M^-1 J^T)^-1)^T from Newton's inverse-dynamics mass matrix M(q) (J M^-1 N ~ 0, N^2 ~ N), k_null=15 Nm/rad with critical damping. M is measured every tick; its min/max eigenvalues are in mass_matrix_eigenvalues (SPD claim measured, not asserted)."
+  ],
+  "rows": {
+    "plan_pause": {
+      "push_force_N": 10.0,
+      "push_at_s": 0.5,
+      "plan_clock_during_yield_min_max": [
+        0.5,
+        0.5
+      ],
+      "plan_clock_final": 5.053,
+      "states_seen": [
+        "RETURN",
+        "TRACK",
+        "YIELD"
+      ],
+      "final_state": "TRACK",
+      "states_tail": [
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK"
+      ],
+      "track_hold_debug": [
+        [
+          3.5,
+          0.01297,
+          0.04267,
+          false,
+          0.0,
+          0.0
+        ],
+        [
+          3.75,
+          0.01293,
+          0.05166,
+          false,
+          0.0,
+          0.0
+        ],
+        [
+          4.0,
+          0.01223,
+          0.05896,
+          false,
+          0.0,
+          0.0
+        ],
+        [
+          4.25,
+          0.01033,
+          0.05307,
+          false,
+          0.0,
+          0.0
+        ],
+        [
+          4.5,
+          0.00826,
+          0.03728,
+          false,
+          0.0,
+          0.0
+        ],
+        [
+          4.75,
+          0.0058,
+          0.00816,
+          false,
+          0.0,
+          0.041
+        ],
+        [
+          5.0,
+          0.00453,
+          0.01987,
+          false,
+          0.0,
+          0.0
+        ],
+        [
+          5.25,
+          0.00174,
+          0.0087,
+          false,
+          0.0,
+          0.014
+        ],
+        [
+          5.5,
+          0.00202,
+          0.01185,
+          false,
+          0.0,
+          0.0
+        ],
+        [
+          5.75,
+          0.00418,
+          0.00873,
+          false,
+          0.0,
+          0.034
+        ],
+        [
+          6.0,
+          0.00539,
+          0.00273,
+          false,
+          0.0,
+          0.284
+        ],
+        [
+          6.25,
+          0.00564,
+          0.00259,
+          true,
+          0.2011,
+          0.534
+        ],
+        [
+          6.5,
+          0.0053,
+          0.00366,
+          true,
+          0.4104,
+          0.784
+        ],
+        [
+          6.75,
+          0.00485,
+          0.00334,
+          true,
+          0.6011,
+          1.034
+        ],
+        [
+          7.0,
+          0.00453,
+          0.00265,
+          true,
+          0.7739,
+          1.284
+        ],
+        [
+          7.25,
+          0.00432,
+          0.00196,
+          true,
+          0.9297,
+          1.534
+        ]
+      ],
+      "return_debug_first_last": {
+        "first": [
+          [
+            1.7,
+            0.04025,
+            0.06473,
+            0.00857,
+            0.06554
+          ],
+          [
+            1.701,
+            0.04018,
+            0.06487,
+            0.00859,
+            0.06547
+          ],
+          [
+            1.702,
+            0.04012,
+            0.06501,
+            0.00861,
+            0.06539
+          ],
+          [
+            1.703,
+            0.04005,
+            0.06515,
+            0.00864,
+            0.06532
+          ],
+          [
+            1.704,
+            0.03999,
+            0.06528,
+            0.00866,
+            0.06524
+          ]
+        ],
+        "last": [
+          [
+            2.942,
+            0.00399,
+            0.00047,
+            0.02213,
+            0.00197
+          ],
+          [
+            2.943,
+            0.00399,
+            0.00047,
+            0.02213,
+            0.00197
+          ],
+          [
+            2.944,
+            0.00399,
+            0.00047,
+            0.02213,
+            0.00197
+          ],
+          [
+            2.945,
+            0.00399,
+            0.00047,
+            0.02213,
+            0.00197
+          ],
+          [
+            2.946,
+            0.00399,
+            0.00047,
+            0.02213,
+            0.00197
+          ]
+        ],
+        "min_e": 0.00399,
+        "min_v": 0.00047,
+        "first_settled_t": null,
+        "n_settled": 0,
+        "last_e_rot_w": [
+          0.02213,
+          0.00197
+        ]
+      },
+      "final_tracking_error_m": 0.003989,
+      "resume_events": [
+        "RESUMED err=0.003995 via=stalled"
+      ],
+      "checks": {
+        "plan_clock_frozen_in_yield": true,
+        "resumed_track_state": true,
+        "plan_clock_advanced_after_resume": true,
+        "final_tracking_error_le_3mm": false
+      },
+      "pass": false
+    }
+  },
+  "checks": {
+    "plan_pause": false
+  },
+  "not_done": [
+    "elbow_push <=15 mm at 10 N: if still F_task/K, the pre-registered bound may be unreachable at the allowed stiffness; row stays FAIL until the user approves a change (rule 6)",
+    "invariants at >= 100000 steps unless --invariant-steps was supplied",
+    "hardware, ISO 10218-2:2025-derived limits, L0/L1 sign-off (D-22, D-58)"
+  ],
+  "result": "FAIL"
+}

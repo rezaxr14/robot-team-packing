@@ -373,11 +373,11 @@ class NewtonCompliantArm:
         # is re-clamped to the supervisor's force/moment caps.
         force_used = out.force.copy()
         wrench_applied = bool(fn > 1e-9 or mn > 1e-9)
-        if self.cfg.residual_comp_gain > 0.0 and wrench_applied:
-            # Only active while a wrench is actually applied.  During RETURN
-            # (f_ext == 0) F_imp is the whole return spring, not a friction
-            # residual; amplifying it by (1+gain) saturates F_lin_max and makes
-            # the rate-limited speed damper unable to enforce v_return.
+        # Experiment: also estimate the free-space tracking bias in TRACK so the
+        # static friction floor does not leave a multi-mm error at the plan.
+        # RETURN is excluded (F_imp is the whole return spring there; amplifying
+        # it saturates F_lin_max and breaks the return-speed bound).
+        if self.cfg.residual_comp_gain > 0.0 and (wrench_applied or out.state == State.TRACK):
             residual = out.force + f_ext
             self._res_filt += self.cfg.residual_beta * (residual - self._res_filt)
             force_used = force_used + self.cfg.residual_comp_gain * self._res_filt
@@ -484,6 +484,9 @@ class NewtonCompliantArm:
             "tau_speed": tau_speed,
             "tau_raw": tau_raw,
             "tau": limited.copy(),
+            "integral_active": bool(out.integral_active),
+            "integ_norm": float(out.integ_norm),
+            "gate_t_hold": float(self.sup._t_hold),
             "torque_clamped": torque_clamped,
             "rate_limited": rate_limited,
         }

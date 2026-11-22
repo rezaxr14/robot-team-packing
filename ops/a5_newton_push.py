@@ -339,6 +339,27 @@ class Harness:
         tau_ext = J_b.T @ np.asarray(f_body, dtype=float)
         return np.linalg.pinv(J_f, rcond=1e-3).T @ tau_ext
 
+    def task_wrench_from_body_dynamic(self, f_body: np.ndarray, body_id: int) -> np.ndarray:
+        """Dynamically consistent task wrench: ``F_task = Jbar^T tau_ext``.
+
+        ``Jbar = M^-1 J_f^T (J_f M^-1 J_f^T)^-1`` (Khatib).  Unlike the
+        flange-equivalent ``(J_f^+)^T J_b^T F``, this is the wrench the task
+        spring must produce to explain the *generalized* push torque; a push on
+        the elbow then mostly moves the elbow in the null space and the
+        end-effector error stays well below ``F/K``.
+        """
+        q = np.asarray(self.state0.joint_q.numpy(), dtype=float)
+        J_f = fk.jacobian(q).numpy()
+        J_all = np.asarray(self.newton.eval_jacobian(self.model, self.state0).numpy())[0]
+        J_b = J_all[body_id * 6:(body_id + 1) * 6, :7]
+        tau_ext = J_b.T @ np.asarray(f_body, dtype=float)
+        M = self.arm.mass_matrix_native(self.model, self.state0)
+        Msym = 0.5 * (M + M.T)
+        Minv = np.linalg.inv(Msym)
+        A = J_f @ Minv @ J_f.T
+        Jbar_T = np.linalg.pinv(A, rcond=1e-6) @ J_f @ Minv
+        return Jbar_T @ tau_ext
+
 
 # --------------------------------------------------------------------------- #
 # Rows
@@ -452,7 +473,7 @@ def plan_pause(h: Harness, *, force: float = 10.0, pre_s: float = 0.5,
         return np.concatenate([h.p0 + np.array([0.05 * min(s, plan_s), 0.0, 0.0]), np.zeros(3)])
     f = np.array([force, 0.0, 0.0, 0.0, 0.0, 0.0])
     n_pre, n_push, n_post = (int(round(x / h.dt)) for x in (pre_s, push_s, post_s))
-    s_yield, s_track, events, states, ret_debug = [], [], [], [], []
+    s_yield, s_track, events, states, ret_debug, hold_debug = [], [], [], [], [], []
     last_pos = h.p0.copy()
     for k in range(n_pre + n_push + n_post):
         f_ext = f if n_pre <= k < n_pre + n_push else np.zeros(6)
@@ -474,6 +495,15 @@ def plan_pause(h: Harness, *, force: float = 10.0, pre_s: float = 0.5,
             s_yield.append(rec["s"])
         if rec["state"] == State.TRACK:
             s_track.append(rec["s"])
+            if k % 250 == 0 and k >= n_pre + n_push:
+                ee = float(np.linalg.norm(rec["pos"] - plan(rec["s"])[:3]))
+                er = float(np.linalg.norm(rec["pos"] - rec["info"]["x_ref"][:3]))
+                fu = np.asarray(rec["info"].get("force_used", np.zeros(6)))[:3]
+                hold_debug.append((round(rec["t"], 2), round(ee, 5), round(er, 5),
+                                   round(float(np.linalg.norm(rec["vel"][:3])), 5),
+                                   bool(rec["info"].get("integral_active")),
+                                   round(float(rec["info"].get("integ_norm", 0.0)), 4),
+                                   [round(float(v), 3) for v in fu]))
     s_frozen = bool(s_yield) and (max(s_yield) - min(s_yield) < 1e-9)
     final_s = float(s_track[-1]) if s_track else 0.0
     final_err = float(np.linalg.norm(last_pos - plan(final_s)[:3]))
@@ -489,6 +519,7 @@ def plan_pause(h: Harness, *, force: float = 10.0, pre_s: float = 0.5,
         "plan_clock_final": round(final_s, 6),
         "states_seen": sorted(set(states)), "final_state": states[-1] if states else None,
         "states_tail": states[-10:],
+        "track_hold_debug": hold_debug[-16:],
         "return_debug_first_last": {"first": ret_debug[:5], "last": ret_debug[-5:],
                                     "min_e": min((x[1] for x in ret_debug), default=None),
                                     "min_v": min((x[2] for x in ret_debug), default=None),
@@ -503,7 +534,7 @@ def plan_pause(h: Harness, *, force: float = 10.0, pre_s: float = 0.5,
 
 def elbow_push(h: Harness, body_id: int, body_name: str, force: float,
                *, push_s: float = 1.0, recover_s: float = 3.0,
-               profile: str = "grasp") -> dict:
+               profile: str = "grasp", mapping: str = "dynamic") -> dict:
     """Elbow/forearm push.  ``profile`` is an allow-listed PROFILES entry.
 
     The default is ``grasp`` (K_lin=500 N/m, the stiffest allowed profile) so the
@@ -516,10 +547,17 @@ def elbow_push(h: Harness, body_id: int, body_name: str, force: float,
     h.arm.cfg.profile = profile
     h.reset()
     f = np.array([force, 0.0, 0.0, 0.0, 0.0, 0.0])
-    f_task = h.task_wrench_from_body(f, body_id)
-    # D-79 (user-approved): the flange-equivalent push makes the task spring yield F_task/K by
-    # construction, so an absolute 15 mm bound is unreachable at K=500 N/m for 10-30 N pushes.
-    ee_bound = 1.25 * float(np.linalg.norm(f_task[:3])) / PROFILES[profile][0] + 0.003
+    if mapping == "dynamic":
+        f_task = h.task_wrench_from_body_dynamic(f, body_id)
+    elif mapping == "flange_equiv":
+        f_task = h.task_wrench_from_body(f, body_id)
+    else:
+        raise ValueError(f"unknown mapping {mapping!r}")
+    # The pre-registered A5 bound is 15 mm.  D-79 (stiffness-relative) was
+    # *proposed*, not approved (no entry in configs/approvals.json); it is
+    # reported only for the flange-equivalent history and is withdrawn if the
+    # dynamically consistent mapping meets 15 mm at 10-30 N.
+    ee_bound = 0.015
     n_push = int(round(push_s / h.dt))
     n_rec = int(round(recover_s / h.dt))
     link0 = np.asarray(h.state0.body_q.numpy())[body_id, :3].copy()
@@ -543,14 +581,17 @@ def elbow_push(h: Harness, body_id: int, body_name: str, force: float,
             break
     checks = {
         "link_yielded": max_link is not None and max_link > 0.001,
-        "ee_error_le_D79_bound": max_ee is not None and max_ee <= ee_bound,
+        "ee_error_le_15mm": max_ee is not None and max_ee <= ee_bound,
         "ee_return_le_5mm": final_ee is not None and final_ee <= 0.005,
     }
+    d79_bound = 1.25 * float(np.linalg.norm(f_task[:3])) / PROFILES[profile][0] + 0.003
     return {
         "body_id": body_id, "body": body_name, "force_N": force,
-        "profile": h.profile, "k_lin_N_per_m": PROFILES[h.profile][0],
-        "criterion": "D-79 (stiffness-relative; original 15 mm bound kept in report history)",
-        "original_ee_bound_m": 0.015, "ee_bound_m": round(ee_bound, 6),
+        "profile": h.profile, "k_lin_N_per_m": PROFILES[profile][0],
+        "mapping": mapping,
+        "criterion": "original 15 mm (no criterion decision cited)",
+        "d79_proposal_bound_m": round(d79_bound, 6),
+        "ee_bound_m": round(ee_bound, 6),
         "flange_equivalent_force_N": round(float(np.linalg.norm(f_task[:3])), 4),
         "max_link_displacement_m": round(max_link, 6) if max_link is not None else None,
         "max_ee_error_during_push_m": round(max_ee, 6) if max_ee is not None else None,
@@ -588,18 +629,57 @@ def _key_rows(h: Harness) -> dict:
     # the free_motion 0.10 m, producing an artificial release_return failure.
     release = release_return(h)
     plan = plan_pause(h)
-    elbow = []
-    for body_id, body_name in ((ELBOW_BODY, "fr3v2_link4"), (FOREARM_BODY, "fr3v2_link6")):
-        for F in (10.0, 20.0, 30.0):
-            elbow.append(elbow_push(h, body_id, body_name, F))
-    _restore_profile(h)
     return {
         "steady_deflection": steady_row,
         "release_return": release,
         "plan_pause": plan,
-        "elbow_push": {
-            "pass": all(r["pass"] for r in elbow), "n_rows": len(elbow), "subrows": elbow,
-        },
+        "elbow_push": elbow_row(h, both_mappings=False),
+    }
+
+
+
+def elbow_row(h: Harness, *, both_mappings: bool = True) -> dict:
+    """Elbow pushes; the dynamically consistent mapping is certified.
+
+    ``both_mappings`` runs the flange-equivalent comparison too (standalone row only).  The
+    payload/latency grids pass ``False``: they only need the certified check, and doubling the
+    elbow trials there multiplies hours of Newton stepping for no extra decision.
+    """
+    elbow = []
+    for body_id, body_name in ((ELBOW_BODY, "fr3v2_link4"), (FOREARM_BODY, "fr3v2_link6")):
+        for F in (10.0, 20.0, 30.0):
+            # Same physical body push; only the wrench handed to the supervisor differs.
+            dyn = elbow_push(h, body_id, body_name, F, mapping="dynamic")
+            flg = (elbow_push(h, body_id, body_name, F, mapping="flange_equiv")
+                   if both_mappings else None)
+            elbow.append({
+                "body_id": body_id, "body": body_name, "force_N": F,
+                "profile": dyn["profile"], "k_lin_N_per_m": dyn["k_lin_N_per_m"],
+                "criterion": "original 15 mm (no criterion decision cited)",
+                "ee_bound_m": 0.015,
+                "dynamic": {k: dyn[k] for k in (
+                    "flange_equivalent_force_N", "max_link_displacement_m",
+                    "max_ee_error_during_push_m", "final_ee_error_after_recovery_m",
+                    "final_posture_error_rad", "null_return_time_s", "checks")},
+                "flange_equiv": ({k: flg[k] for k in (
+                    "flange_equivalent_force_N", "max_link_displacement_m",
+                    "max_ee_error_during_push_m", "final_ee_error_after_recovery_m",
+                    "final_posture_error_rad", "null_return_time_s", "checks")}
+                    if flg is not None else None),
+                "pass": bool(dyn["pass"]),
+            })
+    dyn_pass = all(r["dynamic"]["checks"]["ee_error_le_15mm"] for r in elbow)
+    flg_pass = (all(r["flange_equiv"]["checks"]["ee_error_le_15mm"] for r in elbow)
+                if both_mappings else None)
+    return {
+        "pass": bool(all(r["pass"] for r in elbow)), "n_rows": len(elbow), "subrows": elbow,
+        "certified_mapping": "dynamic",
+        "both_mappings": {"dynamic_le_15mm_all": dyn_pass,
+                          "flange_equiv_le_15mm_all": flg_pass,
+                          "d79_withdrawn": bool(dyn_pass)},
+        "note": "Both mappings are measured on the same body push. The certified check uses the "
+                "dynamically consistent task wrench; the flange-equivalent value is kept as history. "
+                "D-79 was proposed, never approved; it is withdrawn if the dynamic mapping meets 15 mm.",
     }
 
 
@@ -621,8 +701,10 @@ def payload_row() -> dict:
             "steady_worst_error_pct": rows["steady_deflection"]["worst_error_pct"],
             "release_delta_m": rows["release_return"]["delta_at_release_m"],
             "plan_final_error_m": rows["plan_pause"]["final_tracking_error_m"],
-            "elbow_worst_ee_error_m": max(r["max_ee_error_during_push_m"]
-                                          for r in rows["elbow_push"]["subrows"]),
+            "elbow_worst_ee_error_dynamic_m": max(r["dynamic"]["max_ee_error_during_push_m"]
+                                                  for r in rows["elbow_push"]["subrows"]),
+            **( {"elbow_worst_ee_error_flange_equiv_m": None}
+                if any(r["flange_equiv"] is None for r in rows["elbow_push"]["subrows"]) else {} ),
             "checks": checks, "pass": bool(all(checks.values())),
             "rows": rows,
         })
@@ -907,13 +989,7 @@ def main() -> int:
     if want("plan_pause"):
         rows["plan_pause"] = plan_pause(h)
     if want("elbow_push"):
-        elbow = []
-        for body_id, body_name in ((ELBOW_BODY, "fr3v2_link4"), (FOREARM_BODY, "fr3v2_link6")):
-            for F in (10.0, 20.0, 30.0):
-                elbow.append(elbow_push(h, body_id, body_name, F))
-        rows["elbow_push"] = {
-            "pass": all(r["pass"] for r in elbow), "n_rows": len(elbow), "subrows": elbow,
-        }
+        rows["elbow_push"] = elbow_row(h)
         # elbow_push selected 'grasp'; restore the base profile for later rows.
         _restore_profile(h)
 

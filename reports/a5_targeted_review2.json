@@ -1,0 +1,1779 @@
+{
+  "step": "A5",
+  "evidence_class": "SIM",
+  "scope": "native Newton FR3 v2 articulation, effort-mode compliant control, simulated pushes; no hardware, no contact sensor, no safety certification",
+  "mode": "L2",
+  "controller": "rtp.control.newton_arm.NewtonCompliantArm + rtp.control.compliance.ComplianceSupervisor",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp-lang": "1.17.0",
+    "isaaclab": "28.0.0",
+    "isaaclab-newton": "9.1.4",
+    "torch": "2.15.0",
+    "numpy": "2.5.4"
+  },
+  "seed": 20261120,
+  "params": {
+    "dt_s": 0.001,
+    "profile": "free_motion",
+    "k_lin_N_per_m": 200.0,
+    "k_rot_Nm_per_rad": 15.0,
+    "k_null_Nm_per_rad": 15.0,
+    "tau_max_Nm": 50.0,
+    "torque_rate_Nm_per_ms": 1.0,
+    "residual_comp_gain": 4.0,
+    "residual_beta": 0.1,
+    "speed_limiter_gain_Ns_per_m": 8000.0,
+    "fixed_friction_feedforward_enabled": false,
+    "flange_body_id": 9,
+    "elbow_body_id": 5,
+    "forearm_body_id": 7,
+    "hold_s": 1.5,
+    "forces_N": [
+      5.0,
+      10.0,
+      20.0,
+      30.0
+    ],
+    "invariant_steps_requested": 0
+  },
+  "model": "assets/cache/menagerie/franka_fr3_v2/fr3v2.xml",
+  "mass_matrix_eigenvalues": {
+    "min": 0.00069788,
+    "max": 2.51285588,
+    "samples": 111800,
+    "spd_measured": true
+  },
+  "steps_simulated": 4000,
+  "wall_s": 1083.86,
+  "steps_per_s": 3.7,
+  "wrench_estimate_note": "supervisor uses the injected wrench (simulation ground truth); the acceleration-based inverse-dynamics estimate is logged beside it in each steady_deflection subrow for comparison",
+  "measurement_notes": [
+    "Steady deflection is the mean over the last 0.5 s of a 1.5 s hold; expected |delta| = F / K_lin with K_lin from PROFILES[profile].",
+    "A fixed 0.2 Nm*sign(dq) Coulomb feed-forward was measured to be invalid (effective stiction 0.05-0.6 Nm, configuration-dependent and mixed sign). It was removed. Residual-wrench compensation F_corr = g*(F_imp + f_ext) (g=4), a runbook-A5 'injected wrench + controller estimate' feedback, drives the steady-state bias to zero without identifying the plant.",
+    "The supervisor's soft speed limiter is reinforced on every RETURN / released-YIELD tick through J[:3].T using the joint-torque budget; the Cartesian F_lin_max cap otherwise limited its deceleration.",
+    "The first A5 run's 334 'return_speed' violations were a harness bookkeeping error: the 'free' test read the NEXT wrench segment rather than the one applied. The applied wrench is now captured before tick().",
+    "EE error during an elbow push is F_task/K_lin; even at K_lin=500 N/m (grasp, the stiffest allowed PROFILES entry) a 10 N flange-equivalent push yields ~20 mm, so the spec's <=15 mm bound cannot hold for a generic link-4/link-6 push at these forces. Measured, not relaxed.",
+    "The null-space PD now uses the dynamically consistent projector N = I - J^T (M^-1 J^T (J M^-1 J^T)^-1)^T from Newton's inverse-dynamics mass matrix M(q) (J M^-1 N ~ 0, N^2 ~ N), k_null=15 Nm/rad with critical damping. M is measured every tick; its min/max eigenvalues are in mass_matrix_eigenvalues (SPD claim measured, not asserted)."
+  ],
+  "rows": {
+    "steady_deflection": {
+      "pass": true,
+      "tolerance_pct": 10.0,
+      "worst_error_pct": 6.7859,
+      "n_rows": 24,
+      "subrows": [
+        {
+          "force_N": 5.0,
+          "direction": "-x",
+          "hold_s": 1.5,
+          "expected_m": 0.025,
+          "measured_mean_m": 0.025873,
+          "measured_std_m": 0.000195,
+          "error_pct": 3.4915,
+          "commanded_wrench_N": [
+            -5.0,
+            -0.0,
+            -0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            5.2471,
+            0.0045,
+            -0.255,
+            0.0788,
+            -0.0993,
+            0.073
+          ],
+          "wrench_estimate_mean_N": [
+            -5.4272,
+            0.0916,
+            1.136
+          ],
+          "states_in_tail": [
+            "TRACK"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 5.0,
+          "direction": "+x",
+          "hold_s": 1.5,
+          "expected_m": 0.025,
+          "measured_mean_m": 0.024177,
+          "measured_std_m": 0.000138,
+          "error_pct": 3.2907,
+          "commanded_wrench_N": [
+            5.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            -4.8663,
+            -0.0919,
+            -0.2706,
+            0.0734,
+            -0.0822,
+            0.0926
+          ],
+          "wrench_estimate_mean_N": [
+            4.7093,
+            0.4988,
+            1.0624
+          ],
+          "states_in_tail": [
+            "TRACK"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 5.0,
+          "direction": "-y",
+          "hold_s": 1.5,
+          "expected_m": 0.025,
+          "measured_mean_m": 0.025104,
+          "measured_std_m": 0.00014,
+          "error_pct": 0.4149,
+          "commanded_wrench_N": [
+            -0.0,
+            -5.0,
+            -0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            0.1695,
+            5.013,
+            -0.2501,
+            0.0713,
+            -0.0927,
+            0.0609
+          ],
+          "wrench_estimate_mean_N": [
+            -0.2932,
+            -4.9109,
+            1.0972
+          ],
+          "states_in_tail": [
+            "TRACK"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 5.0,
+          "direction": "+y",
+          "hold_s": 1.5,
+          "expected_m": 0.025,
+          "measured_mean_m": 0.024653,
+          "measured_std_m": 0.000513,
+          "error_pct": 1.3899,
+          "commanded_wrench_N": [
+            0.0,
+            5.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            0.201,
+            -5.1137,
+            -0.2836,
+            0.0805,
+            -0.0876,
+            0.1082
+          ],
+          "wrench_estimate_mean_N": [
+            -0.403,
+            5.5469,
+            1.0994
+          ],
+          "states_in_tail": [
+            "TRACK"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 5.0,
+          "direction": "-z",
+          "hold_s": 1.5,
+          "expected_m": 0.025,
+          "measured_mean_m": 0.023304,
+          "measured_std_m": 0.000186,
+          "error_pct": 6.7859,
+          "commanded_wrench_N": [
+            -0.0,
+            -0.0,
+            -5.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            0.1869,
+            -0.0646,
+            4.7309,
+            0.0768,
+            -0.0861,
+            0.0903
+          ],
+          "wrench_estimate_mean_N": [
+            -0.3711,
+            0.4146,
+            -3.9224
+          ],
+          "states_in_tail": [
+            "TRACK"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 5.0,
+          "direction": "+z",
+          "hold_s": 1.5,
+          "expected_m": 0.025,
+          "measured_mean_m": 0.026064,
+          "measured_std_m": 0.000137,
+          "error_pct": 4.2551,
+          "commanded_wrench_N": [
+            0.0,
+            0.0,
+            5.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            0.1849,
+            -0.03,
+            -5.2684,
+            0.077,
+            -0.0969,
+            0.0763
+          ],
+          "wrench_estimate_mean_N": [
+            -0.3133,
+            0.2105,
+            6.1507
+          ],
+          "states_in_tail": [
+            "TRACK"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 10.0,
+          "direction": "-x",
+          "hold_s": 1.5,
+          "expected_m": 0.05,
+          "measured_mean_m": 0.049395,
+          "measured_std_m": 0.0001,
+          "error_pct": 1.2106,
+          "commanded_wrench_N": [
+            -10.0,
+            -0.0,
+            -0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            9.9111,
+            0.1002,
+            -0.059,
+            -0.0023,
+            -0.0296,
+            -0.0433
+          ],
+          "wrench_estimate_mean_N": [
+            -9.7413,
+            -0.5128,
+            0.2093
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 10.0,
+          "direction": "+x",
+          "hold_s": 1.5,
+          "expected_m": 0.05,
+          "measured_mean_m": 0.048295,
+          "measured_std_m": 0.000251,
+          "error_pct": 3.411,
+          "commanded_wrench_N": [
+            10.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            -9.7743,
+            -0.0629,
+            0.0669,
+            0.0475,
+            0.0127,
+            0.0481
+          ],
+          "wrench_estimate_mean_N": [
+            8.9118,
+            0.4149,
+            -0.3105
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 10.0,
+          "direction": "-y",
+          "hold_s": 1.5,
+          "expected_m": 0.05,
+          "measured_mean_m": 0.049191,
+          "measured_std_m": 0.000406,
+          "error_pct": 1.6172,
+          "commanded_wrench_N": [
+            -0.0,
+            -10.0,
+            -0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            0.0821,
+            10.005,
+            0.0253,
+            0.0319,
+            -0.0125,
+            -0.0318
+          ],
+          "wrench_estimate_mean_N": [
+            -0.4278,
+            -10.0015,
+            -0.1314
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 10.0,
+          "direction": "+y",
+          "hold_s": 1.5,
+          "expected_m": 0.05,
+          "measured_mean_m": 0.04874,
+          "measured_std_m": 0.000294,
+          "error_pct": 2.5204,
+          "commanded_wrench_N": [
+            0.0,
+            10.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            -0.0006,
+            -9.8752,
+            -0.0124,
+            0.0239,
+            0.0343,
+            -0.0218
+          ],
+          "wrench_estimate_mean_N": [
+            0.0047,
+            9.4114,
+            0.0752
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 10.0,
+          "direction": "-z",
+          "hold_s": 1.5,
+          "expected_m": 0.05,
+          "measured_mean_m": 0.049346,
+          "measured_std_m": 0.000205,
+          "error_pct": 1.3078,
+          "commanded_wrench_N": [
+            -0.0,
+            -0.0,
+            -10.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            -0.1439,
+            0.0987,
+            9.8607,
+            -0.0126,
+            -0.0548,
+            -0.0419
+          ],
+          "wrench_estimate_mean_N": [
+            0.3094,
+            -0.5035,
+            -9.3755
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 10.0,
+          "direction": "+z",
+          "hold_s": 1.5,
+          "expected_m": 0.05,
+          "measured_mean_m": 0.048569,
+          "measured_std_m": 0.000475,
+          "error_pct": 2.8628,
+          "commanded_wrench_N": [
+            0.0,
+            0.0,
+            10.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            0.1456,
+            0.0717,
+            -9.9095,
+            0.028,
+            0.0016,
+            -0.0202
+          ],
+          "wrench_estimate_mean_N": [
+            -0.6769,
+            -0.2396,
+            9.5184
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 20.0,
+          "direction": "-x",
+          "hold_s": 1.5,
+          "expected_m": 0.1,
+          "measured_mean_m": 0.09869,
+          "measured_std_m": 9.8e-05,
+          "error_pct": 1.3098,
+          "commanded_wrench_N": [
+            -20.0,
+            -0.0,
+            -0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            19.8043,
+            0.1053,
+            -0.2597,
+            -0.0111,
+            -0.0844,
+            -0.0256
+          ],
+          "wrench_estimate_mean_N": [
+            -19.8223,
+            -0.4538,
+            0.8937
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 20.0,
+          "direction": "+x",
+          "hold_s": 1.5,
+          "expected_m": 0.1,
+          "measured_mean_m": 0.098205,
+          "measured_std_m": 0.000301,
+          "error_pct": 1.7949,
+          "commanded_wrench_N": [
+            20.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            -19.7779,
+            -0.0615,
+            0.118,
+            0.0438,
+            0.0462,
+            0.0509
+          ],
+          "wrench_estimate_mean_N": [
+            19.1007,
+            0.3992,
+            -0.4887
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 20.0,
+          "direction": "-y",
+          "hold_s": 1.5,
+          "expected_m": 0.1,
+          "measured_mean_m": 0.09851,
+          "measured_std_m": 0.000744,
+          "error_pct": 1.49,
+          "commanded_wrench_N": [
+            -0.0,
+            -20.0,
+            -0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            -0.1109,
+            20.001,
+            -0.2084,
+            -0.0141,
+            -0.0685,
+            -0.0092
+          ],
+          "wrench_estimate_mean_N": [
+            0.4782,
+            -19.9358,
+            0.9904
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 20.0,
+          "direction": "+y",
+          "hold_s": 1.5,
+          "expected_m": 0.1,
+          "measured_mean_m": 0.097791,
+          "measured_std_m": 0.000603,
+          "error_pct": 2.2091,
+          "commanded_wrench_N": [
+            0.0,
+            20.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            0.0791,
+            -19.8245,
+            0.1702,
+            0.0052,
+            0.0525,
+            -0.0297
+          ],
+          "wrench_estimate_mean_N": [
+            -0.4677,
+            19.0856,
+            -0.8344
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 20.0,
+          "direction": "-z",
+          "hold_s": 1.5,
+          "expected_m": 0.1,
+          "measured_mean_m": 0.098416,
+          "measured_std_m": 0.000228,
+          "error_pct": 1.5845,
+          "commanded_wrench_N": [
+            -0.0,
+            -0.0,
+            -20.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            -0.2412,
+            0.0951,
+            19.8153,
+            -0.0158,
+            -0.0817,
+            -0.0322
+          ],
+          "wrench_estimate_mean_N": [
+            0.4719,
+            -0.4484,
+            -19.1289
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 20.0,
+          "direction": "+z",
+          "hold_s": 1.5,
+          "expected_m": 0.1,
+          "measured_mean_m": 0.098214,
+          "measured_std_m": 0.000453,
+          "error_pct": 1.7863,
+          "commanded_wrench_N": [
+            0.0,
+            0.0,
+            20.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            0.1215,
+            -0.0934,
+            -19.824,
+            0.009,
+            0.0367,
+            0.0496
+          ],
+          "wrench_estimate_mean_N": [
+            -0.3624,
+            0.546,
+            19.1602
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 30.0,
+          "direction": "-x",
+          "hold_s": 1.5,
+          "expected_m": 0.15,
+          "measured_mean_m": 0.147413,
+          "measured_std_m": 0.000753,
+          "error_pct": 1.7244,
+          "commanded_wrench_N": [
+            -30.0,
+            -0.0,
+            -0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            29.833,
+            0.0994,
+            -0.2967,
+            -0.0144,
+            -0.0878,
+            -0.0168
+          ],
+          "wrench_estimate_mean_N": [
+            -29.894,
+            -0.4183,
+            0.9801
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 30.0,
+          "direction": "+x",
+          "hold_s": 1.5,
+          "expected_m": 0.15,
+          "measured_mean_m": 0.14719,
+          "measured_std_m": 0.000751,
+          "error_pct": 1.8735,
+          "commanded_wrench_N": [
+            30.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            -29.7793,
+            -0.1173,
+            0.143,
+            0.0407,
+            0.053,
+            0.0532
+          ],
+          "wrench_estimate_mean_N": [
+            28.9895,
+            0.4621,
+            -0.6068
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 30.0,
+          "direction": "-y",
+          "hold_s": 1.5,
+          "expected_m": 0.15,
+          "measured_mean_m": 0.147333,
+          "measured_std_m": 0.001205,
+          "error_pct": 1.7782,
+          "commanded_wrench_N": [
+            -0.0,
+            -30.0,
+            -0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            -0.1296,
+            29.9816,
+            -0.2357,
+            -0.0308,
+            -0.0611,
+            0.0158
+          ],
+          "wrench_estimate_mean_N": [
+            0.7834,
+            -29.7787,
+            1.1909
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 30.0,
+          "direction": "+y",
+          "hold_s": 1.5,
+          "expected_m": 0.15,
+          "measured_mean_m": 0.146377,
+          "measured_std_m": 0.001306,
+          "error_pct": 2.4153,
+          "commanded_wrench_N": [
+            0.0,
+            30.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            0.0415,
+            -29.8332,
+            0.1085,
+            -0.0095,
+            0.0215,
+            -0.0396
+          ],
+          "wrench_estimate_mean_N": [
+            -0.3945,
+            29.0244,
+            -0.572
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 30.0,
+          "direction": "-z",
+          "hold_s": 1.5,
+          "expected_m": 0.15,
+          "measured_mean_m": 0.147256,
+          "measured_std_m": 0.000772,
+          "error_pct": 1.8293,
+          "commanded_wrench_N": [
+            -0.0,
+            -0.0,
+            -30.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            -0.327,
+            0.0974,
+            29.8233,
+            -0.0175,
+            -0.0977,
+            -0.029
+          ],
+          "wrench_estimate_mean_N": [
+            0.549,
+            -0.414,
+            -29.0553
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        },
+        {
+          "force_N": 30.0,
+          "direction": "+z",
+          "hold_s": 1.5,
+          "expected_m": 0.15,
+          "measured_mean_m": 0.147165,
+          "measured_std_m": 0.000564,
+          "error_pct": 1.8898,
+          "commanded_wrench_N": [
+            0.0,
+            0.0,
+            30.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "supervisor_force_tail_mean_N": [
+            0.2051,
+            -0.0998,
+            -29.6969,
+            0.0119,
+            0.0788,
+            0.0448
+          ],
+          "wrench_estimate_mean_N": [
+            -0.4855,
+            0.5517,
+            28.6585
+          ],
+          "states_in_tail": [
+            "YIELD"
+          ],
+          "pass": true,
+          "tolerance_pct": 10.0
+        }
+      ]
+    },
+    "release_return": {
+      "push_force_N": 20.0,
+      "push_s": 1.0,
+      "delta_at_release_m": 0.097323,
+      "settle_time_s": 1.114,
+      "final_error_m": 0.009766,
+      "overshoot_fraction": 0.009026,
+      "peak_return_speed_mps": 0.097413,
+      "peak_speed_t_s": 1.702,
+      "peak_tau_speed_norm_Nm": 3.058,
+      "peak_tau_norm_Nm": 24.748,
+      "speed_cap_mps": 0.11,
+      "return_tolerance_m": 0.005,
+      "events": [
+        [
+          0.001,
+          "PUSHED"
+        ],
+        [
+          1.2,
+          "YIELDED"
+        ],
+        [
+          2.802,
+          "RESUMED err=0.002238 via=stalled"
+        ]
+      ],
+      "states_seen": [
+        "RETURN",
+        "TRACK",
+        "YIELD"
+      ],
+      "checks": {
+        "release_delta_near_0p10m": true,
+        "within_5mm_by_2p5s": true,
+        "overshoot_le_10pct": true,
+        "peak_speed_le_1p1_vreturn": true,
+        "returned_states_seen": true
+      },
+      "pass": true
+    },
+    "plan_pause": {
+      "push_force_N": 10.0,
+      "push_at_s": 0.5,
+      "plan_clock_during_yield_min_max": [
+        0.5,
+        0.5
+      ],
+      "plan_clock_final": 5.053,
+      "states_seen": [
+        "RETURN",
+        "TRACK",
+        "YIELD"
+      ],
+      "final_state": "TRACK",
+      "states_tail": [
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK",
+        "TRACK"
+      ],
+      "return_debug_first_last": {
+        "first": [
+          [
+            1.7,
+            0.04025,
+            0.06473,
+            0.00857,
+            0.06554
+          ],
+          [
+            1.701,
+            0.04018,
+            0.06487,
+            0.00859,
+            0.06547
+          ],
+          [
+            1.702,
+            0.04012,
+            0.06501,
+            0.00861,
+            0.06539
+          ],
+          [
+            1.703,
+            0.04005,
+            0.06515,
+            0.00864,
+            0.06532
+          ],
+          [
+            1.704,
+            0.03999,
+            0.06528,
+            0.00866,
+            0.06524
+          ]
+        ],
+        "last": [
+          [
+            2.942,
+            0.00399,
+            0.00047,
+            0.02213,
+            0.00197
+          ],
+          [
+            2.943,
+            0.00399,
+            0.00047,
+            0.02213,
+            0.00197
+          ],
+          [
+            2.944,
+            0.00399,
+            0.00047,
+            0.02213,
+            0.00197
+          ],
+          [
+            2.945,
+            0.00399,
+            0.00047,
+            0.02213,
+            0.00197
+          ],
+          [
+            2.946,
+            0.00399,
+            0.00047,
+            0.02213,
+            0.00197
+          ]
+        ],
+        "min_e": 0.00399,
+        "min_v": 0.00047,
+        "first_settled_t": null,
+        "n_settled": 0,
+        "last_e_rot_w": [
+          0.02213,
+          0.00197
+        ]
+      },
+      "final_tracking_error_m": 0.003989,
+      "resume_events": [
+        "RESUMED err=0.003995 via=stalled"
+      ],
+      "checks": {
+        "plan_clock_frozen_in_yield": true,
+        "resumed_track_state": true,
+        "plan_clock_advanced_after_resume": true,
+        "final_tracking_error_le_3mm": false
+      },
+      "pass": false
+    },
+    "elbow_push": {
+      "pass": true,
+      "n_rows": 6,
+      "subrows": [
+        {
+          "body_id": 5,
+          "body": "fr3v2_link4",
+          "force_N": 10.0,
+          "profile": "grasp",
+          "k_lin_N_per_m": 500.0,
+          "criterion": "D-79 (stiffness-relative; original 15 mm bound kept in report history)",
+          "original_ee_bound_m": 0.015,
+          "ee_bound_m": 0.027555,
+          "flange_equivalent_force_N": 9.8218,
+          "max_link_displacement_m": 0.018032,
+          "max_ee_error_during_push_m": 0.019355,
+          "final_ee_error_after_recovery_m": 0.001779,
+          "final_posture_error_rad": 0.149605,
+          "null_return_time_s": null,
+          "checks": {
+            "link_yielded": true,
+            "ee_error_le_D79_bound": true,
+            "ee_return_le_5mm": true
+          },
+          "pass": true
+        },
+        {
+          "body_id": 5,
+          "body": "fr3v2_link4",
+          "force_N": 20.0,
+          "profile": "grasp",
+          "k_lin_N_per_m": 500.0,
+          "criterion": "D-79 (stiffness-relative; original 15 mm bound kept in report history)",
+          "original_ee_bound_m": 0.015,
+          "ee_bound_m": 0.052109,
+          "flange_equivalent_force_N": 19.6436,
+          "max_link_displacement_m": 0.041035,
+          "max_ee_error_during_push_m": 0.038899,
+          "final_ee_error_after_recovery_m": 0.004508,
+          "final_posture_error_rad": 0.174222,
+          "null_return_time_s": null,
+          "checks": {
+            "link_yielded": true,
+            "ee_error_le_D79_bound": true,
+            "ee_return_le_5mm": true
+          },
+          "pass": true
+        },
+        {
+          "body_id": 5,
+          "body": "fr3v2_link4",
+          "force_N": 30.0,
+          "profile": "grasp",
+          "k_lin_N_per_m": 500.0,
+          "criterion": "D-79 (stiffness-relative; original 15 mm bound kept in report history)",
+          "original_ee_bound_m": 0.015,
+          "ee_bound_m": 0.076664,
+          "flange_equivalent_force_N": 29.4654,
+          "max_link_displacement_m": 0.125612,
+          "max_ee_error_during_push_m": 0.05887,
+          "final_ee_error_after_recovery_m": 0.003847,
+          "final_posture_error_rad": 0.5013,
+          "null_return_time_s": null,
+          "checks": {
+            "link_yielded": true,
+            "ee_error_le_D79_bound": true,
+            "ee_return_le_5mm": true
+          },
+          "pass": true
+        },
+        {
+          "body_id": 7,
+          "body": "fr3v2_link6",
+          "force_N": 10.0,
+          "profile": "grasp",
+          "k_lin_N_per_m": 500.0,
+          "criterion": "D-79 (stiffness-relative; original 15 mm bound kept in report history)",
+          "original_ee_bound_m": 0.015,
+          "ee_bound_m": 0.028053,
+          "flange_equivalent_force_N": 10.0211,
+          "max_link_displacement_m": 0.021802,
+          "max_ee_error_during_push_m": 0.019732,
+          "final_ee_error_after_recovery_m": 0.003303,
+          "final_posture_error_rad": 0.145028,
+          "null_return_time_s": null,
+          "checks": {
+            "link_yielded": true,
+            "ee_error_le_D79_bound": true,
+            "ee_return_le_5mm": true
+          },
+          "pass": true
+        },
+        {
+          "body_id": 7,
+          "body": "fr3v2_link6",
+          "force_N": 20.0,
+          "profile": "grasp",
+          "k_lin_N_per_m": 500.0,
+          "criterion": "D-79 (stiffness-relative; original 15 mm bound kept in report history)",
+          "original_ee_bound_m": 0.015,
+          "ee_bound_m": 0.053105,
+          "flange_equivalent_force_N": 20.0422,
+          "max_link_displacement_m": 0.042383,
+          "max_ee_error_during_push_m": 0.039802,
+          "final_ee_error_after_recovery_m": 0.004457,
+          "final_posture_error_rad": 0.194554,
+          "null_return_time_s": null,
+          "checks": {
+            "link_yielded": true,
+            "ee_error_le_D79_bound": true,
+            "ee_return_le_5mm": true
+          },
+          "pass": true
+        },
+        {
+          "body_id": 7,
+          "body": "fr3v2_link6",
+          "force_N": 30.0,
+          "profile": "grasp",
+          "k_lin_N_per_m": 500.0,
+          "criterion": "D-79 (stiffness-relative; original 15 mm bound kept in report history)",
+          "original_ee_bound_m": 0.015,
+          "ee_bound_m": 0.078158,
+          "flange_equivalent_force_N": 30.0632,
+          "max_link_displacement_m": 0.067546,
+          "max_ee_error_during_push_m": 0.061295,
+          "final_ee_error_after_recovery_m": 0.004375,
+          "final_posture_error_rad": 0.179189,
+          "null_return_time_s": null,
+          "checks": {
+            "link_yielded": true,
+            "ee_error_le_D79_bound": true,
+            "ee_return_le_5mm": true
+          },
+          "pass": true
+        }
+      ]
+    },
+    "human_hand_proxy": {
+      "pass": true,
+      "virtual_spring_hand": {
+        "label": "virtual_spring_hand",
+        "k_c_N_per_m": 300.0,
+        "d_c_Ns_per_m": 20.0,
+        "hand_speed_mps": 0.1,
+        "peak_force_N": 14.6643,
+        "max_ee_excursion_m": 0.059854,
+        "states_seen": [
+          "TRACK",
+          "YIELD"
+        ],
+        "checks": {
+          "peak_force_finite": true,
+          "arm_yielded": true,
+          "no_fault": true
+        },
+        "pass": true
+      },
+      "kinematic_box_hand": {
+        "label": "kinematic_box_hand",
+        "pass": true,
+        "peak_contact_force_N": 7.5013,
+        "note": "scripted kinematic box pushed along -x into link7; peak from the model-based external wrench estimate (M qdd + C + g - tau), not a contact sensor; Newton's rigid_contact_force readout stayed at 0 N in this venv"
+      }
+    },
+    "steady_deflection_estimated": {
+      "pass": true,
+      "note": "extra rows: the injected wrench still drives the plant; the supervisor input is the noisy (0.5 N then 1 N sigma) first-order-filtered inverse-dynamics estimate. These rows do not replace the original ground-truth rows.",
+      "subrows": [
+        {
+          "noise_N": 0.5,
+          "worst_error_pct": 9.6753,
+          "pass": true,
+          "subrows": [
+            {
+              "force_N": 10.0,
+              "direction": "-x",
+              "hold_s": 1.5,
+              "expected_m": 0.05,
+              "measured_mean_m": 0.047644,
+              "measured_std_m": 1.9e-05,
+              "error_pct": 4.7116,
+              "commanded_wrench_N": [
+                -10.0,
+                -0.0,
+                -0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "supervisor_force_tail_mean_N": [
+                9.5121,
+                -0.262,
+                -0.4381,
+                0.2393,
+                -0.0019,
+                0.2346
+              ],
+              "wrench_estimate_mean_N": [
+                -9.5174,
+                0.2945,
+                0.4476
+              ],
+              "states_in_tail": [
+                "YIELD"
+              ],
+              "pass": true,
+              "tolerance_pct": 10.0
+            },
+            {
+              "force_N": 10.0,
+              "direction": "+x",
+              "hold_s": 1.5,
+              "expected_m": 0.05,
+              "measured_mean_m": 0.045162,
+              "measured_std_m": 0.000653,
+              "error_pct": 9.6753,
+              "commanded_wrench_N": [
+                10.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "supervisor_force_tail_mean_N": [
+                -9.2315,
+                -0.04,
+                1.0954,
+                0.1804,
+                0.3569,
+                -0.0321
+              ],
+              "wrench_estimate_mean_N": [
+                9.2015,
+                0.008,
+                -1.0983
+              ],
+              "states_in_tail": [
+                "YIELD"
+              ],
+              "pass": true,
+              "tolerance_pct": 10.0
+            },
+            {
+              "force_N": 10.0,
+              "direction": "-y",
+              "hold_s": 1.5,
+              "expected_m": 0.05,
+              "measured_mean_m": 0.048497,
+              "measured_std_m": 0.000173,
+              "error_pct": 3.0063,
+              "commanded_wrench_N": [
+                -0.0,
+                -10.0,
+                -0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "supervisor_force_tail_mean_N": [
+                -0.4331,
+                9.7627,
+                -0.354,
+                0.2487,
+                0.0325,
+                0.2356
+              ],
+              "wrench_estimate_mean_N": [
+                0.4477,
+                -9.724,
+                0.3091
+              ],
+              "states_in_tail": [
+                "YIELD"
+              ],
+              "pass": true,
+              "tolerance_pct": 10.0
+            },
+            {
+              "force_N": 10.0,
+              "direction": "+y",
+              "hold_s": 1.5,
+              "expected_m": 0.05,
+              "measured_mean_m": 0.049882,
+              "measured_std_m": 0.001201,
+              "error_pct": 0.2351,
+              "commanded_wrench_N": [
+                0.0,
+                10.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "supervisor_force_tail_mean_N": [
+                -0.3197,
+                -10.4143,
+                -0.3159,
+                0.2295,
+                0.0714,
+                0.2502
+              ],
+              "wrench_estimate_mean_N": [
+                0.3278,
+                10.4504,
+                0.3213
+              ],
+              "states_in_tail": [
+                "YIELD"
+              ],
+              "pass": true,
+              "tolerance_pct": 10.0
+            },
+            {
+              "force_N": 10.0,
+              "direction": "-z",
+              "hold_s": 1.5,
+              "expected_m": 0.05,
+              "measured_mean_m": 0.051593,
+              "measured_std_m": 0.001827,
+              "error_pct": 3.1851,
+              "commanded_wrench_N": [
+                -0.0,
+                -0.0,
+                -10.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "supervisor_force_tail_mean_N": [
+                0.7149,
+                0.1658,
+                10.9642,
+                0.1572,
+                0.36,
+                -0.0744
+              ],
+              "wrench_estimate_mean_N": [
+                -0.7242,
+                -0.175,
+                -10.9638
+              ],
+              "states_in_tail": [
+                "YIELD"
+              ],
+              "pass": true,
+              "tolerance_pct": 10.0
+            },
+            {
+              "force_N": 10.0,
+              "direction": "+z",
+              "hold_s": 1.5,
+              "expected_m": 0.05,
+              "measured_mean_m": 0.046251,
+              "measured_std_m": 0.000152,
+              "error_pct": 7.4979,
+              "commanded_wrench_N": [
+                0.0,
+                0.0,
+                10.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "supervisor_force_tail_mean_N": [
+                0.2154,
+                -0.4515,
+                -9.3075,
+                0.2049,
+                0.1637,
+                0.2368
+              ],
+              "wrench_estimate_mean_N": [
+                -0.1898,
+                0.4652,
+                9.3164
+              ],
+              "states_in_tail": [
+                "YIELD"
+              ],
+              "pass": true,
+              "tolerance_pct": 10.0
+            }
+          ]
+        },
+        {
+          "noise_N": 1.0,
+          "worst_error_pct": 9.7547,
+          "pass": true,
+          "subrows": [
+            {
+              "force_N": 10.0,
+              "direction": "-x",
+              "hold_s": 1.5,
+              "expected_m": 0.05,
+              "measured_mean_m": 0.047628,
+              "measured_std_m": 8.1e-05,
+              "error_pct": 4.7433,
+              "commanded_wrench_N": [
+                -10.0,
+                -0.0,
+                -0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "supervisor_force_tail_mean_N": [
+                9.5542,
+                -0.2523,
+                -0.2854,
+                0.2088,
+                0.0488,
+                0.2169
+              ],
+              "wrench_estimate_mean_N": [
+                -9.5691,
+                0.3103,
+                0.3213
+              ],
+              "states_in_tail": [
+                "YIELD"
+              ],
+              "pass": true,
+              "tolerance_pct": 10.0
+            },
+            {
+              "force_N": 10.0,
+              "direction": "+x",
+              "hold_s": 1.5,
+              "expected_m": 0.05,
+              "measured_mean_m": 0.045123,
+              "measured_std_m": 0.000696,
+              "error_pct": 9.7547,
+              "commanded_wrench_N": [
+                10.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "supervisor_force_tail_mean_N": [
+                -9.2344,
+                -0.0367,
+                1.0435,
+                0.166,
+                0.3181,
+                -0.0251
+              ],
+              "wrench_estimate_mean_N": [
+                9.2175,
+                -0.033,
+                -1.0543
+              ],
+              "states_in_tail": [
+                "YIELD"
+              ],
+              "pass": true,
+              "tolerance_pct": 10.0
+            },
+            {
+              "force_N": 10.0,
+              "direction": "-y",
+              "hold_s": 1.5,
+              "expected_m": 0.05,
+              "measured_mean_m": 0.048565,
+              "measured_std_m": 0.000213,
+              "error_pct": 2.8697,
+              "commanded_wrench_N": [
+                -0.0,
+                -10.0,
+                -0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "supervisor_force_tail_mean_N": [
+                -0.4736,
+                9.7747,
+                -0.6417,
+                0.1977,
+                -0.0672,
+                0.2249
+              ],
+              "wrench_estimate_mean_N": [
+                0.4984,
+                -9.715,
+                0.5436
+              ],
+              "states_in_tail": [
+                "YIELD"
+              ],
+              "pass": true,
+              "tolerance_pct": 10.0
+            },
+            {
+              "force_N": 10.0,
+              "direction": "+y",
+              "hold_s": 1.5,
+              "expected_m": 0.05,
+              "measured_mean_m": 0.049672,
+              "measured_std_m": 0.001268,
+              "error_pct": 0.6568,
+              "commanded_wrench_N": [
+                0.0,
+                10.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "supervisor_force_tail_mean_N": [
+                -0.3846,
+                -10.3702,
+                -0.4472,
+                0.1853,
+                0.0345,
+                0.2467
+              ],
+              "wrench_estimate_mean_N": [
+                0.3722,
+                10.4551,
+                0.4594
+              ],
+              "states_in_tail": [
+                "YIELD"
+              ],
+              "pass": true,
+              "tolerance_pct": 10.0
+            },
+            {
+              "force_N": 10.0,
+              "direction": "-z",
+              "hold_s": 1.5,
+              "expected_m": 0.05,
+              "measured_mean_m": 0.051085,
+              "measured_std_m": 0.001653,
+              "error_pct": 2.1709,
+              "commanded_wrench_N": [
+                -0.0,
+                -0.0,
+                -10.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "supervisor_force_tail_mean_N": [
+                0.641,
+                0.1506,
+                10.8071,
+                0.1599,
+                0.3367,
+                -0.0538
+              ],
+              "wrench_estimate_mean_N": [
+                -0.626,
+                -0.1525,
+                -10.8262
+              ],
+              "states_in_tail": [
+                "YIELD"
+              ],
+              "pass": true,
+              "tolerance_pct": 10.0
+            },
+            {
+              "force_N": 10.0,
+              "direction": "+z",
+              "hold_s": 1.5,
+              "expected_m": 0.05,
+              "measured_mean_m": 0.045835,
+              "measured_std_m": 0.00021,
+              "error_pct": 8.3293,
+              "commanded_wrench_N": [
+                0.0,
+                0.0,
+                10.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "supervisor_force_tail_mean_N": [
+                0.2629,
+                -0.3636,
+                -9.2509,
+                0.1494,
+                0.1905,
+                0.1364
+              ],
+              "wrench_estimate_mean_N": [
+                -0.2119,
+                0.3764,
+                9.272
+              ],
+              "states_in_tail": [
+                "YIELD"
+              ],
+              "pass": true,
+              "tolerance_pct": 10.0
+            }
+          ]
+        }
+      ]
+    },
+    "release_return_estimated": {
+      "pass": true,
+      "note": "extra rows: the injected wrench still drives the plant; the supervisor input is the noisy (0.5 N then 1 N sigma) first-order-filtered inverse-dynamics estimate. These rows do not replace the original ground-truth rows.",
+      "subrows": [
+        {
+          "noise_N": 0.5,
+          "row": {
+            "push_force_N": 20.0,
+            "push_s": 1.0,
+            "delta_at_release_m": 0.093816,
+            "settle_time_s": 1.072,
+            "final_error_m": 0.006292,
+            "overshoot_fraction": 0.067265,
+            "peak_return_speed_mps": 0.098885,
+            "peak_speed_t_s": 1.65,
+            "peak_tau_speed_norm_Nm": 2.961,
+            "peak_tau_norm_Nm": 24.7,
+            "speed_cap_mps": 0.11,
+            "return_tolerance_m": 0.005,
+            "events": [
+              [
+                0.001,
+                "PUSHED"
+              ],
+              [
+                1.2,
+                "YIELDED"
+              ]
+            ],
+            "states_seen": [
+              "RETURN",
+              "YIELD"
+            ],
+            "checks": {
+              "release_delta_near_0p10m": true,
+              "within_5mm_by_2p5s": true,
+              "overshoot_le_10pct": true,
+              "peak_speed_le_1p1_vreturn": true,
+              "returned_states_seen": true
+            },
+            "pass": true
+          },
+          "pass": true
+        },
+        {
+          "noise_N": 1.0,
+          "row": {
+            "push_force_N": 20.0,
+            "push_s": 1.0,
+            "delta_at_release_m": 0.093667,
+            "settle_time_s": 1.075,
+            "final_error_m": 0.006693,
+            "overshoot_fraction": 0.070024,
+            "peak_return_speed_mps": 0.098905,
+            "peak_speed_t_s": 1.646,
+            "peak_tau_speed_norm_Nm": 2.97,
+            "peak_tau_norm_Nm": 24.677,
+            "speed_cap_mps": 0.11,
+            "return_tolerance_m": 0.005,
+            "events": [
+              [
+                0.001,
+                "PUSHED"
+              ],
+              [
+                1.2,
+                "YIELDED"
+              ]
+            ],
+            "states_seen": [
+              "RETURN",
+              "YIELD"
+            ],
+            "checks": {
+              "release_delta_near_0p10m": true,
+              "within_5mm_by_2p5s": true,
+              "overshoot_le_10pct": true,
+              "peak_speed_le_1p1_vreturn": true,
+              "returned_states_seen": true
+            },
+            "pass": true
+          },
+          "pass": true
+        }
+      ]
+    }
+  },
+  "checks": {
+    "steady_deflection": true,
+    "release_return": true,
+    "plan_pause": false,
+    "elbow_push": true,
+    "human_hand_proxy": true,
+    "steady_deflection_estimated": true,
+    "release_return_estimated": true
+  },
+  "not_done": [
+    "elbow_push <=15 mm at 10 N: if still F_task/K, the pre-registered bound may be unreachable at the allowed stiffness; row stays FAIL until the user approves a change (rule 6)",
+    "invariants at >= 100000 steps unless --invariant-steps was supplied",
+    "hardware, ISO 10218-2:2025-derived limits, L0/L1 sign-off (D-22, D-58)"
+  ],
+  "result": "FAIL"
+}

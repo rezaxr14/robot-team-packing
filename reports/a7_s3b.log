@@ -1,0 +1,130 @@
+{
+  "result": "FAIL",
+  "checks": {
+    "all_cells_ran": true,
+    "boundary_matches_analytic_within_one_step": false,
+    "sim_boundary_is_not_uniform": true,
+    "crush_0p3x_never_crushes": true,
+    "crush_1p3x_crushes_fragility_1": false
+  },
+  "boundaries": [
+    {
+      "mass_kg": 0.1,
+      "mu": 0.1,
+      "sim_boundary_factor": null,
+      "analytic_boundary_factor": null,
+      "match_within_one_step": true,
+      "required_pad_force_N": 4.905
+    },
+    {
+      "mass_kg": 0.1,
+      "mu": 0.3,
+      "sim_boundary_factor": null,
+      "analytic_boundary_factor": 0.3,
+      "match_within_one_step": false,
+      "required_pad_force_N": 1.635
+    },
+    {
+      "mass_kg": 0.1,
+      "mu": 0.9,
+      "sim_boundary_factor": 0.1,
+      "analytic_boundary_factor": 0.1,
+      "match_within_one_step": true,
+      "required_pad_force_N": 0.545
+    },
+    {
+      "mass_kg": 1.0,
+      "mu": 0.1,
+      "sim_boundary_factor": null,
+      "analytic_boundary_factor": null,
+      "match_within_one_step": true,
+      "required_pad_force_N": 49.05
+    },
+    {
+      "mass_kg": 1.0,
+      "mu": 0.3,
+      "sim_boundary_factor": null,
+      "analytic_boundary_factor": null,
+      "match_within_one_step": true,
+      "required_pad_force_N": 16.35
+    },
+    {
+      "mass_kg": 1.0,
+      "mu": 0.9,
+      "sim_boundary_factor": 1.0,
+      "analytic_boundary_factor": 1.0,
+      "match_within_one_step": true,
+      "required_pad_force_N": 5.45
+    },
+    {
+      "mass_kg": 2.0,
+      "mu": 0.1,
+      "sim_boundary_factor": null,
+      "analytic_boundary_factor": null,
+      "match_within_one_step": true,
+      "required_pad_force_N": 98.1
+    },
+    {
+      "mass_kg": 2.0,
+      "mu": 0.3,
+      "sim_boundary_factor": null,
+      "analytic_boundary_factor": null,
+      "match_within_one_step": true,
+      "required_pad_force_N": 32.7
+    },
+    {
+      "mass_kg": 2.0,
+      "mu": 0.9,
+      "sim_boundary_factor": null,
+      "analytic_boundary_factor": null,
+      "match_within_one_step": true,
+      "required_pad_force_N": 10.9
+    },
+    {
+      "mass_kg": 3.0,
+      "mu": 0.1,
+      "sim_boundary_factor": null,
+      "analytic_boundary_factor": null,
+      "match_within_one_step": true,
+      "required_pad_force_N": 147.15
+    },
+    {
+      "mass_kg": 3.0,
+      "mu": 0.3,
+      "sim_boundary_factor": null,
+      "analytic_boundary_factor": null,
+      "match_within_one_step": true,
+      "required_pad_force_N": 49.05
+    },
+    {
+      "mass_kg": 3.0,
+      "mu": 0.9,
+      "sim_boundary_factor": null,
+      "analytic_boundary_factor": null,
+      "match_within_one_step": true,
+      "required_pad_force_N": 16.35
+    }
+  ],
+  "crush": {
+    "factor_0.3": {
+      "seed": 709003,
+      "peak_finger_force_est_N": 4.5631,
+      "crush_force_for_fragility_1_N": 23.0,
+      "crushed": false,
+      "raw_world_crush_limit_N": 8.0,
+      "crushed_under_raw_limit": false,
+      "result": "PASS",
+      "error": null
+    },
+    "factor_1.3": {
+      "seed": 709013,
+      "peak_finger_force_est_N": 19.0903,
+      "crush_force_for_fragility_1_N": 23.0,
+      "crushed": false,
+      "raw_world_crush_limit_N": 8.0,
+      "crushed_under_raw_limit": true,
+      "result": "PASS",
+      "error": null
+    }
+  }
+}

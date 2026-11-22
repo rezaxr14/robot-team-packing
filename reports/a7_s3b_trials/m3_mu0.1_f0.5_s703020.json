@@ -1,0 +1,114 @@
+{
+  "step": "A7 S2 (free-box grasp and lift)",
+  "evidence_class": "SIM",
+  "scope": "one seeded Newton grasp attempt with the derived simplified parallel-jaw hand; not a certification and not a safety result",
+  "seed": 703020,
+  "mass_kg": 3.0,
+  "friction": 0.1,
+  "force_factor": 0.5,
+  "lift_delta_m": 0.14,
+  "contact_model": "box, finger pads and palm all carry the tested mu (derived hand had 1.2 pad mu, which dominated the contact and hid the object friction)",
+  "hand_model": "assets/derived/fr3v2_hand.xml",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp": "1.17.0"
+  },
+  "debug_at_grasp": {
+    "q_actual": [
+      0.02556,
+      0.25607,
+      -0.10151,
+      -2.9584,
+      -0.33778,
+      3.2161,
+      -1.30533,
+      -9e-05,
+      0.00012,
+      0.30303,
+      0.00342,
+      0.92489,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "q_cmd": [
+      0.00769,
+      0.26675,
+      -0.08399,
+      -2.94423,
+      -0.32205,
+      3.21369,
+      -1.32269
+    ],
+    "flange_actual": [
+      0.29834,
+      0.00467,
+      0.12198
+    ],
+    "flange_cmd": [
+      0.3032,
+      0.00332,
+      0.12051
+    ],
+    "fingers_world": [
+      [
+        0.25562,
+        0.00463,
+        0.92704
+      ],
+      [
+        0.34059,
+        0.00453,
+        0.92692
+      ]
+    ],
+    "box_world": [
+      0.30303,
+      0.00342,
+      0.92489
+    ],
+    "finger_q": [
+      -8.557502587791532e-05,
+      0.00011662372708087787
+    ]
+  },
+  "box_center_start": [
+    0.30303,
+    0.00342,
+    0.925
+  ],
+  "box_z_start": 0.92489,
+  "box_z_after_pre": 0.92489,
+  "box_z_after_descend": 0.92489,
+  "box_z_after_close": 0.91975,
+  "box_z_after_hold": 0.92492,
+  "height_gain_m": 3e-05,
+  "box_xy_drift_m": 0.00746,
+  "pad_force_est_N": 0.146,
+  "pad_force_peak_est_N": 7.3607,
+  "pad_force_trace_N": [
+    5.98,
+    6.169,
+    7.153,
+    7.356,
+    7.352,
+    5.597,
+    4.589,
+    3.918,
+    5.553,
+    6.903
+  ],
+  "pad_force_model": "kp_eff*(ctrl-q) averaged over the two finger servos; model estimate, not a contact sensor",
+  "wall_s": 39.07,
+  "steps": 5600,
+  "steps_per_s": 143.3,
+  "checks": {
+    "finite": true,
+    "height_gain_ge_8cm": false,
+    "box_xy_drift_le_2cm": true,
+    "not_fallen": true
+  },
+  "result": "FAIL"
+}

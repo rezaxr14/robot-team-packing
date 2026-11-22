@@ -1,0 +1,99 @@
+{
+  "step": "A7 S2 (free-box grasp and lift)",
+  "evidence_class": "SIM",
+  "scope": "one seeded Newton grasp attempt with the derived simplified parallel-jaw hand; not a certification and not a safety result",
+  "seed": 900004,
+  "mass_kg": 1.0,
+  "lift_delta_m": 0.14,
+  "lift_rule": "explicit --lift-delta (tuning/exploration)",
+  "mass_source": "commanded mass (the `weigh` value would be used on the robot; recorded here)",
+  "controller": "MJCF position servos (rung script, not the A5 controller)",
+  "hand_model": "assets/derived/fr3v2_hand.xml",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp": "1.17.0"
+  },
+  "debug_at_grasp": {
+    "q_actual": [
+      0.00281,
+      0.25281,
+      -0.05214,
+      -2.94931,
+      -0.19227,
+      3.20248,
+      -1.42501,
+      -5e-05,
+      6e-05,
+      0.3102,
+      -0.00086,
+      0.92489,
+      0.0,
+      0.0,
+      -0.0,
+      1.0
+    ],
+    "q_cmd": [
+      -0.01254,
+      0.26833,
+      -0.03609,
+      -2.93195,
+      -0.16603,
+      3.20112,
+      -1.4524
+    ],
+    "flange_actual": [
+      0.30479,
+      0.00077,
+      0.12305
+    ],
+    "flange_cmd": [
+      0.31028,
+      -0.00114,
+      0.1207
+    ],
+    "fingers_world": [
+      [
+        0.2622,
+        0.0007,
+        0.92807
+      ],
+      [
+        0.34719,
+        0.00057,
+        0.92803
+      ]
+    ],
+    "box_world": [
+      0.3102,
+      -0.00086,
+      0.92489
+    ],
+    "finger_q": [
+      -5.1121660362696275e-05,
+      6.065893467166461e-05
+    ]
+  },
+  "box_center_start": [
+    0.3102,
+    -0.00086,
+    0.925
+  ],
+  "box_z_start": 0.92489,
+  "box_z_after_pre": 0.92489,
+  "box_z_after_descend": 0.92489,
+  "box_z_after_close": 0.93088,
+  "box_z_after_hold": 1.05624,
+  "height_gain_m": 0.13135,
+  "box_xy_drift_m": 0.00881,
+  "wall_s": 39.12,
+  "steps": 5600,
+  "steps_per_s": 143.2,
+  "checks": {
+    "finite": true,
+    "height_gain_ge_8cm": true,
+    "box_xy_drift_le_2cm": true,
+    "not_fallen": true
+  },
+  "result": "PASS"
+}

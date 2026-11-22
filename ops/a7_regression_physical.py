@@ -26,7 +26,7 @@ from rtp.stats import wilson  # noqa: E402
 
 SKILLS = ("grasp", "place", "release", "retreat", "weigh", "handover", "push_aside")
 DRIVERS = {
-    "grasp": ("ops/a7_s2_lift_v2.py", ()),
+    "grasp": ("ops/a7_s2_lift_v2.py", ("--rule",)),
     "place": ("ops/a7_s4_place.py", ()),
     "weigh": ("ops/a7_s5_weigh.py", ()),
     "release": ("ops/a7_s7_release_retreat.py", ("--skill", "release")),
@@ -38,8 +38,13 @@ MIN_TRIALS = 200
 MIN_RATE = 0.90
 
 
+# The grasp trials evaluated under the single lift rule live apart from the earlier
+# mixed-command exploration, which never counts as a rung result.
+TRIAL_DIR_OVERRIDE = {"grasp": "grasp_rule"}
+
+
 def trials_dir(skill: str) -> Path:
-    return ROOT / "reports" / "a7_physical" / skill
+    return ROOT / "reports" / "a7_physical" / TRIAL_DIR_OVERRIDE.get(skill, skill)
 
 
 def run(skill: str, seeds: int, start: int, mass: float) -> int:

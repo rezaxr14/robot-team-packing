@@ -45,6 +45,10 @@ CLOSED_CTRL = 0.035
 LIFT_DELTA = 0.12
 DT = 0.001
 R_TARGET = np.array([[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, -1.0]])
+# R-hand side approach (measured experiment): the hand points along world -y, so its pads close
+# along world +z and grip the box top/bottom while the L hand keeps the x faces.  With both hands
+# using the original top-down grasp they occupy the same x faces and the palms overlap.
+R_TARGET_SIDE = np.array([[1.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, 1.0, 0.0]])
 
 ARM_X = 0.35                       # arm bases on the island centre line (D-65)
 R_HOME = (0.0, 0.785, 0.0, -2.356, 0.0, 1.571, -0.785)   # mirrored home (a6_scene)
@@ -196,6 +200,10 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--mass", type=float, default=0.3)
     ap.add_argument("--variant", choices=("handover", "push_aside"), default="handover")
+    ap.add_argument("--r-approach", choices=("top", "side"), default="top",
+                    help="R-hand approach for the handover: 'top' is the original geometry; "
+                         "'side' comes in horizontally from +y and grips the box top/bottom so the "
+                         "two hands do not occupy the same x faces and the palms do not overlap")
     ap.add_argument("--out", type=Path, default=OUT)
     a = ap.parse_args()
 
@@ -205,6 +213,7 @@ def main() -> int:
         "scope": "one seeded two-arm Newton trial with the derived simplified parallel-jaw hands; "
                  "NOT a certification and NOT a safety result",
         "seed": a.seed, "mass_kg": a.mass, "variant": a.variant,
+        "r_approach": a.r_approach,
         "hand_model": str(MODEL.relative_to(ROOT)),
         "pass_bounds": {"min_blocker_displacement_m": MIN_BLOCKER_DISPLACEMENT_M,
                         "max_topple_deg": MAX_TOPPLE_DEG,
@@ -283,12 +292,25 @@ def main() -> int:
             carry = ik(lift[-1], to_local(handover_flange_world, 0))
             ramp(0, carry, CLOSED_CTRL, 800, track)
             step(200, track)
-            # --- R: approach the same point from above, open ----------------------------------
+            # --- R: approach the handover point, open -----------------------------------------
+            # 'top' is the original geometry: both hands use the same top-down orientation, so R's
+            # fingers must occupy the x faces already held by L and the palms overlap (measured
+            # drop, reports/a7_s6_handover_probe.json).  'side' turns the R hand 90 deg so it
+            # points along -y and grips the box top/bottom while L keeps the x faces.
             r_home = np.asarray(R_HOME, float)
-            r_above = np.array(to_local(handover_flange_world + np.array([0.0, 0.0, 0.25]), 1))
-            r_hover = np.array(to_local(handover_flange_world + np.array([0.0, 0.0, 0.01]), 1))
-            r_pre = ik(r_home, tuple(r_above))
-            r_down = ik(r_pre[-1], tuple(r_hover))
+            handover_box_world = handover_flange_world - np.array([0.0, 0.0, BOX_BELOW_FLANGE])
+            if a.r_approach == "side":
+                r_rot = R_TARGET_SIDE
+                r_flange_world = handover_box_world + np.array([0.0, BOX_BELOW_FLANGE, 0.0])
+                r_pre_offset = np.array([0.0, 0.15, 0.0])
+            else:
+                r_rot = R_TARGET
+                r_flange_world = handover_flange_world.copy()
+                r_pre_offset = np.array([0.0, 0.0, 0.25])
+            ik_r = _make_ik(fk, solve_ik, r_rot)
+            r_pre = ik_r(r_home, tuple(np.asarray(to_local(r_flange_world + r_pre_offset, 1))))
+            r_down = ik_r(r_pre[-1], tuple(np.asarray(to_local(r_flange_world, 1))))
+            r_box_expected = r_flange_world + r_rot @ np.array([0.0, 0.0, BOX_BELOW_FLANGE])
             phase_box = {}
             phase_box["after_L_carry"] = np.asarray(state.body_q.numpy())[obj_id, :3].copy()
             ramp(1, r_pre, 0.0, 800, track)
@@ -298,19 +320,16 @@ def main() -> int:
             ramp(1, r_down, CLOSED_CTRL, 300, track)
             phase_box["after_R_close"] = np.asarray(state.body_q.numpy())[obj_id, :3].copy()            # R closes on the box
             step(200, track)
-            # Did R acquire the box? geometric proxy: box centre near R flange - 0.095 z.
+            # Did R acquire the box? geometric proxy: box centre at the R-hand grasp point.
             bq = np.asarray(state.body_q.numpy())
-            r_flange_world = handover_flange_world.copy()        # commanded, local->world known
-            box_near_r = bool(np.linalg.norm(bq[obj_id, :3] - (r_flange_world - np.array([0, 0, BOX_BELOW_FLANGE])))
-                              <= 0.04)
+            box_near_r = bool(np.linalg.norm(bq[obj_id, :3] - r_box_expected) <= 0.04)
             report["phase_box_positions"] = {k: [round(float(v), 5) for v in val]
                                              for k, val in phase_box.items()}
             report["box_z_trace_every_200"] = [round(float(v[2]), 4) for v in track[::200]]
             report["r_acquire_proxy"] = {
                 "box_world": [round(float(v), 5) for v in bq[obj_id, :3]],
-                "expected_world": [round(float(v), 5) for v in (r_flange_world - np.array([0, 0, BOX_BELOW_FLANGE]))],
-                "distance_m": round(float(np.linalg.norm(bq[obj_id, :3] -
-                                      (r_flange_world - np.array([0, 0, BOX_BELOW_FLANGE])))), 5),
+                "expected_world": [round(float(v), 5) for v in r_box_expected],
+                "distance_m": round(float(np.linalg.norm(bq[obj_id, :3] - r_box_expected)), 5),
             }
             if not box_near_r:
                 raise RuntimeError("R did not acquire the box (geometry proxy failed); see r_acquire_proxy")
@@ -320,8 +339,8 @@ def main() -> int:
             sm.step("L_RELEASED")
             ramp(0, lift, 0.0, 500, track)                       # L lifts away
             # --- R: lift and retreat ----------------------------------------------------------
-            r_lift = ik(r_down[-1], tuple(np.array(to_local(handover_flange_world, 1))
-                                          + np.array([0.0, 0.0, 0.10])))
+            r_lift = ik_r(r_down[-1], tuple(np.asarray(to_local(r_flange_world
+                                                              + np.array([0.0, 0.0, 0.10]), 1))))
             ramp(1, r_lift, CLOSED_CTRL, 600, track)
             step(300, track)
             sm.step("R_LIFTED")
