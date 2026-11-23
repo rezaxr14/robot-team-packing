@@ -23,6 +23,8 @@ import json
 import math
 import subprocess
 import sys
+
+import numpy as np
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,13 +42,17 @@ SEED_BASE = 700000
 CRUSH_FRAGILITY = 1.0
 
 
-def trial(seed: int, mass: float, mu: float, factor: float, out: Path) -> dict:
+def trial(seed: int, mass: float, mu: float, factor: float, out: Path,
+          reuse: bool = False) -> dict:
     out.parent.mkdir(parents=True, exist_ok=True)
-    cmd = [sys.executable, str(ROOT / "ops" / "a7_s3_trial.py"),
-           "--seed", str(seed), "--mass", str(mass), "--friction", str(mu),
-           "--force-factor", str(factor), "--lift-delta", str(lift_delta_for_mass(mass)),
-           "--out", str(out)]
-    subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, check=False)
+    # `--reuse-existing` only re-reads an identical, already-measured trial (same seed,
+    # mass, mu, factor, lift rule) so a post-processing fix does not re-run the physics.
+    if not (reuse and out.exists()):
+        cmd = [sys.executable, str(ROOT / "ops" / "a7_s3_trial.py"),
+               "--seed", str(seed), "--mass", str(mass), "--friction", str(mu),
+               "--force-factor", str(factor), "--lift-delta", str(lift_delta_for_mass(mass)),
+               "--out", str(out)]
+        subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, check=False)
     try:
         return json.loads(out.read_text())
     except Exception as exc:  # noqa: BLE001
@@ -63,6 +69,8 @@ def boundary_index(values: list[float], ok: list[bool]) -> int | None:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeds", type=int, default=1, help="repeats per cell (same pre-registered grid)")
+    ap.add_argument("--reuse-existing", action="store_true",
+                    help="re-read identical trial reports instead of re-running the physics")
     ap.add_argument("--out", type=Path, default=ROOT / "reports" / "a7_s3b_boundary.json")
     a = ap.parse_args()
     trials_dir = ROOT / "reports" / "a7_s3b_trials"
@@ -71,13 +79,19 @@ def main() -> int:
     for mass in MASSES:
         for mu in FRICTIONS:
             for factor in FACTORS:
-                ok, ns, gains = [], [], []
+                ok, ns, gains, finals = [], [], [], []
                 for j in range(a.seeds):
                     seed = SEED_BASE + 1000 * MASSES.index(mass) + 100 * FRICTIONS.index(mu) \
                         + 10 * FACTORS.index(factor) + j
-                    rec = trial(seed, mass, mu, factor, trials_dir / f"m{mass:g}_mu{mu:g}_f{factor:g}_s{seed}.json")
+                    rec = trial(seed, mass, mu, factor, trials_dir / f"m{mass:g}_mu{mu:g}_f{factor:g}_s{seed}.json",
+                                reuse=a.reuse_existing)
                     ok.append(rec.get("result") == "PASS")
-                    ns.append(rec.get("pad_force_est_N"))
+                    # The squeeze force that the lift must beat is the steady grasp force
+                    # measured before the lift.  After a slip the fingers close onto the
+                    # command and the servo force collapses, so the final value is not the
+                    # grasp force (D-94).  Fall back to the peak for older reports.
+                    ns.append(rec.get("pad_force_grasp_N", rec.get("pad_force_peak_est_N")))
+                    finals.append(rec.get("pad_force_est_N"))
                     gains.append(rec.get("height_gain_m"))
                 n_meas = [x for x in ns if x is not None]
                 n_pad = float(sum(n_meas) / len(n_meas)) if n_meas else float("nan")
@@ -85,6 +99,8 @@ def main() -> int:
                 cell = {"mass_kg": mass, "mu": mu, "force_factor": factor,
                         "nominal_pad_force_N": round(15.3 * factor, 3),
                         "measured_pad_force_est_N": round(n_pad, 4) if math.isfinite(n_pad) else None,
+                        "measured_pad_force_final_N": round(float(np.mean([x for x in finals if x is not None])), 4)
+                        if any(x is not None for x in finals) else None,
                         "analytic_holds": predicted,
                         "sim_lifted": all(ok), "sim_pass_count": sum(ok), "repeats": a.seeds,
                         "min_height_gain_m": min([g for g in gains if g is not None], default=None)}
@@ -136,7 +152,9 @@ def main() -> int:
         "scope": "grid of Newton grasp trials; the squeeze force is a model-based servo estimate, "
                  "not a contact-sensor reading; crush is defined as a force-threshold rule",
         "analytic_bound": "2*mu*N_pad >= m*g (two pads, quasi-static)",
-        "force_definition": "N_pad = kp_eff*(finger ctrl - finger q), mean over the two servos",
+        "force_definition": "N_pad = ke*(finger ctrl - finger q) - kd*qdot, mean over the two "
+                            "servos, clamped to +/-20 N; steady value taken over the 0.2 s before "
+                            "the lift (the post-lift value collapses after a slip)",
         "crush_definition": "peak finger force estimate > crush_force_for(fragility); "
                             f"crush_force_for({CRUSH_FRAGILITY})={crush_n:.3f} N; the raw "
                             f"world.crush_limit({CRUSH_FRAGILITY})={raw_crush_n:.3f} N is also recorded "
