@@ -392,3 +392,21 @@ REPORT TO ME at each of these points: A5 PASS/FAIL with the per-row numbers; S3b
 ```
 stop after this we will continue tommarow
 ```
+
+## U057 — 2026-11-23 — continue
+
+```
+continue
+```
+
+## U058 — 2026-11-23 — continue (second)
+
+```
+continue
+```
+
+## U059 — 2026-11-24 — continue (third)
+
+```
+continue
+```

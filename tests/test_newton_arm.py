@@ -90,6 +90,28 @@ def test_rotation_helpers_roundtrip():
     assert np.allclose(rotvec_from_matrix(np.eye(3)), np.zeros(3), atol=1e-15)
 
 
+def test_rotation_helper_half_turn_is_not_identity():
+    """A pi rotation must not resolve to zero.
+
+    The FR3 home flange orientation is exactly a pi rotation; the old helper returned 0 for
+    it, so the controller's orientation reference silently collapsed to identity and a
+    relative plan was applied as an absolute one (the A7 hand came out upside down).
+    """
+    from rtp.control.fr3_kinematics import Q_HOME as FK_Q_HOME
+    from rtp.control.fr3_kinematics import fk_numpy
+    _, R_home = fk_numpy(np.asarray(FK_Q_HOME, float))
+    v = rotvec_from_matrix(R_home)
+    assert np.linalg.norm(v) == pytest.approx(np.pi, abs=1e-9)
+    assert np.allclose(matrix_from_rotvec(v), R_home, atol=1e-12)
+    # Every axis/sign choice must round-trip; the recovered axis comes from R, so compare
+    # the matrices rather than the vector sign.
+    for axis in np.eye(3):
+        R = matrix_from_rotvec(np.pi * axis)
+        assert np.allclose(matrix_from_rotvec(rotvec_from_matrix(R)), R, atol=1e-12)
+        R = matrix_from_rotvec(-np.pi * axis)
+        assert np.allclose(matrix_from_rotvec(rotvec_from_matrix(R)), R, atol=1e-12)
+
+
 def test_rate_limit_numpy_matches_impedance_torch():
     torch = pytest.importorskip("torch")
     from rtp.control.impedance import ImpedanceConfig, rate_limit

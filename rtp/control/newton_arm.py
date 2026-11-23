@@ -148,9 +148,23 @@ def rotvec_from_matrix(R: np.ndarray) -> np.ndarray:
     vee = np.array([R[2, 1] - R[1, 2], R[0, 2] - R[2, 0], R[1, 0] - R[0, 1]])
     sinang = 0.5 * float(np.linalg.norm(vee))
     ang = float(np.arctan2(sinang, cosang))
-    if sinang < 1e-12:
+    if sinang > 1e-6:
+        return (ang / (2.0 * sinang)) * vee
+    if cosang > 0.0:
         return 0.5 * vee
-    return (ang / (2.0 * sinang)) * vee
+    # Near a half turn the antisymmetric part vanishes and the formula above returns
+    # zero, which silently turns a pi rotation into "identity".  The FR3 flange at the
+    # home configuration is exactly a pi rotation, so this case is not academic: the
+    # orientation reference collapsed to identity and a relative plan was applied as an
+    # absolute one (hand measured upside down).  Recover the axis from the symmetric
+    # part R = 2 n n^T - I; at exactly pi either sign of n gives the same matrix.
+    A = 0.5 * (R + np.eye(3))
+    i = int(np.argmax(np.diag(A)))
+    n = A[:, i] / np.sqrt(max(float(A[i, i]), 1e-12))
+    nn = float(np.linalg.norm(n))
+    if nn < 1e-9:
+        return np.zeros(3)
+    return ang * (n / nn)
 
 
 def matrix_from_rotvec(v: np.ndarray) -> np.ndarray:

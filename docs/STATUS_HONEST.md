@@ -257,3 +257,11 @@ Nothing in this update is a rung result. No threshold, tolerance, clamp or test 
 | A5 definitive full run | SIM | Restarted 00:38 with the two-mapping elbow row and grid optimisation; still running at stop time and **no report written yet**. Gate still reads A5 FAIL |
 
 Commits are local; nothing was pushed (no push approval).
+
+## Update 2026-11-24 — half-turn bug, A5 re-run, S3b force axis (all SIM)
+
+No threshold, tolerance, clamp, pre-registered test or `configs/arm_cert.yaml` line was changed.
+
+| item | evidence class | state |
+|---|---|---|
+| `rotvec_from_matrix` half-turn bug | SIM / MODEL | **Fixed.** The helper returned `0` for an exact pi rotation (the antisymmetric part is zero there). The FR3 home flange orientation is exactly pi, so the controller's orientation reference collapsed to identity and a bridge plan expressed *relative to home* was applied as absolute (the A7 hand arrived upside down). The axis now comes from the symmetric part `A=(R+I)/2`; round trip `max |R - exp([w])| = 1.5e-15` at home and 1.0e-15 for the 135-degree bridge target. New test `test_rotation_helper_half_turn_is_not_identity`; 17/17 in `tests/test_newton_arm.py`. A5 plans use `rot=0`, which is the correct "hold home" under the fixed convention, so A5 had to be re-run rather than argued |
