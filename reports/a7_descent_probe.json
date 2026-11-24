@@ -1,0 +1,99 @@
+{
+  "step": "A7 S2 (free-box grasp and lift)",
+  "evidence_class": "SIM",
+  "scope": "one seeded Newton grasp attempt with the derived simplified parallel-jaw hand; not a certification and not a safety result",
+  "seed": 0,
+  "mass_kg": 0.5,
+  "lift_delta_m": 0.12000000000000001,
+  "lift_rule": "lift_delta_for_mass(mass)=0.10+0.04*clip(mass,0,1)",
+  "mass_source": "commanded mass (the `weigh` value would be used on the robot; recorded here)",
+  "controller": "NewtonCompliantArm (A5 supervisor; phase profiles approach/grasp/transport)",
+  "hand_model": "assets/derived/fr3v2_hand.xml",
+  "versions": {
+    "python": "3.12.16",
+    "newton": "1.6.1",
+    "warp": "1.17.0"
+  },
+  "debug_at_grasp": {
+    "q_actual": [
+      -0.33043,
+      0.22396,
+      0.22985,
+      -2.91585,
+      -0.29108,
+      3.02875,
+      -1.37838,
+      4e-05,
+      -0.00096,
+      0.30835,
+      -0.00232,
+      0.92492,
+      0.00017,
+      -0.00066,
+      -0.0001,
+      1.0
+    ],
+    "q_cmd": [
+      -0.01679,
+      0.26757,
+      -0.04491,
+      -2.93581,
+      -0.19717,
+      3.20443,
+      -1.43406
+    ],
+    "flange_actual": [
+      0.3091,
+      -0.00059,
+      0.12594
+    ],
+    "flange_cmd": [
+      0.30849,
+      -0.00253,
+      0.12066
+    ],
+    "fingers_world": [
+      [
+        0.25754,
+        0.00228,
+        0.93561
+      ],
+      [
+        0.34305,
+        0.00197,
+        0.92718
+      ]
+    ],
+    "box_world": [
+      0.30835,
+      -0.00232,
+      0.92492
+    ],
+    "finger_q": [
+      3.528534944052808e-05,
+      -0.0009609917178750038
+    ]
+  },
+  "box_center_start": [
+    0.30839,
+    -0.0023,
+    0.925
+  ],
+  "box_z_start": 0.92489,
+  "box_z_after_pre": 0.92489,
+  "box_z_after_descend": 0.92492,
+  "box_z_after_close": 0.9247,
+  "box_z_after_hold": 1.03453,
+  "height_gain_m": 0.10964,
+  "box_xy_drift_m": 0.00207,
+  "wall_s": 114.73,
+  "steps": 11270,
+  "steps_per_s": 98.2,
+  "checks": {
+    "finite": true,
+    "height_gain_ge_8cm": true,
+    "box_xy_drift_le_2cm": true,
+    "not_fallen": true
+  },
+  "result": "PASS"
+}

@@ -101,6 +101,7 @@ def main() -> int:
     import newton
     import warp as wp
     from rtp.control import fr3_kinematics as fk
+    from rtp.control.newton_arm import matrix_from_rotvec, rotvec_from_matrix
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=0)
@@ -113,6 +114,9 @@ def main() -> int:
                     help="drive the arm through NewtonCompliantArm (A5 controller) instead of the "
                          "MJCF position servos; the finger servos stay active")
     ap.add_argument("--out", type=Path, default=OUT)
+    ap.add_argument("--trace", type=Path, default=None,
+                    help="diagnosis only: write a downsampled per-tick trace (pose error, torque "
+                         "components, box z) of the compliant run; the trial result is unchanged")
     a = ap.parse_args()
 
     lift_delta = (lift_delta_for_mass(a.mass) if (a.rule or a.lift_delta is None)
@@ -132,6 +136,10 @@ def main() -> int:
         "versions": {"python": platform.python_version(), "newton": metadata.version("newton"),
                      "warp": wp.__version__},
     }
+    trace_rows: list = []
+    phase = ["init"]
+    trace_k = [0]
+    trace_every = 10
     try:
         model, box0, q_pre, q_grasp, q_lift, Rhome = build(a.seed, a.mass, lift_delta)
         state, control = model.state(), model.control()
@@ -185,6 +193,43 @@ def main() -> int:
             runner.tick(control, plan=plan)
             cp.collide(state, contacts)
             solver.step(state, state, control, contacts, DT)
+            trace_k[0] += 1
+            if a.trace is not None and trace_k[0] % trace_every == 0:
+                inf = runner.last_info
+                q_act = np.asarray(state.joint_q.numpy(), dtype=float)[:7]
+                dq_act = np.asarray(state.joint_qd.numpy(), dtype=float)[:7]
+                p_act, R_act = fk.fk_numpy(q_act)
+                R_plan = matrix_from_rotvec(np.asarray(inf["x_ref"][3:], float)) @ Rhome
+                e_true = rotvec_from_matrix(np.asarray(R_act, float) @ R_plan.T)
+                q_null = np.asarray(runner.arm.q_home, float)
+                _, R_null = fk.fk_numpy(q_null)
+                e_null = rotvec_from_matrix(np.asarray(R_null, float) @ R_plan.T)
+                spec = arm._q_spec
+                trace_rows.append({
+                    "k": int(trace_k[0]), "phase": phase[0],
+                    "s": round(float(inf["s"]), 4), "state": str(inf["state"]),
+                    "ep": round(float(np.linalg.norm(np.asarray(inf["x"][:3]) - np.asarray(inf["x_ref"][:3]))), 5),
+                    "er_ctrl": round(float(np.linalg.norm(np.asarray(inf["x"][3:]) - np.asarray(inf["x_ref"][3:]))), 5),
+                    "er_true": round(float(np.linalg.norm(e_true)), 5),
+                    "er_null": round(float(np.linalg.norm(e_null)), 5),
+                    "rv_ref": [round(float(v), 4) for v in np.asarray(inf["x_ref"][3:])],
+                    "rv_now": [round(float(v), 4) for v in np.asarray(inf["x"][3:])],
+                    "qs_n": (len(spec[0]) if spec is not None else 0),
+                    "s0": (round(float(spec[1]), 3) if spec is not None else None),
+                    "dur": (round(float(spec[2]), 3) if spec is not None else None),
+                    "pz": round(float(p_act[2]), 5),
+                    "tau_task": round(float(np.linalg.norm(inf["tau_task"])), 4),
+                    "tau_null": round(float(np.linalg.norm(inf["tau_null"])), 4),
+                    "tau_g_max": round(float(np.max(np.abs(inf["gravity_comp"]))), 3),
+                    "tau_raw_max": round(float(np.max(np.abs(inf["tau_raw"]))), 3),
+                    "tau_max": round(float(np.max(np.abs(inf["tau"]))), 3),
+                    "clamped": bool(inf["torque_clamped"]),
+                    "f_norm": round(float(np.linalg.norm(inf["force"])), 3),
+                    "m_norm": round(float(np.linalg.norm(inf["force"][3:])), 3),
+                    "qd_max": round(float(np.max(np.abs(dq_act))), 4),
+                    "box_z": round(float(np.asarray(state.body_q.numpy())[item_body, 2]), 5),
+                    "finger": round(float(arm._finger), 4),
+                })
 
         def step(n):
             if arm is not None:
@@ -217,8 +262,16 @@ def main() -> int:
         z_start = float(np.asarray(state.body_q.numpy())[item_body, 2])
         if runner is not None:
             runner.set_profile("approach")
+        phase[0] = "approach"
         ramp(q_pre, 0.0, 1000)                       # approach 10 cm above
         z_after_pre = float(np.asarray(state.body_q.numpy())[item_body, 2])
+        if runner is not None:
+            # The final descent and the close are the runbook's `grasp` phase.  Measured
+            # reason: at `approach` (300 N/m) the joint stiction floor leaves 17-30 mm of
+            # sag near this posture, which parks the pads above the box; `grasp` (500 N/m)
+            # halves it.  Profile choice only, no bound changed.
+            runner.set_profile("grasp")
+        phase[0] = "descent"
         ramp(q_grasp, 0.0, 600)                      # descend to the box
         z_after_descend = float(np.asarray(state.body_q.numpy())[item_body, 2])
         bqd = np.asarray(state.body_q.numpy())
@@ -235,11 +288,13 @@ def main() -> int:
         }
         if runner is not None:
             runner.set_profile("grasp")
+        phase[0] = "close"
         ramp(q_grasp, CLOSED_CTRL, 500)              # close the fingers
         step(500)                                    # establish the grasp
         z_grasped = float(np.asarray(state.body_q.numpy())[item_body, 2])
         if runner is not None:
             runner.set_profile("transport")
+        phase[0] = "lift"
         ramp(q_lift, CLOSED_CTRL, 800)               # lift 10 cm
         step(1000)                                   # hold 1 s
         z_hold = float(np.asarray(state.body_q.numpy())[item_body, 2])
@@ -272,6 +327,9 @@ def main() -> int:
 
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(report, indent=2) + "\n")
+    if a.trace is not None:
+        a.trace.parent.mkdir(parents=True, exist_ok=True)
+        a.trace.write_text(json.dumps({"every_ticks": trace_every, "rows": trace_rows}, indent=1) + "\n")
     print(json.dumps({k: report.get(k) for k in ("result", "height_gain_m", "box_z_after_hold",
                                                  "box_xy_drift_m", "steps_per_s", "checks", "error")
                       if k in report}, indent=2))
