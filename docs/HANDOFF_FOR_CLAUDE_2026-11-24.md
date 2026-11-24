@@ -5,11 +5,12 @@
 number is copied from a file under `reports/`, and each row states its evidence class. Where
 something was not run, it says **not run**.
 
-**One-line state.** A1–A4, A6 are DONE; **A5 is FAIL** (one elbow row on the original 15 mm bound,
-plus one estimated-deflection row) and a full re-run is in flight; **A7 is FAIL** with 0 certifiable
-trials, but the compliant-descent bug that blocked it is now fixed and probes pass; A8–A10, Kaggle,
-SFT/GRPO, the industry eval and the paper are **not run**. The ladder is blocked at A5 by a
-**criterion decision only the operator can make** (D-79).
+**One-line state.** A1–A4, A6 are DONE; **A5 is FAIL** on four rows (elbow bound, its two dependent
+rows, and one estimated-deflection row), and the definitive 2026-11-25 re-run reproduces the previous
+run **exactly**; **A7 is FAIL** with 0 certifiable trials, but the compliant-descent bug that blocked
+it is now fixed and probes pass; A8–A10, Kaggle, SFT/GRPO, the industry eval and the paper are
+**not run**. The ladder is blocked at A5 by a **criterion decision only the operator can make**
+(D-79).
 
 ---
 
@@ -20,8 +21,8 @@ SFT/GRPO, the industry eval and the paper are **not run**. The ladder is blocked
 | repo | `github.com:rezaxr14/robot-team-packing`, branch `main` |
 | HEAD | `9f64984` — **pushed**; `main` is level with `origin/main` |
 | commits in this push | `741bad3 … 9f64984` (11 commits, `c103e62..9f64984`) |
-| untracked / not yet committed | `reports/a5_full_review3.log` (contains the A5 run not yet finished), `reports/g6_newton_push_2026-11-23.json` (preserved previous A5 report), this file, `reports/a7_probe_2026-11-24/`, `docs/USER_PROMPTS_VERBATIM.md` (U062) |
-| A5 process | `ops/a5_newton_push.py --invariant-steps 100000` (PID 19485) was **still running** when this file was written; `reports/g6_newton_push.json` had **not** been rewritten |
+| evidence committed with this revision | `reports/g6_newton_push.json` (new A5 run), `reports/g6_newton_push_2026-11-23.json` (preserved previous A5 report), `reports/a5_full_review3.log`, `reports/a7_probe_2026-11-24/`, `docs/USER_PROMPTS_VERBATIM.md` (U062/U063/U064) |
+| A5 process | **finished 2026-11-25 00:53**; `reports/g6_newton_push.json` was rewritten (100,000 steps, 7,496.8 s) and every measured number equals the 2026-11-23 run; gate `--require A5` exits 1 |
 
 Authority order (do not reorder): `docs/USER_PLAN_VERBATIM.md`, `.agent/RULES.md`,
 `docs/AGENT_RUNBOOK.md` (including "Addendum 2026-11-22"), `IMPLEMENTATION_PLAN.md`, `DECISIONS.md`.
@@ -51,18 +52,21 @@ Gate command: `python ops/arm_steps_status.py --require A5` (and `--require A6`,
 
 ## 3. A5 — the open criterion (this is the decision)
 
-### 3.1 What is running
+### 3.1 What ran, and reproducibility
 
 `source ops/env.sh && $ISAAC_PY ops/a5_newton_push.py --invariant-steps 100000 --out
-reports/g6_newton_push.json`, started 2026-11-24 22:17, expected 2.1 h of wall time on this laptop
-(inflated by two A7 probes that shared the GPU). The code is identical to the run that produced
-`reports/g6_newton_push_2026-11-23.json`, so the numbers should reproduce; **no number from the new
-run is claimed until the report exists**, and the previous report is preserved separately.
+reports/g6_newton_push.json`, 2026-11-24 22:17 -> 2026-11-25 00:53. The run took 7,496.8 s of wall
+time (13.3 steps/s) instead of 7,677.6 s, because two A7 compliance probes shared the GPU for part
+of it; every criterion is sim-time based. **Every measured value matches the 2026-11-23 run to the
+reported precision** — including the four failing rows. Only `wall_s` differs. So the harness is
+reproducible and the FAIL is a design/criterion result, not a flaky measurement. The previous
+report is preserved at `reports/g6_newton_push_2026-11-23.json`, the log is
+`reports/a5_full_review3.log`.
 
-### 3.2 The ten rows (2026-11-23 run — the last complete measurement)
+### 3.2 The ten rows (2026-11-25 run; identical to 2026-11-23)
 
-Source: `reports/g6_newton_push.json` (preserved at `reports/g6_newton_push_2026-11-23.json`),
-100,000 simulated steps, 7,677.6 s wall, software versions pinned inside the report.
+Source: `reports/g6_newton_push.json` (previous: `reports/g6_newton_push_2026-11-23.json`),
+100,000 simulated steps, 7,496.8 s wall, software versions pinned inside the report.
 
 | row | state | measured |
 |---|---|---|
@@ -72,9 +76,9 @@ Source: `reports/g6_newton_push.json` (preserved at `reports/g6_newton_push_2026
 | `invariants` | PASS | 100,000 steps, 0 violations in 39,086 RETURN ticks |
 | `human_hand_proxy` | PASS | 14.57 N virtual-spring peak, 59.7 mm excursion |
 | `release_return_estimated` | PASS | same as above through the estimator |
-| `elbow_push` | **FAIL** | see 3.3 |
-| `payload` | **FAIL** | 4 cells, all fail only through the `elbow_push` subrow |
-| `latency_error` | **FAIL** | 8 cells, all fail only through the `elbow_push` subrow |
+| `elbow_push` | **FAIL** | see 3.3; certified mapping is the dynamic one, the flange-equivalent is within 0.25 % |
+| `payload` | **FAIL** | 4 cells (0/1/2/3 kg); each cell's own steady/release/plan checks pass, it fails only through the `elbow_push` subrow |
+| `latency_error` | **FAIL** | 8 cells (delay 0-3 ticks, mass and armature +/-20 %); fails only through the `elbow_push` subrow |
 | `steady_deflection_estimated` | **FAIL** | 12.02 % (0.5 N estimator noise) and 11.38 % (1 N) vs 10 % |
 
 So **four of the ten rows are FAIL** (6 PASS), and all four reduce to **two independent
@@ -301,7 +305,7 @@ $ISAAC_PY ops/a7_regression_physical.py aggregate
 
 ## 8. Not done (explicit)
 
-* A5 numbers from the 2026-11-24 re-run — report not written yet.
+* Nothing further on A5: the re-run landed and reproduces the previous result; the four FAIL rows need the criterion decisions in section 3.6.
 * 200-trial compliant grasp evaluation; compliant confirmation on the tuning split.
 * Compliant branches for weigh / release / retreat / handover / push_aside.
 * 7-skill grading, A8, A9, A10.

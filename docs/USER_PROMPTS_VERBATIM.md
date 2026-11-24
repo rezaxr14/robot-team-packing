@@ -447,3 +447,15 @@ D-79 question: *"Both wrench mappings fail the original 15 mm elbow bound (19.33
 ```
 report everything in the docs for claude (new file) and i will get back a feedback for you from it
 ```
+
+## U063 — 2026-11-24 — push approval for the handoff commit
+
+```
+you have my push approval push it so i can show it to the claude
+```
+
+## U064 — 2026-11-24 — update docs after A5 and push
+
+```
+after a5 update teh docs and push again so i get a combined feedback, thnx
+```

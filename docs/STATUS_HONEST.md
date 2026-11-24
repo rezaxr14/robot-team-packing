@@ -289,3 +289,38 @@ graded so far are 4 probe seeds, not 200.**
 | A7 `place` compliant bridge | SIM, **not a rung result** | `ops/a7_s4_place.py --compliant` mirrors the S2 bridge: runner created before the solver (arm servo gains zeroed there), `step`/`ramp` routed through `SkillArm.path_plan`/`run_plan`, profiles approach/grasp/transport, controller recorded. **One probe seed** (seed 0, 0.3 kg): PASS — object centre in `compartment_1`, penetration 0.0 m, hand clear, all four checks true. It is now in the aggregator's `COMPLIANT_READY` set, but 200 graded trials are still required |
 
 | Handoff for outside review | — | `docs/HANDOFF_FOR_CLAUDE_2026-11-24.md` collects the A5 criterion question (both elbow mappings vs 15 mm), the A7 compliant-descent root cause and fix, the probe evidence, the grading contract, the known risks and seven specific questions. Written at the user's request (U062). The probe reports are in `reports/a7_probe_2026-11-24/`; the previous A5 report is preserved at `reports/g6_newton_push_2026-11-23.json` |
+
+## Update 2026-11-25 — A5 definitive re-run reproduces (SIM, FAIL unchanged)
+
+No threshold, tolerance, clamp, profile or pre-registered test was changed. `configs/approvals.json`
+is still `{}`. `reports/g6_newton_push.json` (100,000 steps, 7,496.8 s wall, 13.3 steps/s) replaces
+the 2026-11-23 report, which is preserved at `reports/g6_newton_push_2026-11-23.json`; the run log is
+`reports/a5_full_review3.log`.
+
+**Reproducibility.** Every measured number matches the 2026-11-23 run to the reported precision (same
+`steady_deflection` 6.0694 %, `release_return` 0.096789 m / 1.104 s / 0.95 mm / 0.5964 % / 0.0971
+m/s, `plan_pause` clock 0.500 -> 0.500 then 5.422 with `RESUMED err=0.000856 via=settled` at 2.428 s
+and 0.249 mm final error, 39,086 RETURN ticks with 0 violations, 14.5722 N / 59.674 mm hand proxy,
+19.33/39.01/59.16 mm and 19.65/39.63/63.32 mm elbow, 12.0151 % / 11.3836 % estimated deflection).
+Only `wall_s` differs (7,677.6 -> 7,496.8 s), because two A7 probes shared the GPU for part of the
+run; all pass criteria are sim-time based.
+
+| row | state | measured (2026-11-25 run) |
+|---|---|---|
+| `steady_deflection` | **PASS** | 24/24 subrows, worst 6.0694 % vs the unchanged 10 % |
+| `release_return` | **PASS** | delta 96.789 mm, settle 1.104 s, final 0.95 mm, overshoot 0.5964 %, peak 0.0971 m/s < 0.11 |
+| `plan_pause` | **PASS** | clock frozen 0.500 during YIELD, `RESUMED err=0.000856 via=settled` at 2.428 s, clock 5.422, final error **0.249 mm** |
+| `invariants` | **PASS** | 100,000 steps, 0 violations (39,086 RETURN ticks) |
+| `human_hand_proxy` | **PASS** | 14.5722 N peak, 59.674 mm excursion |
+| `release_return_estimated` | **PASS** | same checks through the filtered estimator |
+| `elbow_push` | **FAIL** | certified mapping = dynamic; **19.33/39.01/59.16 mm** (link 4) and **19.65/39.63/63.32 mm** (link 6) at 10/20/30 N vs the original 15 mm; flange-equivalent differs by < 0.25 %; post-release recovery 0.20-0.42 mm; link yielded in all six |
+| `payload` | **FAIL** | 4 cells (0/1/2/3 kg); every cell's own steady/release/plan checks pass, it fails only through `elbow_push` |
+| `latency_error` | **FAIL** | 8 cells (delay 0-3 ticks, mass +/-20 %, armature +/-20 %); fails only through `elbow_push` |
+| `steady_deflection_estimated` | **FAIL** | **12.0151 %** (0.5 N) and **11.3836 %** (1 N) vs the unchanged 10 % |
+
+Gate: `python ops/arm_steps_status.py --require A5` exits **1** (`A5 FAIL`; failing checks
+`['elbow_push', 'payload', 'latency_error', 'steady_deflection_estimated']`). A6 is DONE; A7 now
+reads `0/0` for all seven skills because the aggregator accepts only `NewtonCompliantArm` trials.
+The four FAIL rows still reduce to the same two questions recorded in
+`docs/HANDOFF_FOR_CLAUDE_2026-11-24.md`: the elbow criterion (D-79, PROPOSED, not approved) and the
+residual-bias coupling at gain 4. Nothing can move past A5 until the operator decides the criterion.

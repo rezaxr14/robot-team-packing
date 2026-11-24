@@ -46,8 +46,8 @@
     "spd_measured": true
   },
   "steps_simulated": 100000,
-  "wall_s": 7677.6,
-  "steps_per_s": 13.0,
+  "wall_s": 7496.81,
+  "steps_per_s": 13.3,
   "wrench_estimate_note": "supervisor uses the injected wrench (simulation ground truth); the acceleration-based inverse-dynamics estimate is logged beside it in each steady_deflection subrow for comparison",
   "measurement_notes": [
     "Steady deflection is the mean over the last 0.5 s of a 1.5 s hold; expected |delta| = F / K_lin with K_lin from PROFILES[profile].",
