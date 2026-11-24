@@ -46,7 +46,7 @@ TRIAL_DIR_OVERRIDE = {"grasp": "grasp_rule"}
 # skill scripts still use the MJCF position servos, so they cannot be graded until their
 # bridge exists; asking for a compliant run there is an error, never a silent servo run.
 COMPLIANT_TAG = "NewtonCompliantArm"
-COMPLIANT_READY = {"grasp"}
+COMPLIANT_READY = {"grasp", "place"}
 
 
 def trials_dir(skill: str) -> Path:
