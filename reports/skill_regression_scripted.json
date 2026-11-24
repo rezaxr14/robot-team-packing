@@ -1,25 +1,28 @@
 {
   "step": "A7 physical skill regression",
   "evidence_class": "SIM",
+  "compliant_controller_required": "NewtonCompliantArm",
   "kind": "newton_physical",
   "scope": "graded per-skill Newton trials; missing/ungraded skills are not counted as PASS",
   "trials": 0,
-  "passed": 1,
+  "passed": 0,
   "total": 7,
   "trial_totals": {
-    "all": 200,
-    "pass": 196
+    "all": 0,
+    "pass": 0
   },
   "per_skill": {
     "grasp": {
-      "n": 200,
-      "passed": 196,
-      "rate": 0.98,
+      "n": 0,
+      "passed": 0,
+      "rate": 0.0,
       "wilson95": [
-        0.9497121344948062,
-        0.9921956998236058
+        0.0,
+        0.0
       ],
-      "graded": true
+      "n_reports": 0,
+      "excluded_noncompliant": 0,
+      "graded": false
     },
     "place": {
       "n": 0,
@@ -29,6 +32,8 @@
         0.0,
         0.0
       ],
+      "n_reports": 11,
+      "excluded_noncompliant": 11,
       "graded": false
     },
     "release": {
@@ -39,6 +44,8 @@
         0.0,
         0.0
       ],
+      "n_reports": 0,
+      "excluded_noncompliant": 0,
       "graded": false
     },
     "retreat": {
@@ -49,6 +56,8 @@
         0.0,
         0.0
       ],
+      "n_reports": 0,
+      "excluded_noncompliant": 0,
       "graded": false
     },
     "weigh": {
@@ -59,6 +68,8 @@
         0.0,
         0.0
       ],
+      "n_reports": 0,
+      "excluded_noncompliant": 0,
       "graded": false
     },
     "handover": {
@@ -69,6 +80,8 @@
         0.0,
         0.0
       ],
+      "n_reports": 0,
+      "excluded_noncompliant": 0,
       "graded": false
     },
     "push_aside": {
@@ -79,13 +92,15 @@
         0.0,
         0.0
       ],
+      "n_reports": 0,
+      "excluded_noncompliant": 0,
       "graded": false
     }
   },
   "cases": {
     "grasp": {
-      "rate": 0.98,
-      "passed": true,
+      "rate": 0.0,
+      "passed": false,
       "tags": [
         "grasp"
       ]

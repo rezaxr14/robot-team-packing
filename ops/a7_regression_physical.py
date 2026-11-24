@@ -42,14 +42,24 @@ MIN_RATE = 0.90
 # mixed-command exploration, which never counts as a rung result.
 TRIAL_DIR_OVERRIDE = {"grasp": "grasp_rule"}
 
+# A number only counts if the arm was driven through the A5 supervisor.  The other six
+# skill scripts still use the MJCF position servos, so they cannot be graded until their
+# bridge exists; asking for a compliant run there is an error, never a silent servo run.
+COMPLIANT_TAG = "NewtonCompliantArm"
+COMPLIANT_READY = {"grasp"}
+
 
 def trials_dir(skill: str) -> Path:
     return ROOT / "reports" / "a7_physical" / TRIAL_DIR_OVERRIDE.get(skill, skill)
 
 
-def run(skill: str, seeds: int, start: int, mass: float) -> int:
+def run(skill: str, seeds: int, start: int, mass: float, compliant: bool = False) -> int:
     if skill not in DRIVERS:
         print(f"NO_DRIVER for {skill}; no trials run", file=sys.stderr)
+        return 1
+    if compliant and skill not in COMPLIANT_READY:
+        print(f"NO_COMPLIANT_DRIVER for {skill}: the script drives MJCF position servos, "
+              f"so a compliant cert number is impossible; no trials run", file=sys.stderr)
         return 1
     script, extra = DRIVERS[skill]
     out_dir = trials_dir(skill)
@@ -60,6 +70,8 @@ def run(skill: str, seeds: int, start: int, mass: float) -> int:
             continue
         cmd = [sys.executable, str(ROOT / script), "--seed", str(seed), "--mass", str(mass),
                "--out", str(out), *extra]
+        if compliant:
+            cmd.append("--compliant")
         subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, check=False)
     return 0
 
@@ -74,11 +86,17 @@ def aggregate() -> int:
                 recs.append(json.loads(f.read_text()))
             except Exception:  # noqa: BLE001
                 pass
+        n_reports = len(recs)
+        # Only trials that actually ran through the A5 supervisor count.  The gate reads
+        # `n`/`passed`, so a servo report in the same directory can never inflate them.
+        recs = [r for r in recs if str(r.get("controller", "")).startswith(COMPLIANT_TAG)]
         n = len(recs)
         k = sum(r.get("result") == "PASS" for r in recs)
         lo, hi = wilson(k, n) if n else (0.0, 0.0)
         per_skill[skill] = {"n": n, "passed": k, "rate": k / n if n else 0.0,
                             "wilson95": [lo, hi],
+                            "n_reports": n_reports,
+                            "excluded_noncompliant": n_reports - n,
                             "graded": n >= MIN_TRIALS and k / n >= MIN_RATE if n else False}
         cases[skill] = {"rate": per_skill[skill]["rate"], "passed": per_skill[skill]["graded"],
                         "tags": [skill]}
@@ -87,6 +105,7 @@ def aggregate() -> int:
     report = {
         "step": "A7 physical skill regression",
         "evidence_class": "SIM",
+        "compliant_controller_required": COMPLIANT_TAG,
         "kind": "newton_physical",
         "scope": "graded per-skill Newton trials; missing/ungraded skills are not counted as PASS",
         # Gate contract: `trials` = minimum trials for ANY skill, `passed` = number of
@@ -118,9 +137,11 @@ def main() -> int:
     r.add_argument("--seeds", type=int, default=200)
     r.add_argument("--start", type=int, default=0)
     r.add_argument("--mass", type=float, default=0.5)
+    r.add_argument("--compliant", action="store_true",
+                   help="drive the arm through NewtonCompliantArm (required for a cert number)")
     sub.add_parser("aggregate")
     a = ap.parse_args()
-    return run(a.skill, a.seeds, a.start, a.mass) if a.cmd == "run" else aggregate()
+    return run(a.skill, a.seeds, a.start, a.mass, a.compliant) if a.cmd == "run" else aggregate()
 
 
 if __name__ == "__main__":

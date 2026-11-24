@@ -31,9 +31,12 @@ TUNING_START = 900000
 EVAL_START = 100000
 
 
-def run_trial(seed: int, mass: float, out: Path, *, rule: bool, lift_delta: float | None) -> dict:
+def run_trial(seed: int, mass: float, out: Path, *, rule: bool, lift_delta: float | None,
+              compliant: bool = False) -> dict:
     out.parent.mkdir(parents=True, exist_ok=True)
     cmd = [sys.executable, str(TRIAL), "--seed", str(seed), "--mass", str(mass), "--out", str(out)]
+    if compliant:
+        cmd.append("--compliant")
     if rule:
         cmd.append("--rule")
     elif lift_delta is not None:
@@ -53,7 +56,7 @@ def summarise(rows: list[dict]) -> dict:
             "wilson95": [lo, hi], "min_gain_m": min(gains) if gains else None}
 
 
-def tune(seeds: int) -> int:
+def tune(seeds: int, compliant: bool = False) -> int:
     out_dir = ROOT / "reports" / "a7_s2_tune_trials"
     cells = {}
     for mass in MASSES:
@@ -63,24 +66,26 @@ def tune(seeds: int) -> int:
             for i in range(seeds):
                 seed = TUNING_START + i
                 out = out_dir / f"m{mass:g}_d{delta:.2f}_s{seed}.json"
-                rows.append(run_trial(seed, mass, out, rule=False, lift_delta=delta))
+                rows.append(run_trial(seed, mass, out, rule=False, lift_delta=delta, compliant=compliant))
             cells[f"m{mass:g}_d{delta:.2f}"] = summarise(rows)
     report = {"step": "A7 S2 lift-rule tuning (tuning split only)", "evidence_class": "SIM",
               "scope": "candidate lift deltas on tuning seeds >= 900000; NOT a rung result",
-              "tuning_seeds_min": TUNING_START, "seeds_per_cell": seeds, "cells": cells}
+              "tuning_seeds_min": TUNING_START, "seeds_per_cell": seeds, "cells": cells,
+              "controller": ("NewtonCompliantArm (A5 supervisor)" if compliant
+                             else "MJCF position servos (not a cert number)")}
     (ROOT / "reports" / "a7_s2_rule_tuning.json").write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps(cells, indent=2))
     return 0
 
 
-def evaluate(seeds: int) -> int:
+def evaluate(seeds: int, compliant: bool = False) -> int:
     out_dir = ROOT / "reports" / "a7_physical" / "grasp_rule"
     rows, per_mass = [], {}
     for i in range(seeds):
         mass = MASSES[i % len(MASSES)]
         seed = EVAL_START + i
         out = out_dir / f"s{seed}_m{mass:g}.json"
-        rec = run_trial(seed, mass, out, rule=True, lift_delta=None)
+        rec = run_trial(seed, mass, out, rule=True, lift_delta=None, compliant=compliant)
         rec["seed"], rec["mass_kg"] = seed, mass
         rows.append(rec)
     for mass in MASSES:
@@ -100,6 +105,9 @@ def evaluate(seeds: int) -> int:
               "rule": "lift_delta_for_mass(mass) in ops/a7_s2_lift_v2.py",
               "tuning_seeds_min": TUNING_START, "eval_seeds_min": EVAL_START,
               "mass_source": "commanded mass (stand-in for the `weigh` estimate; recorded in each trial)",
+              "controller": ("NewtonCompliantArm (A5 supervisor)" if compliant
+                             else "MJCF position servos (not a cert number)"),
+              "compliant": bool(compliant),
               "n": overall["n"], "pass": overall["pass"], "rate": overall["rate"],
               "wilson95": overall["wilson95"], "by_mass": per_mass,
               "checks": checks, "trials": rows}
@@ -114,10 +122,12 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("stage", choices=("tune", "eval"))
     ap.add_argument("--seeds", type=int, default=None)
+    ap.add_argument("--compliant", action="store_true",
+                    help="drive the arm through NewtonCompliantArm (required for a cert number)")
     a = ap.parse_args()
     if a.stage == "tune":
-        return tune(a.seeds or 10)
-    return evaluate(a.seeds or 210)
+        return tune(a.seeds or 10, compliant=a.compliant)
+    return evaluate(a.seeds or 210, compliant=a.compliant)
 
 
 if __name__ == "__main__":
