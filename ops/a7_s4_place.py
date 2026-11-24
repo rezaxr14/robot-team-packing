@@ -204,6 +204,9 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--mass", type=float, default=0.3)
     ap.add_argument("--out", type=Path, default=OUT)
+    ap.add_argument("--compliant", action="store_true",
+                    help="drive the arm through NewtonCompliantArm (A5 supervisor) instead of the "
+                         "MJCF position servos; required for a cert number")
     a = ap.parse_args()
 
     report = {
@@ -239,10 +242,21 @@ def main() -> int:
         state.joint_q = wp.array(q.astype(np.float32), dtype=state.joint_q.dtype, device=model.device)
         control.joint_target_q = wp.array(q.astype(np.float32), dtype=control.joint_target_q.dtype,
                                           device=model.device)
+        # The compliant runner zeroes the arm's position-servo gains, so it must exist
+        # BEFORE the solver is constructed (the solver copies the gains).
+        runner = None
+        if a.compliant:
+            sys.path.insert(0, str(ROOT / "ops"))
+            from a7_compliant import CompliantArmRunner
+            runner = CompliantArmRunner(model, state, q_home=fk.Q_HOME, profile="approach")
         solver = newton.solvers.SolverMuJoCo(model, njmax=512, nconmax=512)
         cp = newton.CollisionPipeline(model)
         contacts = cp.contacts()
         item_body = int(np.flatnonzero(["s4_item" in lbl for lbl in model.body_label])[0])
+        arm = None
+        if runner is not None:
+            from a7_compliant import SkillArm
+            arm = SkillArm(runner, fl, fr, control)
 
         def set_cmd(arm_q, finger_ctrl):
             c = np.asarray(control.joint_target_q.numpy()).astype(float).copy()
@@ -251,7 +265,20 @@ def main() -> int:
             control.joint_target_q = wp.array(c.astype(np.float32), dtype=control.joint_target_q.dtype,
                                               device=model.device)
 
+        def step_plan(plan):
+            """One physics tick with the compliant arm following ``plan``."""
+            state.clear_forces()
+            runner.tick(control, plan=plan)
+            cp.collide(state, contacts)
+            solver.step(state, state, control, contacts, DT)
+            if not stepped[0]:
+                stepped[0] = True
+                report["evidence_class"] = "SIM"
+
         def step(n):
+            if arm is not None:
+                arm.hold(step_plan, n)
+                return
             for _ in range(n):
                 state.clear_forces()
                 cp.collide(state, contacts)
@@ -261,20 +288,31 @@ def main() -> int:
                     report["evidence_class"] = "SIM"
 
         def ramp(path, finger_ctrl, n):
+            if arm is not None:
+                plan, t_end = arm.path_plan(path, vmax=0.08)
+                arm.run_plan(plan, t_end, step_plan, finger=finger_ctrl)
+                arm.hold(step_plan, 400, finger=finger_ctrl)
+                return
             for k in range(n):
                 u = min(1.0, (k + 1) / n)
                 idx = u * (len(path) - 1)
                 i = min(int(idx), len(path) - 2)
-                arm = path[i] + (idx - i) * (path[i + 1] - path[i])
-                set_cmd(arm, finger_ctrl)
+                arm_q = path[i] + (idx - i) * (path[i + 1] - path[i])
+                set_cmd(arm_q, finger_ctrl)
                 step(1)
 
         t0 = time.perf_counter()
         step(200)                                   # settle
+        if runner is not None:
+            runner.set_profile("approach")
         ramp(q_pre, 0.0, 1000)                      # approach
+        if runner is not None:
+            runner.set_profile("grasp")
         ramp(q_grasp, 0.0, 600)                     # descend
         ramp(q_grasp, CLOSED_CTRL, 500)             # close
         step(500)                                   # establish grasp
+        if runner is not None:
+            runner.set_profile("transport")
         ramp(q_lift, CLOSED_CTRL, 800)              # slip-compensated lift (D-80)
         step(300)
         ramp(q_transport, CLOSED_CTRL, 800)         # carry over the compartment
@@ -308,7 +346,11 @@ def main() -> int:
             "hand_clear_definition": ("fingers open (inner gap >= box edge), flange above compartment "
                                       "rim, and object centre inside a compartment"),
             "hand_clear": hand_clear,
-            "wall_s": round(wall, 2), "steps": steps, "steps_per_s": round(steps / wall, 1),
+            "wall_s": round(wall, 2),
+            "steps": int(arm.steps + 200) if arm is not None else steps,
+            "steps_per_s": round((int(arm.steps + 200) if arm is not None else steps) / wall, 1),
+            "controller": ("NewtonCompliantArm (A5 supervisor; profiles approach/grasp/transport)"
+                           if arm is not None else "MJCF position servos (not a cert number)"),
             "checks": {
                 "finite": bool(np.isfinite(bq).all()),
                 "object_inside_a_compartment": contained,
