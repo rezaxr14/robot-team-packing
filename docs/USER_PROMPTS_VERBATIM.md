@@ -410,3 +410,26 @@ continue
 ```
 continue
 ```
+
+## U060 — 2026-11-24 — stop for today
+
+```
+stop we will continue tommarow
+```
+
+## U061 — 2026-11-24 — review patches, D-79, A5/A7 re-run, grading order
+
+```
+FIRST append this entire message verbatim to docs/USER_PROMPTS_VERBATIM.md, then act.
+
+0. Run: git fetch; git status -sb; git log --oneline origin/main..HEAD. Show me the output. If the review patches (gate approvals check, stall-aware resume + bounded settled-hold integral in rtp/control/compliance.py, tuning_seeds_min) are not in HEAD, apply them with `git am <patch>`; print `echo $?` (must be 0). Run `python -m pytest -q tests/test_compliance.py tests/test_arm_steps_status.py`. Then ask me for push approval and list the exact commits.
+1. D-79: rewrite it to remove "user pre-approved". It is PROPOSED, not approved; no entry in USER_PROMPTS_VERBATIM.md approves it. Leave configs/approvals.json without a D-79 entry. The elbow_push row must read FAIL against the original 15 mm bound until I add the entry.
+2. Before relying on D-79, test BOTH elbow wrench mappings on Newton: (a) the current flange-equivalent of the body push, (b) the dynamically consistent task wrench Lambda J M^-1 tau_ext. Report EE error at 10/20/30 N on links 4 and 6 against the ORIGINAL 15 mm bound. If (b) meets it, D-79 is unnecessary; drop it.
+3. Re-run A5 in full with the stall-aware resume: `source ops/env.sh && $ISAAC_PY ops/a5_newton_push.py --invariant-steps 100000 --out reports/g6_newton_push.json`. Report all 10 rows with numbers. No threshold, tolerance, clamp or test changes.
+4. A7 grasp: ONE deterministic lift_delta = f(mass), tuned only on seeds >= 900000 (add `tuning_seeds_min: 900000` to configs/arm_cert.yaml; authorized, nothing else in that file changes), evaluated once on fresh seeds. No pooling of the 12 cm and 14 cm runs. Discard the current 196/200 as a cert number.
+5. Add rung S3b: analytic slip boundary 2*mu*N >= m*g over masses x friction x force factors; crush = peak finger force > crush_force_for(fragility).
+6. Grade all 7 skills to >= 200 trials each, >= 0.90 each, same driver. Handover stays FAIL until it passes honestly.
+7. Then A8 (train/distill_arm.py), A9 (push-perturbed; residual SAC only if needed), A10 (cards + skill_tables). Run `--require A<k-1>` before each step. R4+ only after `--require A10`.
+
+STOP CONDITIONS: stop and report if any gate exits 1 after two fix attempts, if a result needs a threshold change, or if a push is pending. Every number must come from a reports/*.json with its evidence class. Write "not run" when not run. Never claim safety around people.
+```
