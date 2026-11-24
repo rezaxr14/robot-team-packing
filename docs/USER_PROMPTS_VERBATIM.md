@@ -433,3 +433,17 @@ FIRST append this entire message verbatim to docs/USER_PROMPTS_VERBATIM.md, then
 
 STOP CONDITIONS: stop and report if any gate exits 1 after two fix attempts, if a result needs a threshold change, or if a push is pending. Every number must come from a reports/*.json with its evidence class. Write "not run" when not run. Never claim safety around people.
 ```
+
+## U062 — 2026-11-24 — answers to the two questions (push, D-79)
+
+Push approval question: *"May I push the 11 local commits listed above to origin/main? Nothing has been pushed."*
+
+```
+Yes — push now
+```
+
+D-79 question: *"Both wrench mappings fail the original 15 mm elbow bound (19.33/39.01/59.16 mm link 4; 19.65/39.63/63.32 mm link 6 at 10/20/30 N). How should A5's elbow_push row be scored?"*
+
+```
+report everything in the docs for claude (new file) and i will get back a feedback for you from it
+```
