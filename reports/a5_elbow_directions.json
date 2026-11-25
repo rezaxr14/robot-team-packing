@@ -1,0 +1,472 @@
+{
+ "step": "U065-E1/E2",
+ "title": "elbow push direction diagnosis (diagnostic only)",
+ "evidence_class": "SIM",
+ "diagnostic_only": true,
+ "controller_change": "none for E1/E2; residual_comp_gain=0 only in the --gain0 cells",
+ "seed_plant": 20261120,
+ "versions": {
+  "python": "3.12.16",
+  "newton": "1.6.1",
+  "warp-lang": "1.17.0",
+  "isaaclab": "28.0.0",
+  "isaaclab-newton": "9.1.4",
+  "torch": "2.15.0",
+  "numpy": "2.5.4"
+ },
+ "params": {
+  "profile": "grasp",
+  "k_lin_N_per_m": 500.0,
+  "mapping": "dynamic",
+  "push_s": 1.0,
+  "recover_s": 3.0,
+  "mode": "both",
+  "estimator_noise_N": 0.5,
+  "residual_comp_gain": 4.0,
+  "determinism": "outcome-level; each cell run once, no re-rolls; not bit-exact"
+ },
+ "cells": {
+  "told": [
+   {
+    "body": "fr3_link4",
+    "body_id": 5,
+    "direction": "-x",
+    "force_N": 10.0,
+    "profile": "grasp",
+    "k_lin_N_per_m": 500.0,
+    "mapping": "dynamic",
+    "use_estimate": false,
+    "noise_N": 0.0,
+    "f_task_N": [
+     -9.819882,
+     -0.24588,
+     -0.31755,
+     0.026377,
+     -1.07856,
+     0.0
+    ],
+    "f_task_norm_N": 9.828091,
+    "expected_deflection_m": 0.019656,
+    "max_ee_error_during_push_m": 0.019266,
+    "max_link_displacement_m": 0.025259,
+    "post_recovery_ee_error_m": 0.000189,
+    "post_recovery_ee_error_tail_mean_m": 0.000199,
+    "ee_error_over_expected": 0.9802,
+    "states_seen": [
+     "RETURN",
+     "TRACK",
+     "YIELD"
+    ],
+    "torque_clamped_ticks": 0,
+    "rate_limited_ticks": 5,
+    "estimator_force_tail_mean_N": null,
+    "wall_s": 37.3
+   },
+   {
+    "body": "fr3_link4",
+    "body_id": 5,
+    "direction": "+x",
+    "force_N": 10.0,
+    "profile": "grasp",
+    "k_lin_N_per_m": 500.0,
+    "mapping": "dynamic",
+    "use_estimate": false,
+    "noise_N": 0.0,
+    "f_task_N": [
+     9.819882,
+     0.24588,
+     0.31755,
+     -0.026377,
+     1.07856,
+     -0.0
+    ],
+    "f_task_norm_N": 9.828091,
+    "expected_deflection_m": 0.019656,
+    "max_ee_error_during_push_m": 0.019326,
+    "max_link_displacement_m": 0.025033,
+    "post_recovery_ee_error_m": 0.000278,
+    "post_recovery_ee_error_tail_mean_m": 0.000285,
+    "ee_error_over_expected": 0.9832,
+    "states_seen": [
+     "RETURN",
+     "TRACK",
+     "YIELD"
+    ],
+    "torque_clamped_ticks": 0,
+    "rate_limited_ticks": 4,
+    "estimator_force_tail_mean_N": null,
+    "wall_s": 37.4
+   },
+   {
+    "body": "fr3_link4",
+    "body_id": 5,
+    "direction": "-y",
+    "force_N": 10.0,
+    "profile": "grasp",
+    "k_lin_N_per_m": 500.0,
+    "mapping": "dynamic",
+    "use_estimate": false,
+    "noise_N": 0.0,
+    "f_task_N": [
+     0.175707,
+     -1.552352,
+     0.023549,
+     0.163693,
+     0.017217,
+     0.0
+    ],
+    "f_task_norm_N": 1.562442,
+    "expected_deflection_m": 0.003125,
+    "max_ee_error_during_push_m": 0.003045,
+    "max_link_displacement_m": 0.010243,
+    "post_recovery_ee_error_m": 0.000299,
+    "post_recovery_ee_error_tail_mean_m": 0.000306,
+    "ee_error_over_expected": 0.9745,
+    "states_seen": [
+     "TRACK"
+    ],
+    "torque_clamped_ticks": 0,
+    "rate_limited_ticks": 1,
+    "estimator_force_tail_mean_N": null,
+    "wall_s": 40.4
+   }
+  ],
+  "estimate": [],
+  "gain0": []
+ },
+ "model_crosscheck": {
+  "mujoco": {
+   "evidence_class": "MODEL",
+   "model": "assets/cache/menagerie/franka_fr3_v2/fr3v2.xml",
+   "q": [
+    0.0,
+    -0.785,
+    0.0,
+    -2.356,
+    0.0,
+    1.571,
+    0.785
+   ],
+   "pinv_rcond": 1e-06,
+   "note": "closed-form dynamic task wrench; no Newton, no contact, no controller",
+   "cells": {
+    "body_origin": {
+     "fr3_link4/-x": {
+      "norm_N": 9.0861,
+      "vector_N": [
+       -8.8838,
+       -0.0,
+       -1.9067
+      ]
+     },
+     "fr3_link4/+x": {
+      "norm_N": 9.0861,
+      "vector_N": [
+       8.8838,
+       0.0,
+       1.9067
+      ]
+     },
+     "fr3_link4/-y": {
+      "norm_N": 0.32,
+      "vector_N": [
+       0.086,
+       0.308,
+       0.0115
+      ]
+     },
+     "fr3_link4/+y": {
+      "norm_N": 0.32,
+      "vector_N": [
+       -0.086,
+       -0.308,
+       -0.0115
+      ]
+     },
+     "fr3_link4/-z": {
+      "norm_N": 5.3191,
+      "vector_N": [
+       -5.2007,
+       -0.0,
+       -1.1162
+      ]
+     },
+     "fr3_link4/+z": {
+      "norm_N": 5.3191,
+      "vector_N": [
+       5.2007,
+       0.0,
+       1.1162
+      ]
+     },
+     "fr3_link6/-x": {
+      "norm_N": 10.0,
+      "vector_N": [
+       -10.0,
+       -0.0,
+       0.0
+      ]
+     },
+     "fr3_link6/+x": {
+      "norm_N": 10.0,
+      "vector_N": [
+       10.0,
+       0.0,
+       0.0
+      ]
+     },
+     "fr3_link6/-y": {
+      "norm_N": 8.2414,
+      "vector_N": [
+       0.0188,
+       -8.2414,
+       0.0025
+      ]
+     },
+     "fr3_link6/+y": {
+      "norm_N": 8.2414,
+      "vector_N": [
+       -0.0188,
+       8.2414,
+       -0.0025
+      ]
+     },
+     "fr3_link6/-z": {
+      "norm_N": 10.0,
+      "vector_N": [
+       -0.0,
+       -0.0,
+       -10.0
+      ]
+     },
+     "fr3_link6/+z": {
+      "norm_N": 10.0,
+      "vector_N": [
+       0.0,
+       0.0,
+       10.0
+      ]
+     }
+    },
+    "com": {
+     "fr3_link4/-x": {
+      "norm_N": 9.8246,
+      "vector_N": [
+       -9.8169,
+       -0.2237,
+       -0.3172
+      ]
+     },
+     "fr3_link4/+x": {
+      "norm_N": 9.8246,
+      "vector_N": [
+       9.8169,
+       0.2237,
+       0.3172
+      ]
+     },
+     "fr3_link4/-y": {
+      "norm_N": 2.2803,
+      "vector_N": [
+       0.0785,
+       -2.2789,
+       0.0105
+      ]
+     },
+     "fr3_link4/+y": {
+      "norm_N": 2.2803,
+      "vector_N": [
+       -0.0785,
+       2.2789,
+       -0.0105
+      ]
+     },
+     "fr3_link4/-z": {
+      "norm_N": 5.1191,
+      "vector_N": [
+       -3.9397,
+       -0.1188,
+       -3.2665
+      ]
+     },
+     "fr3_link4/+z": {
+      "norm_N": 5.1191,
+      "vector_N": [
+       3.9397,
+       0.1188,
+       3.2665
+      ]
+     },
+     "fr3_link6/-x": {
+      "norm_N": 10.0174,
+      "vector_N": [
+       -9.9925,
+       0.7059,
+       0.001
+      ]
+     },
+     "fr3_link6/+x": {
+      "norm_N": 10.0174,
+      "vector_N": [
+       9.9925,
+       -0.7059,
+       -0.001
+      ]
+     },
+     "fr3_link6/-y": {
+      "norm_N": 9.6594,
+      "vector_N": [
+       0.0036,
+       -9.6594,
+       0.0005
+      ]
+     },
+     "fr3_link6/+y": {
+      "norm_N": 9.6594,
+      "vector_N": [
+       -0.0036,
+       9.6594,
+       -0.0005
+      ]
+     },
+     "fr3_link6/-z": {
+      "norm_N": 10.0,
+      "vector_N": [
+       0.0,
+       -0.0,
+       -10.0
+      ]
+     },
+     "fr3_link6/+z": {
+      "norm_N": 10.0,
+      "vector_N": [
+       -0.0,
+       0.0,
+       10.0
+      ]
+     }
+    }
+   }
+  },
+  "newton_mapping_10N": {
+   "fr3_link4/-x": {
+    "norm_N": 9.8281,
+    "vector_N": [
+     -9.8199,
+     -0.2459,
+     -0.3175
+    ]
+   },
+   "fr3_link4/+x": {
+    "norm_N": 9.8281,
+    "vector_N": [
+     9.8199,
+     0.2459,
+     0.3175
+    ]
+   },
+   "fr3_link4/-y": {
+    "norm_N": 1.5624,
+    "vector_N": [
+     0.1757,
+     -1.5524,
+     0.0235
+    ]
+   },
+   "fr3_link4/+y": {
+    "norm_N": 1.5624,
+    "vector_N": [
+     -0.1757,
+     1.5524,
+     -0.0235
+    ]
+   },
+   "fr3_link4/-z": {
+    "norm_N": 5.1166,
+    "vector_N": [
+     -3.9372,
+     -0.1001,
+     -3.2662
+    ]
+   },
+   "fr3_link4/+z": {
+    "norm_N": 5.1166,
+    "vector_N": [
+     3.9372,
+     0.1001,
+     3.2662
+    ]
+   },
+   "fr3_link6/-x": {
+    "norm_N": 10.0132,
+    "vector_N": [
+     -9.9831,
+     0.7758,
+     0.0023
+    ]
+   },
+   "fr3_link6/+x": {
+    "norm_N": 10.0132,
+    "vector_N": [
+     9.9831,
+     -0.7758,
+     -0.0023
+    ]
+   },
+   "fr3_link6/-y": {
+    "norm_N": 9.6258,
+    "vector_N": [
+     0.0081,
+     -9.6258,
+     0.0011
+    ]
+   },
+   "fr3_link6/+y": {
+    "norm_N": 9.6258,
+    "vector_N": [
+     -0.0081,
+     9.6258,
+     -0.0011
+    ]
+   },
+   "fr3_link6/-z": {
+    "norm_N": 10.0,
+    "vector_N": [
+     -0.0,
+     0.0,
+     -10.0
+    ]
+   },
+   "fr3_link6/+z": {
+    "norm_N": 10.0,
+    "vector_N": [
+     0.0,
+     -0.0,
+     10.0
+    ]
+   }
+  },
+  "jacobian_convention": {
+   "fr3_link4": {
+    "max_abs_diff": {
+     "body_origin": 0.114337246,
+     "com": 9.54e-07
+    },
+    "matches": "com"
+   },
+   "fr3_link6": {
+    "max_abs_diff": {
+     "body_origin": 0.070959466,
+     "com": 2.861e-06
+    },
+    "matches": "com"
+   }
+  }
+ },
+ "mass_matrix_eigenvalues": {
+  "min": 0.00073074,
+  "max": 1.94978753,
+  "samples": 12000,
+  "spd_measured": true
+ }
+}

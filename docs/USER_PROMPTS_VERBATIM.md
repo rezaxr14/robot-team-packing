@@ -459,3 +459,22 @@ you have my push approval push it so i can show it to the claude
 ```
 after a5 update teh docs and push again so i get a combined feedback, thnx
 ```
+
+## U065 — 2026-11-25 — E1-E4 elbow diagnosis/estimated sweep, A7 code-only work
+
+```
+FIRST append this entire message verbatim to docs/USER_PROMPTS_VERBATIM.md, then act.
+
+E1. Elbow row diagnosis (SIM, diagnostic, no controller or scoring change). New report reports/a5_elbow_directions.json: links fr3_link4 and fr3_link6 x directions +-x,+-y,+-z x forces 10/20/30 N, profile grasp, dynamic mapping. Per cell record F_task (told wrench), expected |F_task|/K_lin, measured max EE error, link displacement, post-recovery EE error. Independent MODEL cross-check (MuJoCo Menagerie FR3 at Q_HOME): link4 +x 10N -> 9.09 N task, link4 +y -> 0.39 N, link6 +x -> 10.0 N, link6 +y -> 8.23 N, link6 +z -> 10.0 N. Report whether Newton matches these within 5 %. Also run link4 +y with residual_comp_gain=0 to show the physical response without the told-wrench equilibrium forcing.
+E2. Repeat the elbow cells with f_ext taken from the estimator path (the same wrench_hat used by human_hand_proxy and the *_estimated rows), not the injected wrench. Hardware only has the estimate.
+E3. DECISIONS: rewrite D-79 as PROPOSED v2, NOT approved, configs/approvals.json stays {}. Proposed criterion per (link, direction, force): EE_err <= 15 mm OR |EE_err - |F_task|/K_lin| <= 0.10*|F_task|/K_lin (the existing 10 % deflection tolerance, no new margin), plus link displacement > 1 mm, post-recovery EE error <= 5 mm, zero cap/leash/rate violations. Fix the formula mismatch (F/K+3 mm = 23/43/63 mm, not 28.8/53/78). Include the E1 table. The elbow row stays FAIL against 15 mm until the user adds the approvals.json entry.
+E4. steady_deflection_estimated: residual_comp_gain is a controller constant, change authorized (not a threshold). Sweep g in {0,1,2,3,4} on noise seeds DIFFERENT from the A5 report seed 20261120. For each g record steady_deflection_estimated (0.5 N and 1 N noise), release_return_estimated and plan_pause. Pick the smallest g that passes all with margin, log the sweep in DECISIONS, document the transient effective stiffness (1+g)K in docs/IMPEDANCE_SPEC.md, then ONE full A5 re-run at seed 20261120. No threshold, tolerance, clamp or test change.
+A7 (code only until `--require A5` exits 0): NO graded runs before then, because controller constants may change.
+ a. Write compliant branches for weigh, release, retreat, push_aside, handover (handover last, two runners).
+ b. place: do not follow IK iterates; use explicit waypoints pre-pose -> hover above the bag wall (wall height + margin) -> vertical descent -> place.
+ c. S3b: keep the recorded FAIL. Fix the closing transient for light low-friction objects (force ramp during close), re-measure; no criterion edit. State the certified envelope for the cards (mass, friction) from measurements.
+ d. Crush: the card says "not testable within actuator range" (20 N < 23 N). Find which crush constant (rtp.world.crush_limit 8 N vs crush_force_for 23 N) labels outcomes in the scene and datagen, record that in DECISIONS, and report the source of the +-20 N finger actuator range versus the Franka Hand datasheet.
+ e. Keep m_max = 4 Nm (placeholder, safety-limit question, not tuning). Determinism: certification is outcome-level, each trial run once, no re-rolls of failures; reports say "not bit-exact".
+Gate: before any step run `python ops/arm_steps_status.py --require A<k-1>`.
+STOP and report if a gate exits 1 after two fix attempts, a result needs a threshold change, or a push is pending (list the commits and ask for push approval). Every number from reports/*.json with its evidence class; "not run" when not run. Never claim safety around people.
+```

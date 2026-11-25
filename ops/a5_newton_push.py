@@ -87,7 +87,8 @@ class Harness:
 
     def __init__(self, dt: float = 0.001, profile: str = "free_motion", *,
                  payload_kg: float = 0.0, model_error: Optional[dict] = None,
-                 delay_ticks: int = 0, kinematic_hand: bool = False) -> None:
+                 delay_ticks: int = 0, kinematic_hand: bool = False,
+                 residual_comp_gain: float = 4.0) -> None:
         import newton
         import warp as wp
         self.wp, self.newton = wp, newton
@@ -97,6 +98,7 @@ class Harness:
         self.model_error = dict(model_error or {})
         self.delay_ticks = int(delay_ticks)
         self.kinematic_hand = bool(kinematic_hand)
+        self.residual_comp_gain = float(residual_comp_gain)
         self.kinematic_hand_body = None
         self.delay_buf = deque()
         path = CACHE / ENTRY
@@ -111,7 +113,8 @@ class Harness:
         # wrench + controller force estimate), with the supervisor's own speed
         # limiter reinforced on every return tick.
         self.arm = NewtonCompliantArm(NewtonArmConfig(
-            dt=dt, profile=profile, friction_comp=False, residual_comp_gain=4.0,
+            dt=dt, profile=profile, friction_comp=False,
+            residual_comp_gain=self.residual_comp_gain,
             residual_beta=0.1, speed_limiter_gain=8000.0,
             compliance=ComplianceConfig(zeta=1.2)))
         self.solver = newton.solvers.SolverMuJoCo(self.model)
